@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
+import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.web.socket.WebSocketHandler
 import org.springframework.web.socket.WebSocketHttpHeaders
 import org.springframework.web.socket.client.WebSocketConnectionManager
@@ -27,6 +28,7 @@ import kotlin.system.exitProcess
  * This project is licensed under the GPL-3.0 License.
  * See the LICENSE file for details.
  */
+@EnableAsync
 @Configuration
 @EnableWebSocket
 @ComponentScan("io.github.qingshu.ayaka")

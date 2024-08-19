@@ -22,14 +22,20 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven {
+        url = uri("https://maven.meteordev.org/releases")
+    }
 }
 
 dependencies {
+    api(kotlin("reflect"))
+    api("meteordevelopment:orbit:0.2.3")
+    api("com.alibaba.fastjson2:fastjson2:2.0.52")
     api("org.springframework.boot:spring-boot-starter-websocket")
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 }
 
 kotlin {

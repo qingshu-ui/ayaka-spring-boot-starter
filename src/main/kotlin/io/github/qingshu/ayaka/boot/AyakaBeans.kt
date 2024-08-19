@@ -1,10 +1,12 @@
 package io.github.qingshu.ayaka.boot
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.qingshu.ayaka.bot.BotContainer
 import io.github.qingshu.ayaka.bot.BotFactory
 import io.github.qingshu.ayaka.config.AyakaProperties
 import io.github.qingshu.ayaka.config.WebsocketProperties
 import io.github.qingshu.ayaka.config.WebsocketServerProperties
+import io.github.qingshu.ayaka.event.EventFactory
 import io.github.qingshu.ayaka.handler.WebsocketClientHandler
 import io.github.qingshu.ayaka.handler.WebsocketServerHandler
 import io.github.qingshu.ayaka.task.ScheduledTask
@@ -30,11 +32,13 @@ class AyakaBeans(
     private val wsP: WebsocketProperties,
     private val wssP: WebsocketServerProperties,
     private val scheduledTask: ScheduledTask,
+    private val jsonParser: ObjectMapper,
+    private val eventFactory: EventFactory
 ) {
 
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnProperty("ayaka.ws.client.enable", havingValue = "true")
+    @ConditionalOnProperty(value = ["ayaka.ws.client.enable"], havingValue = "true")
     fun websocketClientHandler(): WebsocketClientHandler {
         return WebsocketClientHandler(
             wsp = wsP,
@@ -45,14 +49,15 @@ class AyakaBeans(
 
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnProperty("ayaka.ws.server.enable", havingValue = "true")
+    @ConditionalOnProperty(value = ["ayaka.ws.server.enable"], havingValue = "true")
     fun websocketServerHandler(): WebsocketServerHandler {
         return WebsocketServerHandler(
             ayaka = ayakaP,
             botContainer = botContainer,
             botFactory = botFactory,
             scheduledTask = scheduledTask,
-            websocketProperties = wsP
+            websocketProperties = wsP,
+            eventFactory = eventFactory
         )
     }
 
@@ -66,4 +71,6 @@ class AyakaBeans(
         container.setMaxSessionIdleTimeout(wssP.maxSessionIdleTimeout)
         return container
     }
+
+
 }

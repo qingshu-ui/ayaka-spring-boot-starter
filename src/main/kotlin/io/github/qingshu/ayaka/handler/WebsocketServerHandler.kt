@@ -1,5 +1,6 @@
 package io.github.qingshu.ayaka.handler
 
+import com.alibaba.fastjson2.JSONObject
 import io.github.qingshu.ayaka.bot.BotContainer
 import io.github.qingshu.ayaka.bot.BotFactory
 import io.github.qingshu.ayaka.config.AyakaProperties
@@ -7,6 +8,7 @@ import io.github.qingshu.ayaka.config.WebsocketProperties
 import io.github.qingshu.ayaka.dto.constant.AdapterEnum
 import io.github.qingshu.ayaka.dto.constant.Connection
 import io.github.qingshu.ayaka.dto.constant.SessionStatusEnum
+import io.github.qingshu.ayaka.event.EventFactory
 import io.github.qingshu.ayaka.task.ScheduledTask
 import io.github.qingshu.ayaka.utils.checkToken
 import io.github.qingshu.ayaka.utils.handleFirstConnect
@@ -33,16 +35,17 @@ class WebsocketServerHandler(
     private val botFactory: BotFactory,
     private val scheduledTask: ScheduledTask,
     private val websocketProperties: WebsocketProperties,
+    private val eventFactory: EventFactory,
 ) : TextWebSocketHandler() {
 
     override fun afterConnectionEstablished(session: WebSocketSession) {
         session.attributes[Connection.ADAPTER_KEY] = AdapterEnum.SERVER
         val xSelfId = parseSelfId(session)
-        if (xSelfId != 0L) {
+        if (xSelfId == 0L) {
             session.close()
             return
         }
-        if (checkToken(session, websocketProperties.accessToken)) {
+        if (!checkToken(session, websocketProperties.accessToken)) {
             session.close()
             return
         }
@@ -68,10 +71,6 @@ class WebsocketServerHandler(
 
     }
 
-    override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
-        super.handleTextMessage(session, message)
-    }
-
     override fun afterConnectionClosed(session: WebSocketSession, status: CloseStatus) {
         val xSelfId = session.handshakeHeaders["x-self-id"]?.get(0)?.toLong() ?: 0L
         if (xSelfId != 0L || !botContainer.bots.containsKey(xSelfId)) {
@@ -90,6 +89,13 @@ class WebsocketServerHandler(
         }, ayaka.reConnectInterval.toLong(), TimeUnit.SECONDS)
         session.attributes[Connection.SESSION_STATUS_KEY] = SessionStatusEnum.OFFLINE
         session.attributes[Connection.FUTURE_KEY] = schedule
+    }
+
+
+    override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
+        val xSelfId = parseSelfId(session)
+        val result = JSONObject.parseObject(message.payload)
+        eventFactory.postEvent(xSelfId, result)
     }
 
     companion object {

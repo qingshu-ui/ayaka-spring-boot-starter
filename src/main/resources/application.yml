@@ -4,6 +4,11 @@ spring:
 ayaka:
   ws:
     server:
-      enable: false
-    client:
       enable: true
+    client:
+      enable: false
+  task:
+    enable-async: true
+    thread-name-prefix: "ayaka-async-task"
+  plugin:
+    plugin-package: "io.github.qingshu.ayaka.plugin"

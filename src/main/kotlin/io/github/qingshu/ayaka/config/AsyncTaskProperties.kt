@@ -11,9 +11,12 @@ import org.springframework.context.annotation.Configuration
  * See the LICENSE file for details.
  */
 @Configuration
-@ConfigurationProperties(prefix = "ayaka.ws.server")
-class WebsocketServerProperties {
-    var maxSessionIdleTimeout: Long = 15 * 60000L
-    var url = "/ws/ayaka"
-    var enable = false
-}
+@ConfigurationProperties("ayaka.task")
+data class AsyncTaskProperties(
+    var corePoolSize: Int = 10,
+    var maxPoolSize: Int = 50,
+    var keepAliveTime: Int = 10,
+    var workQueueSize: Int = 10000,
+    var threadNamePrefix: String = "ayaka-",
+    var enableAsync: Boolean = true
+)
