@@ -1,5 +1,6 @@
 package io.github.qingshu.ayaka.utils
 
+import com.alibaba.fastjson2.JSONObject
 import io.github.qingshu.ayaka.bot.Bot
 import io.github.qingshu.ayaka.bot.BotFactory
 import io.github.qingshu.ayaka.dto.constant.Connection

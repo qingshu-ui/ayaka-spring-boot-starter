@@ -18,6 +18,7 @@ data class WebsocketProperties(
     var enableAuthSchema: Boolean = true,
     var maxTextMessageBufferSize: Int = 512000,
     var maxBinaryMessageBufferSize: Int = 512000,
+    var echoTimeout: Long = 60000L
 ) {
     fun accessToken(): String {
         if (enableAuthSchema && accessToken != "") {

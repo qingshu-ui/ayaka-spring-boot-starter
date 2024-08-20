@@ -10,7 +10,7 @@ import com.alibaba.fastjson2.annotation.JSONField
  * See the LICENSE file for details.
  */
 data class GeneralRawResp(
-    @JSONField(name = "status") private val status: String?,
-    @JSONField(name = "ret_code") private val retCode: Int?,
-    @JSONField(name = "echo") private val echo: String?,
+    @JSONField(name = "status") val status: String?,
+    @JSONField(name = "retcode") val retCode: Int?,
+    @JSONField(name = "echo") val echo: String?,
 )

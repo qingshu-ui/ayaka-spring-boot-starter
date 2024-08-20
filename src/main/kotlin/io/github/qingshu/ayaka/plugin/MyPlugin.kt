@@ -17,9 +17,12 @@ class MyPlugin: BotPlugin {
 
     @EventHandler
     fun exampleListener(event: PrivateMessageEvent){
-        val bot = event.bot
+        val bot = event.bot!!
         val msg = event.messageId
         log.info("This a example plugin by {} handle", Thread.currentThread().name)
+        val userId = event.sender!!.userId!!
+        val result = bot.sendPrivateMsg(userId, "Hello", false)
+        log.info("Sent message successfully, result: {}", result)
     }
 
     companion object{

@@ -10,23 +10,23 @@ import com.alibaba.fastjson2.annotation.JSONField
  * See the LICENSE file for details.
  */
 data class GetMsgResp(
-    @JSONField(name = "time") private val time: Int?,
-    @JSONField(name = "message_type") private val messageType: String?,
-    @JSONField(name = "message_id") private val messageId: Int?,
-    @JSONField(name = "real_id") private val realId: Int?,
-    @JSONField(name = "message") private val message: String?,
-    @JSONField(name = "raw_message") private val rawMessage: String?,
-    @JSONField(name = "sender") private val sender: Sender?,
+    @JSONField(name = "time") val time: Int?,
+    @JSONField(name = "message_type") val messageType: String?,
+    @JSONField(name = "message_id") val messageId: Int?,
+    @JSONField(name = "real_id") val realId: Int?,
+    @JSONField(name = "message") val message: String?,
+    @JSONField(name = "raw_message") val rawMessage: String?,
+    @JSONField(name = "sender") val sender: Sender?,
 ) {
     data class Sender(
-        @JSONField(name = "user_id") private val userId: Long?,
-        @JSONField(name = "nickname") private val nickname: String?,
-        @JSONField(name = "sex") private val sex: String?,
-        @JSONField(name = "age") private val age: Int?,
-        @JSONField(name = "card") private val card: String?,
-        @JSONField(name = "area") private val area: String?,
-        @JSONField(name = "level") private val level: String?,
-        @JSONField(name = "role") private val role: String?,
-        @JSONField(name = "title") private val title: String?,
+        @JSONField(name = "user_id") val userId: Long?,
+        @JSONField(name = "nickname") val nickname: String?,
+        @JSONField(name = "sex") val sex: String?,
+        @JSONField(name = "age") val age: Int?,
+        @JSONField(name = "card") val card: String?,
+        @JSONField(name = "area") val area: String?,
+        @JSONField(name = "level") val level: String?,
+        @JSONField(name = "role") val role: String?,
+        @JSONField(name = "title") val title: String?,
     )
 }

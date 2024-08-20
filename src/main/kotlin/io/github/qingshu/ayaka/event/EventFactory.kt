@@ -53,7 +53,7 @@ class EventFactory @Autowired constructor(
         } else {
             val event = getEvent(resp)
             if(event != null) {
-                event.bot = botContainer.bots[xSelfId]
+                event.bot = botContainer.bots[xSelfId]!!
                 bus.post(event)
             }
         }

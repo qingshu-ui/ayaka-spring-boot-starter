@@ -20,7 +20,7 @@ data class PrivateMessageEvent(
 
     @JSONField(name = "message_id") val messageId: Int?,
     @JSONField(name = "sub_type") val subType: String?,
-    @JSONField(name = "sender") val privateSender: PrivateSender?,
+    @JSONField(name = "sender") val sender: PrivateSender?,
     @JSONField(name = "temp_source") val tempSource: Int?,
 ) : GeneralEvent(postType, time, selfId, bot) {
 

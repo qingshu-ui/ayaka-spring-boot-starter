@@ -10,5 +10,5 @@ import com.alibaba.fastjson2.annotation.JSONField
  * See the LICENSE file for details.
  */
 data class MsgId(
-    @JSONField(name = "message_id") private val messageId: Int?
+    @JSONField(name = "message_id") val messageId: Int?
 )

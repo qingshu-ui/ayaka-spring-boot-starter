@@ -1,5 +1,7 @@
 package io.github.qingshu.ayaka.bot
 
+import io.github.qingshu.ayaka.utils.ProtocolHelper
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.socket.WebSocketSession
 
@@ -11,8 +13,10 @@ import org.springframework.web.socket.WebSocketSession
  * See the LICENSE file for details.
  */
 @Component
-class BotFactory {
+class BotFactory @Autowired constructor(
+    private val sender: ProtocolHelper,
+) {
     fun createBot(xSelfId: Long, session: WebSocketSession): Bot {
-        return Bot(xSelfId, session)
+        return Bot(xSelfId, session, sender)
     }
 }
