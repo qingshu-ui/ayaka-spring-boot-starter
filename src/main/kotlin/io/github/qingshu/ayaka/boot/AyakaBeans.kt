@@ -43,7 +43,8 @@ class AyakaBeans(
         return WebsocketClientHandler(
             wsp = wsP,
             botContainer = botContainer,
-            botFactory = botFactory
+            botFactory = botFactory,
+            eventFactory = eventFactory,
         )
     }
 

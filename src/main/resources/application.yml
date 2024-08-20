@@ -4,9 +4,10 @@ spring:
 ayaka:
   ws:
     server:
-      enable: true
-    client:
       enable: false
+    client:
+      enable: true
+      url: "ws://192.168.1.9:5800"
   task:
     enable-async: true
     thread-name-prefix: "ayaka-async-task"
