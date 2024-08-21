@@ -11,15 +11,13 @@ import kotlin.reflect.KClass
  * This project is licensed under the GPL-3.0 License.
  * See the LICENSE file for details.
  */
-open class GeneralEvent(
-    @JSONField(name = "post_type") open val postType: String?,
+open class GeneralEvent {
 
-    @JSONField(name = "time") open val time: Long?,
+    @JSONField(name = "post_type") open var postType: String? = null
+    @JSONField(name = "time") open var time: Long? = null
+    @JSONField(name = "self_id") open var selfId: String? = null
+    @JSONField(serialize = false, deserialize = false) open var bot: Bot? = null
 
-    @JSONField(name = "self_id") open val selfId: String?,
-
-    @JSONField(serialize = false, deserialize = false) open var bot: Bot?
-){
     companion object{
         val events = mutableListOf<KClass<out GeneralEvent>>()
     }

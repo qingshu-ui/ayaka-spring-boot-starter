@@ -2,8 +2,6 @@ package io.github.qingshu.ayaka.event.message
 
 import com.alibaba.fastjson2.JSONObject
 import com.alibaba.fastjson2.annotation.JSONField
-import io.github.qingshu.ayaka.bot.Bot
-import io.github.qingshu.ayaka.event.GeneralEvent
 
 /**
  * Copyright (c) 2024 qingshu.
@@ -12,25 +10,19 @@ import io.github.qingshu.ayaka.event.GeneralEvent
  * This project is licensed under the GPL-3.0 License.
  * See the LICENSE file for details.
  */
-data class PrivateMessageEvent(
-    override val postType: String?,
-    override val time: Long?,
-    override val selfId: String?,
-    override var bot: Bot?,
+class PrivateMessageEvent : MessageEvent() {
+    @JSONField(name = "message_id") var messageId: Int? = null
+    @JSONField(name = "sub_type") var subType: String? = null
+    @JSONField(name = "sender") var sender: PrivateSender? = null
+    @JSONField(name = "temp_source") var tempSource: Int? = null
 
-    @JSONField(name = "message_id") val messageId: Int?,
-    @JSONField(name = "sub_type") val subType: String?,
-    @JSONField(name = "sender") val sender: PrivateSender?,
-    @JSONField(name = "temp_source") val tempSource: Int?,
-) : GeneralEvent(postType, time, selfId, bot) {
-
-    data class PrivateSender(
-        @JSONField(name = "group_id") val groupId: Long?,
-        @JSONField(name = "user_id") val userId: Long?,
-        @JSONField(name = "nickname") val nickname: String?,
-        @JSONField(name = "sex") val sex: String?,
-        @JSONField(name = "age") val age: Int?,
-    )
+    class PrivateSender {
+        @JSONField(name = "group_id") var groupId: Long? = null
+        @JSONField(name = "user_id") var userId: Long? = null
+        @JSONField(name = "nickname") var nickname: String? = null
+        @JSONField(name = "sex") var sex: String? = null
+        @JSONField(name = "age") var age: Int? = null
+    }
 
     companion object {
         init {

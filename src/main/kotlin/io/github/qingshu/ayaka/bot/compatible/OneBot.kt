@@ -1,7 +1,12 @@
 package io.github.qingshu.ayaka.bot.compatible
 
+import io.github.qingshu.ayaka.dto.general.GeneralRawResp
 import io.github.qingshu.ayaka.dto.general.GeneralRespData
+import io.github.qingshu.ayaka.dto.general.GeneralRespList
+import io.github.qingshu.ayaka.dto.resp.GetMsgResp
+import io.github.qingshu.ayaka.dto.resp.GroupInfoResp
 import io.github.qingshu.ayaka.dto.resp.MsgId
+import io.github.qingshu.ayaka.event.message.AnyMessageEvent
 
 /**
  * Copyright (c) 2024 qingshu.
@@ -28,15 +33,58 @@ interface OneBot {
      * @param autoEscape 消息内容是否作为纯文本发送，不解析 CQ 码
      * @return result [GeneralRespData] of [MsgId]
      */
-    fun sendPrivateMsg(groupId: Long, userId: Long, msg: String, autoEscape: Boolean): GeneralRespData<MsgId>
+    fun sendPrivateMsg(groupId: Long?, userId: Long, msg: String, autoEscape: Boolean): GeneralRespData<MsgId>
 
+    /**
+     * 发送群消息
+     * @param groupId 群号
+     * @param msg 消息内容
+     * @param autoEscape 消息内容是否作为纯文本发送，不解析 CQ 码
+     * @return result [GeneralRespData] of [MsgId]
+     */
+    fun sendGroupMsg(groupId: Long, msg: String, autoEscape: Boolean): GeneralRespData<MsgId>
+
+    /**
+     * 获取群列表
+     * @return result [GeneralRespList] of [GroupInfoResp]
+     */
+    fun getGroupList(): GeneralRespList<GroupInfoResp>
+
+    /**
+     * 发送消息
+     * @param event [AnyMessageEvent]
+     * @param msg 消息内容
+     * @param autoEscape 消息内容是否作为纯文本发送，不解析 CQ 码
+     * @return result [GeneralRespData] of [MsgId]
+     */
+    fun sendMsg(event: AnyMessageEvent, msg:String, autoEscape: Boolean): GeneralRespData<MsgId>
+
+    /**
+     * 撤回消息
+     *
+     * @param msgId 消息 ID
+     * @return result [GeneralRawResp]
+     */
+    fun deleteMsg(msgId: Int): GeneralRawResp
+
+    /**
+     * 获取消息
+     *
+     * @param msgId 消息 ID
+     * @return result [GeneralRespData] of [GetMsgResp]
+     */
+    fun getMsg(msgId: Int): GeneralRespData<GetMsgResp>
+
+    /**
+     * 好友点赞
+     *
+     * @param userId 目标用户
+     * @param times  点赞次数（每个好友每天最多 10 次，机器人为 Super VIP 则提高到 20次）
+     * @return result [GeneralRawResp]
+     */
+    fun sendLike(userId: Long, times: Int): GeneralRawResp
     /*
-    fun sendGroupMsg(): GeneralRespData<MsgId>
-    fun sendMsg(): GeneralRespData<MsgId>
-    fun deleteMsg(): GeneralRawResp
-    fun getMsg(): GeneralRespData<GetMsgResp>
     fun getForwardMsg(): GeneralRespData<JSONObject>
-    fun sendLike(): GeneralRawResp
     fun setGroupKick(): GeneralRawResp
     fun setGroupBan(): GeneralRawResp
     fun setGroupAnonymousBan(): GeneralRawResp
@@ -53,7 +101,6 @@ interface OneBot {
     fun getStrangerInfo(): GeneralRespData<StrangerInfoResp>
     fun getFriendList(): GeneralRespData<FriendInfoResp>
     fun getGroupInfo(): GeneralRespData<GroupInfoResp>
-    fun getGroupList(): GeneralRespList<GroupInfoResp>
     fun getGroupMemberInfo(): GeneralRespData<GroupMemberInfoResp>
     fun getGroupMemberList(): GeneralRespList<GroupMemberInfoResp>
     fun getGroupHonorInfo(): GeneralRespData<GroupHonorInfoResp>
