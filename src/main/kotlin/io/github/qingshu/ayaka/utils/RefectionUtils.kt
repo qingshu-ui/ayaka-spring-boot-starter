@@ -13,7 +13,7 @@ import kotlin.reflect.KClass
  */
 object RefectionUtils {
 
-    fun findSubClasses(baseClass: KClass<*>): List<Class<*>> {
+    private fun findSubClasses(baseClass: KClass<*>): List<Class<*>> {
         val scanner = ClassPathScanningCandidateComponentProvider(false)
         scanner.addIncludeFilter(AssignableTypeFilter(baseClass.java))
         val basePackage = baseClass.java.packageName
@@ -22,6 +22,11 @@ object RefectionUtils {
             .filter { baseClass.java.isAssignableFrom(it) && it != baseClass.java }
     }
 
+    /**
+     * 扫描指定类型的所有子类，使其静态成员被初始化
+     * 应该在 spring 应用启动时完成调用此函数
+     * 主要用于 不受 IOC 容器管理的 bean 对象
+     */
     fun initStaticFun(baseClass: KClass<*>) {
         findSubClasses(baseClass)
     }

@@ -6,7 +6,7 @@ import io.github.qingshu.ayaka.bot.BotFactory
 import io.github.qingshu.ayaka.config.AyakaProperties
 import io.github.qingshu.ayaka.config.WebsocketProperties
 import io.github.qingshu.ayaka.config.WebsocketServerProperties
-import io.github.qingshu.ayaka.event.EventFactory
+import io.github.qingshu.ayaka.dto.event.EventFactory
 import io.github.qingshu.ayaka.handler.WebsocketClientHandler
 import io.github.qingshu.ayaka.handler.WebsocketServerHandler
 import io.github.qingshu.ayaka.task.ScheduledTask

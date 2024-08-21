@@ -1,4 +1,4 @@
-package io.github.qingshu.ayaka.event
+package io.github.qingshu.ayaka.dto.event
 
 import com.alibaba.fastjson2.JSONObject
 import com.fasterxml.jackson.databind.util.LRUMap
@@ -34,7 +34,7 @@ class EventFactory @Autowired constructor(
         listener.forEach(bus::subscribe)
     }
 
-    fun getEvent(json: JSONObject): GeneralEvent? {
+    private fun getEvent(json: JSONObject): GeneralEvent? {
         GeneralEvent.events.forEach { event ->
             val canHandleFun = event.companionObject?.memberFunctions?.find { it.name == "canHandle" }
             val canHandle = canHandleFun?.call(event.companionObjectInstance, json) as Boolean
@@ -45,14 +45,18 @@ class EventFactory @Autowired constructor(
         return null
     }
 
-
+    /**
+     * 将上报内容传递给事件监听器进行处理
+     * @param xSelfId 接收上报消息的 QQ 号
+     * @param resp [JSONObject] of fastjson2
+     */
     @Async("ayakaTaskExecutor")
     fun postEvent(xSelfId: Long, resp: JSONObject) {
         if (resp.containsKey("echo")) {
             echoMap[resp["echo"]].complete(resp)
         } else {
             val event = getEvent(resp)
-            if(event != null) {
+            if(null != event) {
                 event.bot = botContainer.bots[xSelfId]!!
                 bus.post(event)
             }
@@ -61,6 +65,7 @@ class EventFactory @Autowired constructor(
 
     companion object {
         init {
+            // 通过反射的对静态成员进行初始化得到 events 列表
             RefectionUtils.initStaticFun(GeneralEvent::class)
         }
         private val log = LoggerFactory.getLogger(EventFactory::class.java)

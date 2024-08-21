@@ -8,10 +8,8 @@ import io.github.qingshu.ayaka.bot.compatible.OpenShamrock
 import io.github.qingshu.ayaka.dto.constant.ActionPathEnum
 import io.github.qingshu.ayaka.dto.constant.ParamsKey
 import io.github.qingshu.ayaka.dto.general.*
-import io.github.qingshu.ayaka.dto.resp.GetMsgResp
-import io.github.qingshu.ayaka.dto.resp.GroupInfoResp
-import io.github.qingshu.ayaka.dto.resp.MsgId
-import io.github.qingshu.ayaka.event.message.AnyMessageEvent
+import io.github.qingshu.ayaka.dto.resp.*
+import io.github.qingshu.ayaka.dto.event.message.AnyMessageEvent
 import io.github.qingshu.ayaka.utils.ProtocolHelper
 import org.springframework.web.socket.WebSocketSession
 
@@ -439,6 +437,184 @@ class Bot(
         val result = helper.send(session, JSON.toJSON(api) as JSONObject)
         return result.let {
             JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRawResp>() {})
+        }
+    }
+
+
+    /**
+     * 获取登录号信息
+     *
+     * @return result [GeneralRespData] of [GetLoginInfoResp]
+     */
+    override fun getLoginInfo(): GeneralRespData<GetLoginInfoResp> {
+        val api = ProtocolBody(
+            action = ActionPathEnum.GET_LOGIN_INFO.path, params = JSONObject()
+        )
+        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        return result.let {
+            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<GetLoginInfoResp>>() {})
+        }
+    }
+
+    /**
+     * 获取陌生人信息
+     *
+     * @param userId  QQ 号
+     * @param noCache 是否不使用缓存（使用缓存可能更新不及时，但响应更快）
+     * @return result [GeneralRespData] of [StrangerInfoResp]
+     */
+    override fun getStrangerInfo(userId: Long, noCache: Boolean): GeneralRespData<StrangerInfoResp> {
+        val params = JSONObject()
+        params[ParamsKey.USER_ID] = userId
+        params[ParamsKey.NO_CACHE] = noCache
+        val api = ProtocolBody(
+            action = ActionPathEnum.GET_STRANGER_INFO.path, params = params
+        )
+        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        return result.let {
+            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<StrangerInfoResp>>() {})
+        }
+    }
+
+    /**
+     * 获取好友列表
+     *
+     * @return result [GeneralRespData] of [FriendInfoResp]
+     */
+    override fun getFriendList(): GeneralRespData<FriendInfoResp> {
+        val api = ProtocolBody(
+            action = ActionPathEnum.GET_FRIEND_LIST.path, params = JSONObject()
+        )
+        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        return result.let {
+            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<FriendInfoResp>>() {})
+        }
+    }
+
+    /**
+     * 获取群信息
+     *
+     * @param groupId 群号
+     * @param noCache 是否不使用缓存（使用缓存可能更新不及时，但响应更快）
+     * @return result [GeneralRespData] of [GroupInfoResp]
+     */
+    override fun getGroupInfo(groupId: Long, noCache: Boolean): GeneralRespData<GroupInfoResp> {
+        val params = JSONObject()
+        params[ParamsKey.GROUP_ID] = groupId
+        params[ParamsKey.NO_CACHE] = noCache
+        val api = ProtocolBody(
+            action = ActionPathEnum.GET_GROUP_INFO.path, params = params
+        )
+        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        return result.let {
+            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<GroupInfoResp>>() {})
+        }
+    }
+
+    /**
+     * 获取群成员信息
+     *
+     * @param groupId 群号
+     * @param userId  QQ 号
+     * @param noCache 是否不使用缓存（使用缓存可能更新不及时，但响应更快）
+     * @return result [GeneralRespData] of [GroupMemberInfoResp]
+     */
+    override fun getGroupMemberInfo(
+        groupId: Long, userId: Long, noCache: Boolean
+    ): GeneralRespData<GroupMemberInfoResp> {
+        val params = JSONObject()
+        params[ParamsKey.GROUP_ID] = groupId
+        params[ParamsKey.USER_ID] = userId
+        params[ParamsKey.NO_CACHE] = noCache
+        val api = ProtocolBody(
+            action = ActionPathEnum.GET_GROUP_MEMBER_INFO.path, params = params
+        )
+        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        return result.let {
+            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<GroupMemberInfoResp>>() {})
+        }
+    }
+
+    /**
+     * 获取群成员列表
+     *
+     * @param groupId 群号
+     * @return result [GeneralRespList] of [GroupMemberInfoResp]
+     */
+    override fun getGroupMemberList(groupId: Long): GeneralRespList<GroupMemberInfoResp> {
+        val params = JSONObject()
+        params[ParamsKey.GROUP_ID] = groupId
+        val api = ProtocolBody(
+            action = ActionPathEnum.GET_GROUP_MEMBER_LIST.path, params = params
+        )
+        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        return result.let {
+            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespList<GroupMemberInfoResp>>() {})
+        }
+    }
+
+    /**
+     * 获取群荣誉信息
+     *
+     * @param groupId 群号
+     * @param type    要获取的群荣誉类型, 可传入 talkative performer legend strong_newbie emotion 以分别获取单个类型的群荣誉数据, 或传入 all 获取所有数据
+     * @return result [GeneralRespData] of [GroupHonorInfoResp]
+     */
+    override fun getGroupHonorInfo(groupId: Long, type: String): GeneralRespData<GroupHonorInfoResp> {
+        val params = JSONObject()
+        params[ParamsKey.GROUP_ID] = groupId
+        params[ParamsKey.TYPE] = type
+        val api = ProtocolBody(
+            action = ActionPathEnum.GET_GROUP_HONOR_INFO.path, params = params
+        )
+        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        return result.let {
+            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<GroupHonorInfoResp>>() {})
+        }
+    }
+
+    /**
+     * 检查是否可以发送图片
+     *
+     * @return result [GeneralRespData] of [BooleanResp]
+     */
+    override fun canSendImage(): GeneralRespData<BooleanResp> {
+        val api = ProtocolBody(
+            action = ActionPathEnum.CAN_SEND_IMAGE.path, params = JSONObject()
+        )
+        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        return result.let {
+            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<BooleanResp>>() {})
+        }
+    }
+
+    /**
+     * 检查是否可以发送语音
+     *
+     * @return result [GeneralRespData] of [BooleanResp]
+     */
+    override fun canSendRecord(): GeneralRespData<BooleanResp> {
+        val api = ProtocolBody(
+            action = ActionPathEnum.CAN_SEND_RECORD.path, params = JSONObject()
+        )
+        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        return result.let {
+            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<BooleanResp>>() {})
+        }
+    }
+
+    /**
+     * 获取状态
+     *
+     * @return result [GeneralRespData] of [GetStatusResp]
+     */
+    override fun getStatus(): GeneralRespData<GetStatusResp> {
+        val api = ProtocolBody(
+            action = ActionPathEnum.GET_STATUS.path, params = JSONObject()
+        )
+        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        return result.let {
+            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<GetStatusResp>>() {})
         }
     }
 }

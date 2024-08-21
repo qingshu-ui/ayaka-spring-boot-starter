@@ -1,4 +1,4 @@
-package io.github.qingshu.ayaka.event.message
+package io.github.qingshu.ayaka.dto.event.message
 
 import com.alibaba.fastjson2.JSONObject
 import com.alibaba.fastjson2.annotation.JSONField
@@ -30,10 +30,10 @@ class PrivateMessageEvent : MessageEvent() {
         }
 
         fun canHandle(json: JSONObject): Boolean {
-            if(json.containsKey("post_type") && json["post_type"] == "message") {
-                return json.containsKey("message_type") && json["message_type"] == "private"
+            return when {
+                "message" == json["post_type"] -> "private" == json["message_type"]
+                else -> false
             }
-            return false
         }
     }
 }

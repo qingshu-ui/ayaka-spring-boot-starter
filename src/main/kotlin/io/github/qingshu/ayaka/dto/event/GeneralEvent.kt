@@ -1,4 +1,4 @@
-package io.github.qingshu.ayaka.event
+package io.github.qingshu.ayaka.dto.event
 
 import com.alibaba.fastjson2.annotation.JSONField
 import io.github.qingshu.ayaka.bot.Bot
@@ -15,7 +15,7 @@ open class GeneralEvent {
 
     @JSONField(name = "post_type") open var postType: String? = null
     @JSONField(name = "time") open var time: Long? = null
-    @JSONField(name = "self_id") open var selfId: String? = null
+    @JSONField(name = "self_id") open var selfId: Long? = null
     @JSONField(serialize = false, deserialize = false) open var bot: Bot? = null
 
     companion object{

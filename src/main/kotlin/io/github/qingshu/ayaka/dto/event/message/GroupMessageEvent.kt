@@ -1,5 +1,6 @@
-package io.github.qingshu.ayaka.event.message
+package io.github.qingshu.ayaka.dto.event.message
 
+import com.alibaba.fastjson2.JSONObject
 import com.alibaba.fastjson2.annotation.JSONField
 import io.github.qingshu.ayaka.dto.general.Anonymous
 
@@ -24,5 +25,18 @@ open class GroupMessageEvent : MessageEvent() {
         @JSONField(name = "level") var level: String? = null
         @JSONField(name = "role") var role: String? = null
         @JSONField(name = "title") var title: String? = null
+    }
+
+    companion object{
+        init {
+            events.add(GroupMessageEvent::class)
+        }
+
+        fun canHandle(json: JSONObject): Boolean{
+            return when {
+                "message" == json["post_type"] -> "group" == json["message_type"]
+                else -> false
+            }
+        }
     }
 }

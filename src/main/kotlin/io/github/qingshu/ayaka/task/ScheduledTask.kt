@@ -1,6 +1,7 @@
 package io.github.qingshu.ayaka.task
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 import org.springframework.stereotype.Component
 import java.util.concurrent.ScheduledThreadPoolExecutor
@@ -14,7 +15,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor
  */
 @Component
 class ScheduledTask @Autowired constructor(
-    private val ayakaExecutor: ThreadPoolTaskExecutor
+    @Qualifier("ayakaTaskExecutor") private val ayakaExecutor: ThreadPoolTaskExecutor
 ) {
     private var executor: ScheduledThreadPoolExecutor? = null
 

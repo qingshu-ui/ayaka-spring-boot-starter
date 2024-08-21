@@ -97,4 +97,12 @@ object ParamsKey {
     const val PRIVATE: String = "private"
 
     const val GROUP: String = "group"
+
+    const val POST_TYPE = "post_type"
+
+    const val META_EVENT_TYPE = "meta_event_type"
+
+    const val REQUEST_TYPE = "request_type"
+
+    const val NOTICE_TYPE = "notice_type"
 }

@@ -4,10 +4,8 @@ import io.github.qingshu.ayaka.dto.general.Anonymous
 import io.github.qingshu.ayaka.dto.general.GeneralRawResp
 import io.github.qingshu.ayaka.dto.general.GeneralRespData
 import io.github.qingshu.ayaka.dto.general.GeneralRespList
-import io.github.qingshu.ayaka.dto.resp.GetMsgResp
-import io.github.qingshu.ayaka.dto.resp.GroupInfoResp
-import io.github.qingshu.ayaka.dto.resp.MsgId
-import io.github.qingshu.ayaka.event.message.AnyMessageEvent
+import io.github.qingshu.ayaka.dto.resp.*
+import io.github.qingshu.ayaka.dto.event.message.AnyMessageEvent
 
 /**
  * Copyright (c) 2024 qingshu.
@@ -201,23 +199,94 @@ interface OneBot {
      */
     fun setGroupAddRequest(flag: String, subType: String, approve: Boolean, reason: String): GeneralRawResp
 
-    /*
-    fun getForwardMsg(): GeneralRespData<JSONObject>
+
+    /**
+     * 获取登录号信息
+     *
+     * @return result [GeneralRespData] of [GetLoginInfoResp]
+     */
     fun getLoginInfo(): GeneralRespData<GetLoginInfoResp>
-    fun getStrangerInfo(): GeneralRespData<StrangerInfoResp>
+
+    /**
+     * 获取陌生人信息
+     *
+     * @param userId  QQ 号
+     * @param noCache 是否不使用缓存（使用缓存可能更新不及时，但响应更快）
+     * @return result [GeneralRespData] of [StrangerInfoResp]
+     */
+    fun getStrangerInfo(userId: Long, noCache: Boolean): GeneralRespData<StrangerInfoResp>
+
+    /**
+     * 获取好友列表
+     *
+     * @return result [GeneralRespData] of [FriendInfoResp]
+     */
     fun getFriendList(): GeneralRespData<FriendInfoResp>
-    fun getGroupInfo(): GeneralRespData<GroupInfoResp>
-    fun getGroupMemberInfo(): GeneralRespData<GroupMemberInfoResp>
-    fun getGroupMemberList(): GeneralRespList<GroupMemberInfoResp>
-    fun getGroupHonorInfo(): GeneralRespData<GroupHonorInfoResp>
+
+    /**
+     * 获取群信息
+     *
+     * @param groupId 群号
+     * @param noCache 是否不使用缓存（使用缓存可能更新不及时，但响应更快）
+     * @return result [GeneralRespData] of [GroupInfoResp]
+     */
+    fun getGroupInfo(groupId: Long, noCache: Boolean): GeneralRespData<GroupInfoResp>
+
+    /**
+     * 获取群成员信息
+     *
+     * @param groupId 群号
+     * @param userId  QQ 号
+     * @param noCache 是否不使用缓存（使用缓存可能更新不及时，但响应更快）
+     * @return result [GeneralRespData] of [GroupMemberInfoResp]
+     */
+    fun getGroupMemberInfo(groupId: Long, userId: Long, noCache: Boolean): GeneralRespData<GroupMemberInfoResp>
+
+    /**
+     * 获取群成员列表
+     *
+     * @param groupId 群号
+     * @return result [GeneralRespList] of [GroupMemberInfoResp]
+     */
+    fun getGroupMemberList(groupId: Long): GeneralRespList<GroupMemberInfoResp>
+
+    /**
+     * 获取群荣誉信息
+     *
+     * @param groupId 群号
+     * @param type    要获取的群荣誉类型, 可传入 talkative performer legend strong_newbie emotion 以分别获取单个类型的群荣誉数据, 或传入 all 获取所有数据
+     * @return result [GeneralRespData] of [GroupHonorInfoResp]
+     */
+    fun getGroupHonorInfo(groupId: Long, type:String): GeneralRespData<GroupHonorInfoResp>
+
+    /**
+     * 检查是否可以发送图片
+     *
+     * @return result [GeneralRespData] of [BooleanResp]
+     */
+    fun canSendImage(): GeneralRespData<BooleanResp>
+
+    /**
+     * 检查是否可以发送语音
+     *
+     * @return result [GeneralRespData] of [BooleanResp]
+     */
+    fun canSendRecord(): GeneralRespData<BooleanResp>
+
+    /**
+     * 获取状态
+     *
+     * @return result [GeneralRespData] of [GetStatusResp]
+     */
+    fun getStatus(): GeneralRespData<GetStatusResp>
+
+    /* Unrealized API for onebot v11
+    fun getForwardMsg(): GeneralRespData<JSONObject>
     fun getCookies(): GeneralRespData<GetCooliesResp>
     fun getCsrfToken(): GeneralRespData<CsrfTokenResp>
     fun getCredentials(): GeneralRespData<CredentialsResp>
     fun getRecord(): GeneralRespData<GetResourceResp>
     fun getImage(): GeneralRespData<GetResourceResp>
-    fun canSendImage(): GeneralRespData<BooleanResp>
-    fun canSendRecord(): GeneralRespData<BooleanResp>
-    fun getStatus(): GeneralRespData<GetStatusResp>
     fun getVersionInfo(): GeneralRespData<VersionInfoResp>
     fun setRestart(): GeneralRawResp
     fun cleanCache(): GeneralRawResp

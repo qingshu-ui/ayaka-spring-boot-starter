@@ -2,17 +2,20 @@ plugins {
     id("maven-publish")
     kotlin("jvm") version "1.9.24"
     kotlin("plugin.spring") version "1.9.24"
+    kotlin("kapt") version "1.9.24"
     id("org.springframework.boot") version "3.3.2"
     id("io.spring.dependency-management") version "1.1.6"
 }
 
 group = "io.github.qingshu-ui"
-version = "0.0.2-SNAPSHOT"
+version = "0.0.3-SNAPSHOT"
 
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
+    withJavadocJar()
+    withSourcesJar()
 }
 
 configurations {
@@ -34,10 +37,7 @@ dependencies {
     api("com.alibaba.fastjson2:fastjson2:2.0.52")
     api("org.springframework.boot:spring-boot-starter-websocket")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+    kapt("org.springframework.boot:spring-boot-configuration-processor")
 }
 
 kotlin {
@@ -46,8 +46,12 @@ kotlin {
     }
 }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
+tasks.jar {
+    enabled = true
+}
+
+tasks.bootJar {
+    enabled = false
 }
 
 publishing {

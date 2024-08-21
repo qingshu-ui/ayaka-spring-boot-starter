@@ -1,7 +1,7 @@
-package io.github.qingshu.ayaka.event.message
+package io.github.qingshu.ayaka.dto.event.message
 
 import com.alibaba.fastjson2.annotation.JSONField
-import io.github.qingshu.ayaka.event.GeneralEvent
+import io.github.qingshu.ayaka.dto.event.GeneralEvent
 
 open class MessageEvent: GeneralEvent(){
     @JSONField(name = "message_type") open var messageType: String? = null

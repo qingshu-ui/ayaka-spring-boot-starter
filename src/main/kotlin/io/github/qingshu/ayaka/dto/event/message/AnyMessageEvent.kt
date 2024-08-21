@@ -1,4 +1,4 @@
-package io.github.qingshu.ayaka.event.message
+package io.github.qingshu.ayaka.dto.event.message
 
 /**
  * Copyright (c) 2024 qingshu.
