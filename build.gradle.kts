@@ -65,7 +65,7 @@ publishing {
     repositories{
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/qingshu-code/ayaka-spring-boot-starter")
+            url = uri("https://maven.pkg.github.com/qingshu-ui/ayaka-spring-boot-starter")
             credentials {
                 username = System.getenv("GITHUB_ACTOR")
                 password = System.getenv("GITHUB_TOKEN")
