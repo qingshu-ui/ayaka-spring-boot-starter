@@ -7,9 +7,9 @@ import io.github.qingshu.ayaka.bot.compatible.OneBot
 import io.github.qingshu.ayaka.bot.compatible.OpenShamrock
 import io.github.qingshu.ayaka.dto.constant.ActionPathEnum
 import io.github.qingshu.ayaka.dto.constant.ParamsKey
+import io.github.qingshu.ayaka.dto.event.message.AnyMessageEvent
 import io.github.qingshu.ayaka.dto.general.*
 import io.github.qingshu.ayaka.dto.resp.*
-import io.github.qingshu.ayaka.dto.event.message.AnyMessageEvent
 import io.github.qingshu.ayaka.utils.ProtocolHelper
 import org.springframework.web.socket.WebSocketSession
 
@@ -49,8 +49,7 @@ class Bot(
         params[ParamsKey.MESSAGE] = msg
         params[ParamsKey.AUTO_ESCAPE] = autoEscape
         val api = ProtocolBody(
-            action = ActionPathEnum.SEND_PRIVATE_MSG.path,
-            params = params
+            action = ActionPathEnum.SEND_PRIVATE_MSG.path, params = params
         )
         val result = helper.send(session, JSON.toJSON(api) as JSONObject)
         return result.let {

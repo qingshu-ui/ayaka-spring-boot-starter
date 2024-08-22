@@ -1,6 +1,5 @@
 package io.github.qingshu.ayaka.boot
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.qingshu.ayaka.bot.BotContainer
 import io.github.qingshu.ayaka.bot.BotFactory
 import io.github.qingshu.ayaka.config.AyakaProperties
@@ -32,8 +31,7 @@ class AyakaBeans(
     private val wsP: WebsocketProperties,
     private val wssP: WebsocketServerProperties,
     private val scheduledTask: ScheduledTask,
-    private val jsonParser: ObjectMapper,
-    private val eventFactory: EventFactory
+    private val eventFactory: EventFactory,
 ) {
 
     @Bean

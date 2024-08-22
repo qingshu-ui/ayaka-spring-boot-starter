@@ -1,11 +1,11 @@
 package io.github.qingshu.ayaka.bot.compatible
 
+import io.github.qingshu.ayaka.dto.event.message.AnyMessageEvent
 import io.github.qingshu.ayaka.dto.general.Anonymous
 import io.github.qingshu.ayaka.dto.general.GeneralRawResp
 import io.github.qingshu.ayaka.dto.general.GeneralRespData
 import io.github.qingshu.ayaka.dto.general.GeneralRespList
 import io.github.qingshu.ayaka.dto.resp.*
-import io.github.qingshu.ayaka.dto.event.message.AnyMessageEvent
 
 /**
  * Copyright (c) 2024 qingshu.
@@ -56,7 +56,7 @@ interface OneBot {
      * @param autoEscape 消息内容是否作为纯文本发送，不解析 CQ 码
      * @return result [GeneralRespData] of [MsgId]
      */
-    fun sendMsg(event: AnyMessageEvent, msg:String, autoEscape: Boolean): GeneralRespData<MsgId>
+    fun sendMsg(event: AnyMessageEvent, msg: String, autoEscape: Boolean): GeneralRespData<MsgId>
 
     /**
      * 撤回消息
@@ -257,7 +257,7 @@ interface OneBot {
      * @param type    要获取的群荣誉类型, 可传入 talkative performer legend strong_newbie emotion 以分别获取单个类型的群荣誉数据, 或传入 all 获取所有数据
      * @return result [GeneralRespData] of [GroupHonorInfoResp]
      */
-    fun getGroupHonorInfo(groupId: Long, type:String): GeneralRespData<GroupHonorInfoResp>
+    fun getGroupHonorInfo(groupId: Long, type: String): GeneralRespData<GroupHonorInfoResp>
 
     /**
      * 检查是否可以发送图片
