@@ -49,12 +49,13 @@ class WebsocketClientHandler(
     }
 
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
-        val xSelfId = parseSelfId(session)
+        var xSelfId = parseSelfId(session)
         if (xSelfId == 0L) {
             val valid = JSON.isValid(message.payload)
             if (valid) {
                 val selfId = JSON.parseObject(message.payload).getOrDefault("self_id", "").toString()
                 session.attributes["x-self-id"] = selfId
+                xSelfId = parseSelfId(session)
             }
             if (!botContainer.bots.containsKey(xSelfId)) {
                 afterConnectionEstablished(session)

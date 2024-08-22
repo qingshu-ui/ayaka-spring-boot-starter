@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "io.github.qingshu-ui"
-version = "0.0.3-SNAPSHOT"
+version = "0.0.4-SNAPSHOT"
 
 java {
     toolchain {
@@ -48,6 +48,7 @@ kotlin {
 
 tasks.jar {
     enabled = true
+    archiveClassifier.set("")
 }
 
 tasks.bootJar {

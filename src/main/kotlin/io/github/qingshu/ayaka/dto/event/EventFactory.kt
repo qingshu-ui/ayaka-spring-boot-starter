@@ -57,7 +57,10 @@ class EventFactory @Autowired constructor(
         } else {
             val event = getEvent(resp)
             if(null != event) {
-                event.bot = botContainer.bots[xSelfId]!!
+                val bot = botContainer.bots[xSelfId]
+                if (bot != null) {
+                    event.bot = bot
+                }
                 bus.post(event)
             }
         }
@@ -65,7 +68,6 @@ class EventFactory @Autowired constructor(
 
     companion object {
         init {
-            // 通过反射的对静态成员进行初始化得到 events 列表
             RefectionUtils.initStaticFun(GeneralEvent::class)
         }
         private val log = LoggerFactory.getLogger(EventFactory::class.java)

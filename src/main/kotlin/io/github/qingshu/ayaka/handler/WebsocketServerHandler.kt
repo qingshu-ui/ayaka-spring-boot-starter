@@ -42,10 +42,12 @@ class WebsocketServerHandler(
         session.attributes[Connection.ADAPTER_KEY] = AdapterEnum.SERVER
         val xSelfId = parseSelfId(session)
         if (xSelfId == 0L) {
+            log.warn("Websocket server closed an illegal connection")
             session.close()
             return
         }
         if (!checkToken(session, websocketProperties.accessToken)) {
+            log.warn("Websocket server closed an unverified connection")
             session.close()
             return
         }

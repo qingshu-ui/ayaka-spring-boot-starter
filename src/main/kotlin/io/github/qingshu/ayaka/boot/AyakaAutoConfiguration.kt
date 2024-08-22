@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.scheduling.annotation.EnableAsync
-import org.springframework.web.socket.WebSocketHandler
 import org.springframework.web.socket.WebSocketHttpHeaders
 import org.springframework.web.socket.client.WebSocketConnectionManager
 import org.springframework.web.socket.client.standard.StandardWebSocketClient
@@ -48,10 +47,12 @@ class AyakaAutoConfiguration @Autowired constructor(
         }
 
         if (wssP.enable) {
-            registry.addHandler(wssH as WebSocketHandler, wssP.url).setAllowedOrigins("*")
+            log.info("Starting websocket server...")
+            registry.addHandler(wssH!!, wssP.url).setAllowedOrigins("*")
         }
 
         if (wscP.enable) {
+            log.info("Starting websocket client...")
             createWebsocketClient()
         }
     }
@@ -62,9 +63,10 @@ class AyakaAutoConfiguration @Autowired constructor(
         if (wsP.accessToken != "") {
             headers["Authorization"] = wsP.accessToken()
         }
-        val manager = WebSocketConnectionManager(client, wscH as WebSocketHandler, wscP.url)
-        manager.headers = headers
-        manager.isAutoStartup = true
+        val manager = WebSocketConnectionManager(client, wscH!!, wscP.url).apply {
+            this.headers = headers
+            this.isAutoStartup = true
+        }
 
         scheduledTask.executor().scheduleAtFixedRate({
             if (!manager.isConnected) {

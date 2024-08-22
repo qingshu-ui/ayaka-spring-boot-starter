@@ -166,7 +166,7 @@ class Bot(
     }
 
     /**
-     * 群打卡，来自 OpenShamrock 在其他 Bot 实现可能无效
+     * 群打卡
      * @param groupId 群号
      * @return result [GeneralRawResp]
      */
