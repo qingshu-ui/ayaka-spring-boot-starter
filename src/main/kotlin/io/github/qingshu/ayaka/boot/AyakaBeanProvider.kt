@@ -39,7 +39,7 @@ class AyakaBeanProvider @Autowired constructor(
 
 
     @Bean("ayakaTaskExecutor")
-    @ConditionalOnProperty(value = ["ayaka.task.enableAsync"], havingValue = "true", matchIfMissing = true)
+    @ConditionalOnProperty(value = ["ayaka.task.enable-async"], havingValue = "true", matchIfMissing = true)
     fun createExecutorService(): ThreadPoolTaskExecutor {
         val executor = ThreadPoolTaskExecutor()
         executor.corePoolSize = poolProperties.corePoolSize
