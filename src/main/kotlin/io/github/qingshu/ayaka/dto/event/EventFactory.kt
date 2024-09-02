@@ -54,16 +54,19 @@ class EventFactory @Autowired constructor(
     fun postEvent(xSelfId: Long, resp: JSONObject) {
         if (resp.containsKey("echo")) {
             echoMap[resp["echo"]].complete(resp)
-        } else {
-            val event = getEvent(resp)
-            if(null != event) {
-                val bot = botContainer.bots[xSelfId]
-                if (bot != null) {
-                    event.bot = bot
-                }
-                bus.post(event)
-            }
+            return
         }
+
+        val event = getEvent(resp) ?: let {
+            log.warn("[ayaka] no event found")
+            return
+        }
+        val bot = botContainer.bots[xSelfId] ?: let {
+            log.warn("[ayaka] no bot found")
+            return
+        }
+        event.bot = bot
+        bus.post(event)
     }
 
     companion object {

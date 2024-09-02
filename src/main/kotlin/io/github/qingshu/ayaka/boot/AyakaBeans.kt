@@ -24,52 +24,50 @@ import org.springframework.web.socket.server.standard.ServletServerContainerFact
  * See the LICENSE file for details.
  */
 @Configuration
-class AyakaBeans(
-    private val ayakaP: AyakaProperties,
-    private val botContainer: BotContainer,
-    private val botFactory: BotFactory,
-    private val wsP: WebsocketProperties,
-    private val wssP: WebsocketServerProperties,
-    private val scheduledTask: ScheduledTask,
-    private val eventFactory: EventFactory,
-) {
+class AyakaBeans {
 
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnProperty(value = ["ayaka.ws.client.enable"], havingValue = "true")
-    fun websocketClientHandler(): WebsocketClientHandler {
-        return WebsocketClientHandler(
-            wsp = wsP,
+    fun websocketClientHandler(
+        websocketProperties: WebsocketProperties,
+        botContainer: BotContainer,
+        botFactory: BotFactory,
+        eventFactory: EventFactory,
+    ) = WebsocketClientHandler(
+            wsp = websocketProperties,
             botContainer = botContainer,
             botFactory = botFactory,
             eventFactory = eventFactory,
         )
-    }
 
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnProperty(value = ["ayaka.ws.server.enable"], havingValue = "true")
-    fun websocketServerHandler(): WebsocketServerHandler {
-        return WebsocketServerHandler(
-            ayaka = ayakaP,
+    fun websocketServerHandler(
+        ayakaProperties: AyakaProperties,
+        botContainer: BotContainer,
+        botFactory: BotFactory,
+        scheduledTask: ScheduledTask,
+        websocketProperties: WebsocketProperties,
+        eventFactory: EventFactory,
+    ) = WebsocketServerHandler(
+            ayaka = ayakaProperties,
             botContainer = botContainer,
             botFactory = botFactory,
             scheduledTask = scheduledTask,
-            websocketProperties = wsP,
+            websocketProperties = websocketProperties,
             eventFactory = eventFactory
         )
-    }
-
     @Bean
     @ConditionalOnMissingBean
     @Lazy
-    fun createWebSocketServerContainer(): ServletServerContainerFactoryBean? {
-        val container = ServletServerContainerFactoryBean()
-        container.setMaxTextMessageBufferSize(wsP.maxTextMessageBufferSize)
-        container.setMaxBinaryMessageBufferSize(wsP.maxBinaryMessageBufferSize)
-        container.setMaxSessionIdleTimeout(wssP.maxSessionIdleTimeout)
-        return container
+    fun createWebSocketServerContainer(
+        websocketProperties: WebsocketProperties, websocketServerProperties: WebsocketServerProperties
+    ) = ServletServerContainerFactoryBean().apply {
+        setMaxTextMessageBufferSize(websocketProperties.maxTextMessageBufferSize)
+        setMaxBinaryMessageBufferSize(websocketProperties.maxBinaryMessageBufferSize)
+        setMaxSessionIdleTimeout(websocketServerProperties.maxSessionIdleTimeout)
     }
-
 
 }

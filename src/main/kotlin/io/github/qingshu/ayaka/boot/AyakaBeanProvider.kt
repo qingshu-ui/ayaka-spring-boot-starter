@@ -8,7 +8,6 @@ import meteordevelopment.orbit.EventBus
 import meteordevelopment.orbit.IEventBus
 import meteordevelopment.orbit.listeners.LambdaListener
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
@@ -27,9 +26,7 @@ import java.util.concurrent.ThreadPoolExecutor
  * See the LICENSE file for details.
  */
 @Configuration
-class AyakaBeanProvider @Autowired constructor(
-    private val poolProperties: AsyncTaskProperties, private val pluginProperties: PluginProperties
-) {
+class AyakaBeanProvider {
 
     @Bean
     @ConditionalOnMissingBean
@@ -40,22 +37,22 @@ class AyakaBeanProvider @Autowired constructor(
 
     @Bean("ayakaTaskExecutor")
     @ConditionalOnProperty(value = ["ayaka.task.enable-async"], havingValue = "true", matchIfMissing = true)
-    fun createExecutorService(): ThreadPoolTaskExecutor {
-        val executor = ThreadPoolTaskExecutor()
-        executor.corePoolSize = poolProperties.corePoolSize
-        executor.maxPoolSize = poolProperties.maxPoolSize
-        executor.queueCapacity = poolProperties.workQueueSize
-        executor.keepAliveSeconds = poolProperties.keepAliveTime
-        executor.setThreadNamePrefix(poolProperties.threadNamePrefix)
-        executor.setRejectedExecutionHandler(ThreadPoolExecutor.CallerRunsPolicy())
-        executor.setWaitForTasksToCompleteOnShutdown(true)
-        executor.initialize()
-        return executor
+    fun createExecutorService(
+        poolProperties: AsyncTaskProperties,
+    ) = ThreadPoolTaskExecutor().apply {
+        corePoolSize = poolProperties.corePoolSize
+        maxPoolSize = poolProperties.maxPoolSize
+        queueCapacity = poolProperties.workQueueSize
+        keepAliveSeconds = poolProperties.keepAliveTime
+        setThreadNamePrefix(poolProperties.threadNamePrefix)
+        setRejectedExecutionHandler(ThreadPoolExecutor.CallerRunsPolicy())
+        setWaitForTasksToCompleteOnShutdown(true)
+        initialize()
     }
 
     @Bean
     @ConditionalOnMissingBean
-    fun createEventBus(): IEventBus {
+    fun createEventBus(pluginProperties: PluginProperties): IEventBus {
 
         val lambdaFactory: LambdaListener.Factory = LambdaListener.Factory { lookupInMethod, klass ->
             lookupInMethod.invoke(null, klass, MethodHandles.lookup()) as MethodHandles.Lookup
