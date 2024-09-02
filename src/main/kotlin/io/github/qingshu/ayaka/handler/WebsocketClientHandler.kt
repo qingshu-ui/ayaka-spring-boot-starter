@@ -13,6 +13,7 @@ import org.springframework.web.socket.CloseStatus
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
 import org.springframework.web.socket.handler.TextWebSocketHandler
+import java.io.IOException
 
 /**
  * Copyright (c) 2024 qingshu.
@@ -29,16 +30,20 @@ class WebsocketClientHandler(
 ) : TextWebSocketHandler() {
 
     override fun afterConnectionEstablished(session: WebSocketSession) {
-        session.textMessageSizeLimit = wsp.maxTextMessageBufferSize
-        session.binaryMessageSizeLimit = wsp.maxBinaryMessageBufferSize
-        session.attributes[Connection.ADAPTER_KEY] = AdapterEnum.CLIENT
-        val xSelfId = parseSelfId(session)
-        if (xSelfId == 0L) {
-            return
+        try {
+            session.textMessageSizeLimit = wsp.maxTextMessageBufferSize
+            session.binaryMessageSizeLimit = wsp.maxBinaryMessageBufferSize
+            session.attributes[Connection.ADAPTER_KEY] = AdapterEnum.CLIENT
+            val xSelfId = parseSelfId(session)
+            if (xSelfId == 0L) {
+                return
+            }
+            val bot = botFactory.createBot(xSelfId, session)
+            botContainer.bots[xSelfId] = bot
+            log.info("{} connected", xSelfId)
+        } catch (e: IOException) {
+            log.error("Failed close websocket session: ${e.message}")
         }
-        val bot = botFactory.createBot(xSelfId, session)
-        botContainer.bots[xSelfId] = bot
-        log.info("{} connected", xSelfId)
     }
 
     override fun afterConnectionClosed(session: WebSocketSession, status: CloseStatus) {

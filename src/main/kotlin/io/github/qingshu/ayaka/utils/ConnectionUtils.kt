@@ -2,13 +2,20 @@ package io.github.qingshu.ayaka.utils
 
 import io.github.qingshu.ayaka.bot.Bot
 import io.github.qingshu.ayaka.bot.BotFactory
+import io.github.qingshu.ayaka.dto.constant.AdapterEnum
 import io.github.qingshu.ayaka.dto.constant.Connection
 import io.github.qingshu.ayaka.dto.constant.SessionStatusEnum
 import io.github.qingshu.ayaka.handler.WebsocketServerHandler
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.web.socket.WebSocketSession
 import org.springframework.web.socket.handler.ConcurrentWebSocketSessionDecorator
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
+
+private class ConnectionUtils
+
+private val log: Logger = LoggerFactory.getLogger(ConnectionUtils::class.java)
 
 fun checkToken(session: WebSocketSession, token: String): Boolean {
     if (token.isEmpty()) {
@@ -28,6 +35,7 @@ fun handleFirstConnect(xSelfId: Long, session: WebSocketSession, botFactory: Bot
 }
 
 fun handleReConnect(bot: Bot, xSelfId: Long, session: WebSocketSession) {
+    log.info("Received reconnect from {}", xSelfId)
     val oldContext = bot.session.attributes
     val status = oldContext[Connection.SESSION_STATUS_KEY] as? SessionStatusEnum
     if (status == SessionStatusEnum.ONLINE) {
@@ -51,5 +59,21 @@ fun parseSelfId(session: WebSocketSession): Long {
         xSelfIdStr.toLong()
     }catch (e: NumberFormatException) {
         0L
+    }
+}
+
+fun getAdapter(session: WebSocketSession): AdapterEnum {
+    val context = session.attributes
+    return when (val adapterObj = context[Connection.ADAPTER_KEY]) {
+        is AdapterEnum -> adapterObj
+        else -> throw UnsupportedOperationException("adapter type wrong")
+    }
+}
+
+fun getSessionStatus(session: WebSocketSession): SessionStatusEnum {
+    val context = session.attributes
+    return when (val statusObj = context.getOrDefault(Connection.SESSION_STATUS_KEY, SessionStatusEnum.DIE)) {
+        is SessionStatusEnum -> statusObj
+        else -> throw UnsupportedOperationException("session status type wrong")
     }
 }

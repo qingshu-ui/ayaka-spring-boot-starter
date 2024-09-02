@@ -3,6 +3,8 @@ package io.github.qingshu.ayaka.utils
 import com.alibaba.fastjson2.JSONObject
 import com.fasterxml.jackson.databind.util.LRUMap
 import io.github.qingshu.ayaka.config.WebsocketProperties
+import io.github.qingshu.ayaka.dto.constant.AdapterEnum
+import io.github.qingshu.ayaka.dto.constant.SessionStatusEnum
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.runBlocking
@@ -29,6 +31,17 @@ class ProtocolHelper @Autowired constructor(
 ) {
 
     fun send(session: WebSocketSession, message:JSONObject): JSONObject {
+
+        if (getAdapter(session) == AdapterEnum.SERVER) {
+            val status = getSessionStatus(session)
+            if (SessionStatusEnum.ONLINE != status) {
+                when (status) {
+                    SessionStatusEnum.DIE -> throw Exception("session been closed.")
+                    else -> throw Exception("session been closed, but you can attempt again later.")
+                }
+            }
+        }
+
         val uuid = UUID.randomUUID().toString()
         val futureResp = CompletableFuture<JSONObject>()
         echoMap[uuid] = futureResp
