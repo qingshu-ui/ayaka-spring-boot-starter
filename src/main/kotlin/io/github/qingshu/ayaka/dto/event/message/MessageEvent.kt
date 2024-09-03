@@ -9,4 +9,12 @@ open class MessageEvent: GeneralEvent(){
     @JSONField(name = "message") open var message: String? = null
     @JSONField(name = "raw_message") open var rawMessage: String? = null
     @JSONField(name = "font") open var font: Int? = null
+
+    override fun setCancelled(cancelled: Boolean) {
+        this.block = cancelled
+    }
+
+    override fun isCancelled(): Boolean {
+        return this.block
+    }
 }

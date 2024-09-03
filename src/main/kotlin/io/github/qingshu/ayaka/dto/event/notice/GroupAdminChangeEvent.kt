@@ -20,6 +20,13 @@ class GroupAdminChangeEvent : NoticeEvent() {
     @JSONField(name = "group_id")
     var groupId: Long? = null
 
+    override fun setCancelled(cancelled: Boolean) {
+        this.block = cancelled
+    }
+
+    override fun isCancelled(): Boolean {
+        return this.block
+    }
 
     companion object {
         init {

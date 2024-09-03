@@ -11,4 +11,12 @@ data class AnyMessageEvent(
     override var messageType: String? = null,
     override var groupId: Long? = null,
     override var userId: Long? = null,
-) : GroupMessageEvent()
+) : GroupMessageEvent() {
+    override fun setCancelled(cancelled: Boolean) {
+        this.block = cancelled
+    }
+
+    override fun isCancelled(): Boolean {
+        return this.block
+    }
+}

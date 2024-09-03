@@ -36,4 +36,12 @@ class PrivateMessageEvent : MessageEvent() {
             }
         }
     }
+
+    override fun setCancelled(cancelled: Boolean) {
+        this.block = cancelled
+    }
+
+    override fun isCancelled(): Boolean {
+        return this.block
+    }
 }

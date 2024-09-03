@@ -13,6 +13,14 @@ import io.github.qingshu.ayaka.dto.constant.ParamsKey.POST_TYPE
  */
 class FriendAddEvent: NoticeEvent() {
 
+    override fun setCancelled(cancelled: Boolean) {
+        this.block = cancelled
+    }
+
+    override fun isCancelled(): Boolean {
+        return this.block
+    }
+
     companion object {
         init {
             events.add(FriendAddEvent::class)

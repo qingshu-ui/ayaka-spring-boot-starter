@@ -24,6 +24,14 @@ class GroupHonorChangeEvent : NoticeEvent() {
     @JSONField(name = "honor_type")
     var honorType: String? = null
 
+    override fun setCancelled(cancelled: Boolean) {
+        this.block = cancelled
+    }
+
+    override fun isCancelled(): Boolean {
+        return this.block
+    }
+
     companion object {
         init {
             events.add(GroupHonorChangeEvent::class)

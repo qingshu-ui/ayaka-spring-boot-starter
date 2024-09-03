@@ -37,6 +37,14 @@ class GroupFileUploadEvent : NoticeEvent() {
         var url: String? = null
     }
 
+    override fun setCancelled(cancelled: Boolean) {
+        this.block = cancelled
+    }
+
+    override fun isCancelled(): Boolean {
+        return this.block
+    }
+
     companion object{
         init {
             events.add(GroupFileUploadEvent::class)

@@ -25,6 +25,14 @@ class GuildMessageEvent: MessageEvent() {
         @JSONField(name = "nickname") var nickname: String? = null
     }
 
+    override fun setCancelled(cancelled: Boolean) {
+        this.block = cancelled
+    }
+
+    override fun isCancelled(): Boolean {
+        return this.block
+    }
+
     companion object{
         init {
             events.add(GuildMessageEvent::class)

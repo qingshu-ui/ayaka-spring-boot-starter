@@ -22,6 +22,14 @@ class GroupIncreaseEvent : NoticeEvent() {
     @JSONField(name = "operator_id")
     var operatorId: Long? = null
 
+    override fun setCancelled(cancelled: Boolean) {
+        this.block = cancelled
+    }
+
+    override fun isCancelled(): Boolean {
+        return this.block
+    }
+
     companion object {
         init {
             events.add(GroupIncreaseEvent::class)

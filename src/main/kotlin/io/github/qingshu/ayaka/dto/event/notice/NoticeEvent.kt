@@ -16,4 +16,12 @@ open class NoticeEvent : GeneralEvent() {
 
     @JSONField(name = "user_id")
     open var userId: Long? = null
+
+    override fun setCancelled(cancelled: Boolean) {
+        this.block = cancelled
+    }
+
+    override fun isCancelled(): Boolean {
+        return this.block
+    }
 }

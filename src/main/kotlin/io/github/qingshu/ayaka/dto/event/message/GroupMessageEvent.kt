@@ -27,6 +27,14 @@ open class GroupMessageEvent : MessageEvent() {
         @JSONField(name = "title") var title: String? = null
     }
 
+    override fun setCancelled(cancelled: Boolean) {
+        this.block = cancelled
+    }
+
+    override fun isCancelled(): Boolean {
+        return this.block
+    }
+
     companion object{
         init {
             events.add(GroupMessageEvent::class)

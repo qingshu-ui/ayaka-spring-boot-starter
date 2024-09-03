@@ -18,6 +18,14 @@ class LifecycleMetaEvent : GeneralEvent() {
     @JSONField(name = "sub_type")
     var subType: String? = null
 
+    override fun setCancelled(cancelled: Boolean) {
+        this.block = cancelled
+    }
+
+    override fun isCancelled(): Boolean {
+        return this.block
+    }
+
     companion object {
         init {
             events.add(LifecycleMetaEvent::class)

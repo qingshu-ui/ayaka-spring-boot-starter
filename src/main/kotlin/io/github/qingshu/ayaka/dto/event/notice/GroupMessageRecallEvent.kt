@@ -23,6 +23,14 @@ class GroupMessageRecallEvent: NoticeEvent() {
     @JSONField(name = "message_id")
     var messageId: Int? = null
 
+    override fun setCancelled(cancelled: Boolean) {
+        this.block = cancelled
+    }
+
+    override fun isCancelled(): Boolean {
+        return this.block
+    }
+
     companion object {
         init {
             events.add(GroupMessageRecallEvent::class)

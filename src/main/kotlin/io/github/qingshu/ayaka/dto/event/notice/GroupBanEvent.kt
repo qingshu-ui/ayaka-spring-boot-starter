@@ -25,6 +25,14 @@ class GroupBanEvent: NoticeEvent() {
     @JSONField(name = "duration")
     var duration: Long? = null
 
+    override fun setCancelled(cancelled: Boolean) {
+        this.block = cancelled
+    }
+
+    override fun isCancelled(): Boolean {
+        return this.block
+    }
+
     companion object {
         init {
             events.add(GroupBanEvent::class)

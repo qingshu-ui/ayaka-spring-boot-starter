@@ -35,6 +35,14 @@ class GroupAddRequestEvent : GeneralEvent() {
     @JSONField(name = "invitor_id")
     var invitorId: Long? = null
 
+    override fun setCancelled(cancelled: Boolean) {
+        this.block = cancelled
+    }
+
+    override fun isCancelled(): Boolean {
+        return this.block
+    }
+
     companion object {
         init {
             events.add(GroupAddRequestEvent::class)

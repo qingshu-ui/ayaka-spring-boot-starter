@@ -14,6 +14,14 @@ import io.github.qingshu.ayaka.dto.constant.ParamsKey.POST_TYPE
  */
 class FriendMessageRecallEvent : NoticeEvent() {
 
+    override fun setCancelled(cancelled: Boolean) {
+        this.block = cancelled
+    }
+
+    override fun isCancelled(): Boolean {
+        return this.block
+    }
+
     @JSONField(name = "message_id")
     var messageId: Int? = null
 

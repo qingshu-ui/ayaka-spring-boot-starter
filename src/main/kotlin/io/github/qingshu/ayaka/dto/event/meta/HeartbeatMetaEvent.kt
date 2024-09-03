@@ -66,6 +66,14 @@ class HeartbeatMetaEvent: GeneralEvent() {
         var lastMessageTime: Long? = null
     }
 
+    override fun setCancelled(cancelled: Boolean) {
+        this.block = cancelled
+    }
+
+    override fun isCancelled(): Boolean {
+        return this.block
+    }
+
     companion object{
         init {
             events.add(HeartbeatMetaEvent::class)

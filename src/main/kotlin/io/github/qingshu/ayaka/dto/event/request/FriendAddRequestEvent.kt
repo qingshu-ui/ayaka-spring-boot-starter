@@ -27,6 +27,14 @@ class FriendAddRequestEvent : GeneralEvent() {
     @JSONField(name = "flag")
     var flag: String? = null
 
+    override fun setCancelled(cancelled: Boolean) {
+        this.block = cancelled
+    }
+
+    override fun isCancelled(): Boolean {
+        return this.block
+    }
+
 
     companion object {
         init {

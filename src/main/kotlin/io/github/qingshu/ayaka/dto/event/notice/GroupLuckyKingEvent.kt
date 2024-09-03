@@ -24,6 +24,14 @@ class GroupLuckyKingEvent : NoticeEvent() {
     @JSONField(name = "target_id")
     var targetId: Long? = null
 
+    override fun setCancelled(cancelled: Boolean) {
+        this.block = cancelled
+    }
+
+    override fun isCancelled(): Boolean {
+        return this.block
+    }
+
     companion object {
         init {
             events.add(GroupLuckyKingEvent::class)
