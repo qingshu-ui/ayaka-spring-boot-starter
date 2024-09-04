@@ -17,4 +17,14 @@ open class MessageEvent: GeneralEvent(){
     override fun isCancelled(): Boolean {
         return this.block
     }
+
+    /**
+     * 消息是否提及某人
+     * @param userId 某人
+     * @return [Boolean]
+     */
+    fun isAt(userId: Long): Boolean {
+        val atPattern = "\\[CQ:at,qq=$userId(,[^]]*)?\\]".toRegex()
+        return atPattern.find(rawMessage ?: "") != null
+    }
 }
