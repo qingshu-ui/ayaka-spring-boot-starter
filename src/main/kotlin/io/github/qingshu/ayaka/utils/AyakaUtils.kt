@@ -1,5 +1,9 @@
 package io.github.qingshu.ayaka.utils
 
+import io.github.qingshu.ayaka.dto.ArrayMsg
+import io.github.qingshu.ayaka.dto.constant.MsgTypeEnum
+import org.slf4j.LoggerFactory
+
 /**
  * Copyright (c) 2024 qingshu.
  * This file is part of the ayaka-spring-boot-starter project.
@@ -8,6 +12,11 @@ package io.github.qingshu.ayaka.utils
  * See the LICENSE file for details.
  */
 class AyakaUtils
+
+private val log = LoggerFactory.getLogger(AyakaUtils::class.java)
+
+private const val CQ_CODE_SPLIT = "(?<=\\[CQ:[^]]{1,99999}])|(?=\\[CQ:[^]]{1,99999}])"
+private const val CQ_CODE_REGEX = "\\[CQ:([^,\\[\\]]+)((?:,[^,=\\[\\]]+=[^,\\[\\]]*)*)]"
 
 /**
  * 消息编码
@@ -58,4 +67,89 @@ fun generateForwardMsg(uin: Long, name: String, contents: List<String>): List<Ma
         nodes.add(node)
     }
     return nodes
+}
+
+/**
+ * rawMessage to ArrayMsg
+ * @param rawMsg
+ * @return [List]
+ */
+fun raw2ArrayMsg(rawMsg: String): List<ArrayMsg> {
+    val chain = ArrayList<ArrayMsg>()
+    try {
+        rawMsg.split(Regex(CQ_CODE_SPLIT)).filter { it.isNotEmpty() }.forEach { s ->
+            val matches = RegexUtils.matcher(CQ_CODE_REGEX, s)
+            val item = ArrayMsg()
+            val data = mutableMapOf<String, String>()
+
+            if (matches == null) {
+                item.setType(MsgTypeEnum.TEXT)
+                data["text"] = unescape(s)
+                item.data = data
+            } else {
+                val type = MsgTypeEnum.typeOf(matches.groupValues[1])
+                val params = matches.groupValues[2].split(",")
+                item.setType(type)
+                params.filter { it.isNotEmpty() }.forEach { args ->
+                    val (k, v) = args.split("=", limit = 2)
+                    data[k] = unescape(v)
+                }
+                item.data = data
+            }
+            chain.add(item)
+        }
+    } catch (e: Exception) {
+        log.error("Conversion failed: ${e.message}")
+    }
+    return chain
+}
+
+/**
+ * 从 ArrayMsg 生成 CQ Code
+ * @param arrayMsg [ArrayMsg]
+ * @return [String]
+ */
+fun arrayMsg2Code(arrayMsg: List<ArrayMsg>): String {
+    return buildString {
+        arrayMsg.forEach { item ->
+            if (MsgTypeEnum.TEXT != item.getType()) {
+                append("[CQ:")
+                append(item.getType().path)
+                item.data.forEach { (k, v) ->
+                    append(",$k=${unescape(v)}")
+                }
+                append("]")
+            } else {
+                append(escape(item.data[MsgTypeEnum.TEXT.path]!!))
+            }
+        }
+    }
+}
+
+/**
+ * 获取消息内所有图片链接
+ * @param msgList 消息链
+ * @return [List]
+ */
+fun getImgUrlInMsg(msgList: List<ArrayMsg>): List<String> {
+    return msgList.filter { MsgTypeEnum.IMAGE == it.getType() }.map { it.data["url"] ?: "" }.toList()
+}
+
+/**
+ * 获取消息内所有视频链接
+ * @param msgList 消息链
+ * @return [List]
+ */
+fun getVideoUrlInMsg(msgList: List<ArrayMsg>): List<String> {
+    return msgList.filter { MsgTypeEnum.VIDEO == it.getType() }.map { it.data["url"] ?: "" }.toList()
+}
+
+/**
+ * 获取消息内所有at对象账号（不包含全体 at）
+ * @param msgList 消息链
+ * @return [List]
+ */
+fun getAtList(msgList: List<ArrayMsg>): List<Long> {
+    return msgList.filter { MsgTypeEnum.AT == it.getType() && "all" != (it.data["qq"] ?: "") }
+        .map { it.data["qq"]?.toLong() ?: 0L }.toList()
 }
