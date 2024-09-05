@@ -60,7 +60,7 @@ class MsgUtils {
      * @return [MsgUtils]
      */
     fun face(id: Int): MsgUtils {
-        builder.append("[CQ:face,id=$id")
+        builder.append("[CQ:face,id=$id]")
         return this
     }
 
@@ -109,7 +109,7 @@ class MsgUtils {
      * @return [MsgUtils]
      */
     fun reply(msgId: Int): MsgUtils {
-        builder.append("[CQ:reply,id=$msgId")
+        builder.append("[CQ:reply,id=$msgId]")
         return this
     }
 
@@ -119,7 +119,7 @@ class MsgUtils {
      * @return [MsgUtils]
      */
     fun reply(msgId: String): MsgUtils {
-        builder.append("[CQ:reply,id=\"$msgId\"")
+        builder.append("[CQ:reply,id=\"$msgId\"]")
         return this
     }
 
@@ -132,7 +132,7 @@ class MsgUtils {
      * @return [MsgUtils]
      */
     fun gift(userId: Long, giftId: Int): MsgUtils {
-        builder.append("[CQ:gift,qq=$userId,id=$giftId")
+        builder.append("[CQ:gift,qq=$userId,id=$giftId]")
         return this
     }
 
@@ -230,7 +230,7 @@ class MsgUtils {
      * @return [MsgUtils]
      */
     fun music(type: String, id: Int): MsgUtils {
-        builder.append("[CQ:music,type=${escape(type)},id=$id")
+        builder.append("[CQ:music,type=${escape(type)},id=$id]")
         return this
     }
 
@@ -272,7 +272,7 @@ class MsgUtils {
      * @return [MsgUtils]
      */
     fun rps(value: Int): MsgUtils {
-        builder.append("[CQ:rps,value=$value")
+        builder.append("[CQ:rps,value=$value]")
         return this
     }
 
@@ -292,7 +292,7 @@ class MsgUtils {
      * @return {@link MsgUtils}
      */
     fun forward(id: String): MsgUtils {
-        builder.append("[CQ:forward,id=$id")
+        builder.append("[CQ:forward,id=$id]")
         return this
     }
 
