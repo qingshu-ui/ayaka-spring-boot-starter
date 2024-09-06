@@ -52,19 +52,20 @@ class EventFactory @Autowired constructor(
      */
     @Async("ayakaTaskExecutor")
     fun postEvent(xSelfId: Long, resp: JSONObject) {
-        if (resp.containsKey("echo")) {
-            echoMap[resp["echo"]].complete(resp)
+        resp["echo"]?.let {
+            echoMap[it].complete(resp)
             return
         }
 
-        val event = getEvent(resp) ?: let {
-            log.warn("[ayaka] no event found")
+        val event = getEvent(resp) ?: run {
+            log.warn("[event] is null for response: $resp")
             return
         }
-        val bot = botContainer.bots[xSelfId] ?: let {
-            log.warn("[ayaka] no bot found")
+        val bot = botContainer.bots[xSelfId] ?: run {
+            log.warn("[bot] is null for xSelfId: $xSelfId")
             return
         }
+
         event.bot = bot
         bus.post(event)
     }
