@@ -34,15 +34,16 @@ class EventFactory @Autowired constructor(
         listener.forEach(bus::subscribe)
     }
 
-    private fun getEvent(json: JSONObject): GeneralEvent? {
+    private fun getEvent(json: JSONObject): List<GeneralEvent> {
+        val events = arrayListOf<GeneralEvent>()
         GeneralEvent.events.forEach { event ->
             val canHandleFun = event.companionObject?.memberFunctions?.find { it.name == "canHandle" }
             val canHandle = canHandleFun?.call(event.companionObjectInstance, json) as Boolean
             if (canHandle) {
-                return json.to(event.java)
+                events.add(json.to(event.java))
             }
         }
-        return null
+        return events
     }
 
     /**
@@ -57,17 +58,21 @@ class EventFactory @Autowired constructor(
             return
         }
 
-        val event = getEvent(resp) ?: run {
-            log.warn("[event] is null for response: $resp")
-            return
-        }
         val bot = botContainer.bots[xSelfId] ?: run {
             log.warn("[bot] is null for xSelfId: $xSelfId")
             return
         }
 
-        event.bot = bot
-        bus.post(event)
+        getEvent(resp).run {
+            if(isEmpty()){
+                log.warn("[event] is null for response: $resp")
+                return
+            }
+            forEach {
+                it.bot = bot
+                bus.post(it)
+            }
+        }
     }
 
     companion object {

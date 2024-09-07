@@ -102,7 +102,7 @@ class Bot(
     override fun sendMsg(event: AnyMessageEvent, msg: String, autoEscape: Boolean): GeneralRespData<MsgId> {
         return when (event.messageType) {
             ParamsKey.GROUP -> sendGroupMsg(event.groupId!!, msg, autoEscape)
-            ParamsKey.PRIVATE -> sendPrivateMsg(event.groupId!!, msg, autoEscape)
+            ParamsKey.PRIVATE -> sendPrivateMsg(event.userId!!, msg, autoEscape)
             else -> GeneralRespData(
                 status = "failed", data = null, retCode = -1
             )
