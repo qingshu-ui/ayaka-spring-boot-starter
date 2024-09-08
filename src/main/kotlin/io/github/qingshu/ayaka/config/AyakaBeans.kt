@@ -1,14 +1,16 @@
-package io.github.qingshu.ayaka.boot
+package io.github.qingshu.ayaka.config
 
 import io.github.qingshu.ayaka.bot.BotContainer
 import io.github.qingshu.ayaka.bot.BotFactory
-import io.github.qingshu.ayaka.config.AyakaProperties
-import io.github.qingshu.ayaka.config.WebsocketProperties
-import io.github.qingshu.ayaka.config.WebsocketServerProperties
 import io.github.qingshu.ayaka.dto.event.EventFactory
 import io.github.qingshu.ayaka.handler.WebsocketClientHandler
 import io.github.qingshu.ayaka.handler.WebsocketServerHandler
+import io.github.qingshu.ayaka.propreties.AyakaProperties
+import io.github.qingshu.ayaka.propreties.WebsocketProperties
+import io.github.qingshu.ayaka.propreties.WebsocketServerProperties
 import io.github.qingshu.ayaka.task.ScheduledTask
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
@@ -34,11 +36,15 @@ class AyakaBeans {
         botContainer: BotContainer,
         botFactory: BotFactory,
         eventFactory: EventFactory,
+        coroutine: CoroutineScope,
+        dispatcher: CoroutineDispatcher,
     ) = WebsocketClientHandler(
-            wsp = websocketProperties,
-            botContainer = botContainer,
-            botFactory = botFactory,
-            eventFactory = eventFactory,
+        wsp = websocketProperties,
+        botContainer = botContainer,
+        botFactory = botFactory,
+        eventFactory = eventFactory,
+        coroutine = coroutine,
+        dispatcher = dispatcher,
         )
 
     @Bean
@@ -51,13 +57,17 @@ class AyakaBeans {
         scheduledTask: ScheduledTask,
         websocketProperties: WebsocketProperties,
         eventFactory: EventFactory,
+        coroutine: CoroutineScope,
+        dispatcher: CoroutineDispatcher,
     ) = WebsocketServerHandler(
-            ayaka = ayakaProperties,
-            botContainer = botContainer,
-            botFactory = botFactory,
-            scheduledTask = scheduledTask,
-            websocketProperties = websocketProperties,
-            eventFactory = eventFactory
+        ayaka = ayakaProperties,
+        botContainer = botContainer,
+        botFactory = botFactory,
+        scheduledTask = scheduledTask,
+        websocketProperties = websocketProperties,
+        eventFactory = eventFactory,
+        coroutine = coroutine,
+        dispatcher = dispatcher,
         )
     @Bean
     @ConditionalOnMissingBean

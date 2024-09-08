@@ -1,9 +1,9 @@
-package io.github.qingshu.ayaka.boot
+package io.github.qingshu.ayaka.config
 
 import com.alibaba.fastjson2.JSONObject
 import com.fasterxml.jackson.databind.util.LRUMap
-import io.github.qingshu.ayaka.config.AsyncTaskProperties
-import io.github.qingshu.ayaka.config.PluginProperties
+import io.github.qingshu.ayaka.propreties.AsyncTaskProperties
+import io.github.qingshu.ayaka.propreties.PluginProperties
 import meteordevelopment.orbit.EventBus
 import meteordevelopment.orbit.IEventBus
 import meteordevelopment.orbit.listeners.LambdaListener
@@ -16,6 +16,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 import java.lang.invoke.MethodHandles
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ThreadPoolExecutor
+import kotlin.system.exitProcess
 
 
 /**
@@ -62,7 +63,8 @@ class AyakaBeanProvider {
         if (pluginProperties.pluginPackage.isNotEmpty()) {
             bus.registerLambdaFactory(pluginProperties.pluginPackage, lambdaFactory)
         } else {
-            log.warn("No event scan package found")
+            log.warn("The 'BotPlugin' package path is not specified.")
+            exitProcess(-1)
         }
         return bus
     }

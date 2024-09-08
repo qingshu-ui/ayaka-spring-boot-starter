@@ -3,11 +3,14 @@ package io.github.qingshu.ayaka.handler
 import com.alibaba.fastjson2.JSON
 import io.github.qingshu.ayaka.bot.BotContainer
 import io.github.qingshu.ayaka.bot.BotFactory
-import io.github.qingshu.ayaka.config.WebsocketProperties
 import io.github.qingshu.ayaka.dto.constant.AdapterEnum
 import io.github.qingshu.ayaka.dto.constant.Connection
 import io.github.qingshu.ayaka.dto.event.EventFactory
+import io.github.qingshu.ayaka.propreties.WebsocketProperties
 import io.github.qingshu.ayaka.utils.parseSelfId
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.slf4j.LoggerFactory
 import org.springframework.web.socket.CloseStatus
 import org.springframework.web.socket.TextMessage
@@ -26,7 +29,9 @@ class WebsocketClientHandler(
     private val wsp: WebsocketProperties,
     private val botFactory: BotFactory,
     private val botContainer: BotContainer,
-    private val eventFactory: EventFactory
+    private val eventFactory: EventFactory,
+    private val coroutine: CoroutineScope,
+    private val dispatcher: CoroutineDispatcher,
 ) : TextWebSocketHandler() {
 
     override fun afterConnectionEstablished(session: WebSocketSession) {
@@ -67,7 +72,9 @@ class WebsocketClientHandler(
             }
         }
         val result = JSON.parseObject(message.payload)
-        eventFactory.postEvent(xSelfId, result)
+        coroutine.launch(dispatcher) {
+            eventFactory.postEvent(xSelfId, result)
+        }
     }
 
     companion object {

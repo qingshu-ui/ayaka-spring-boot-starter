@@ -1,4 +1,4 @@
-package io.github.qingshu.ayaka.config
+package io.github.qingshu.ayaka.propreties
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
@@ -17,12 +17,12 @@ data class AsyncTaskProperties(
     /**
      * 核心线程持数量
      */
-    var corePoolSize: Int = 10,
+    var corePoolSize: Int = 5,
 
     /**
      * 最大线程数量
      */
-    var maxPoolSize: Int = 50,
+    var maxPoolSize: Int = 10,
 
     /**
      * 空闲线程保持时间

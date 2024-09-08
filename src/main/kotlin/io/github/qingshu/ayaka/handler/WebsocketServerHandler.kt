@@ -3,17 +3,20 @@ package io.github.qingshu.ayaka.handler
 import com.alibaba.fastjson2.JSONObject
 import io.github.qingshu.ayaka.bot.BotContainer
 import io.github.qingshu.ayaka.bot.BotFactory
-import io.github.qingshu.ayaka.config.AyakaProperties
-import io.github.qingshu.ayaka.config.WebsocketProperties
 import io.github.qingshu.ayaka.dto.constant.AdapterEnum
 import io.github.qingshu.ayaka.dto.constant.Connection
 import io.github.qingshu.ayaka.dto.constant.SessionStatusEnum
 import io.github.qingshu.ayaka.dto.event.EventFactory
+import io.github.qingshu.ayaka.propreties.AyakaProperties
+import io.github.qingshu.ayaka.propreties.WebsocketProperties
 import io.github.qingshu.ayaka.task.ScheduledTask
 import io.github.qingshu.ayaka.utils.checkToken
 import io.github.qingshu.ayaka.utils.handleFirstConnect
 import io.github.qingshu.ayaka.utils.handleReConnect
 import io.github.qingshu.ayaka.utils.parseSelfId
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.web.socket.CloseStatus
@@ -36,6 +39,8 @@ class WebsocketServerHandler(
     private val scheduledTask: ScheduledTask,
     private val websocketProperties: WebsocketProperties,
     private val eventFactory: EventFactory,
+    private val coroutine: CoroutineScope,
+    private val dispatcher: CoroutineDispatcher,
 ) : TextWebSocketHandler() {
 
     override fun afterConnectionEstablished(session: WebSocketSession) {
@@ -97,7 +102,9 @@ class WebsocketServerHandler(
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
         val xSelfId = parseSelfId(session)
         val result = JSONObject.parseObject(message.payload)
-        eventFactory.postEvent(xSelfId, result)
+        coroutine.launch(dispatcher) {
+            eventFactory.postEvent(xSelfId, result)
+        }
     }
 
     companion object {

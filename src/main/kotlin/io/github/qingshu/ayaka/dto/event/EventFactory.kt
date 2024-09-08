@@ -8,7 +8,6 @@ import io.github.qingshu.ayaka.utils.RefectionUtils
 import meteordevelopment.orbit.IEventBus
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
 import java.util.concurrent.CompletableFuture
 import kotlin.reflect.full.companionObject
@@ -51,8 +50,8 @@ class EventFactory @Autowired constructor(
      * @param xSelfId 接收上报消息的 QQ 号
      * @param resp [JSONObject] of fastjson2
      */
-    @Async("ayakaTaskExecutor")
-    fun postEvent(xSelfId: Long, resp: JSONObject) {
+    suspend fun postEvent(xSelfId: Long, resp: JSONObject) {
+        log.debug("{}", resp)
         resp["echo"]?.let {
             echoMap[it].complete(resp)
             return
