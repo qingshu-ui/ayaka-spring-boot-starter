@@ -22,7 +22,7 @@ interface OneBot {
      * @param autoEscape 消息内容是否作为纯文本发送，不解析 CQ 码
      * @return result [GeneralRespData] of [MsgId]
      */
-    fun sendPrivateMsg(userId: Long, msg: String, autoEscape: Boolean): GeneralRespData<MsgId>
+    fun sendPrivateMsg(userId: Long, msg: String, autoEscape: Boolean = false): GeneralRespData<MsgId>
 
     /**
      * 发送私聊消息
@@ -32,7 +32,7 @@ interface OneBot {
      * @param autoEscape 消息内容是否作为纯文本发送，不解析 CQ 码
      * @return result [GeneralRespData] of [MsgId]
      */
-    fun sendPrivateMsg(groupId: Long?, userId: Long, msg: String, autoEscape: Boolean): GeneralRespData<MsgId>
+    fun sendPrivateMsg(groupId: Long?, userId: Long, msg: String, autoEscape: Boolean = false): GeneralRespData<MsgId>
 
     /**
      * 发送群消息
@@ -41,7 +41,7 @@ interface OneBot {
      * @param autoEscape 消息内容是否作为纯文本发送，不解析 CQ 码
      * @return result [GeneralRespData] of [MsgId]
      */
-    fun sendGroupMsg(groupId: Long, msg: String, autoEscape: Boolean): GeneralRespData<MsgId>
+    fun sendGroupMsg(groupId: Long, msg: String, autoEscape: Boolean = false): GeneralRespData<MsgId>
 
     /**
      * 获取群列表
@@ -56,7 +56,7 @@ interface OneBot {
      * @param autoEscape 消息内容是否作为纯文本发送，不解析 CQ 码
      * @return result [GeneralRespData] of [MsgId]
      */
-    fun sendMsg(event: AnyMessageEvent, msg: String, autoEscape: Boolean): GeneralRespData<MsgId>
+    fun sendMsg(event: AnyMessageEvent, msg: String, autoEscape: Boolean = false): GeneralRespData<MsgId>
 
     /**
      * 撤回消息
