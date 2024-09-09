@@ -50,7 +50,7 @@ fun handleReConnect(bot: Bot, xSelfId: Long, session: WebSocketSession) {
         null
     }
     oldContext.clear()
-    bot.session = session
+    bot.session = ConcurrentWebSocketSessionDecorator(session, 3000, 40960)
 }
 
 fun parseSelfId(session: WebSocketSession): Long {

@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.web.socket.CloseStatus
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
+import org.springframework.web.socket.handler.ConcurrentWebSocketSessionDecorator
 import org.springframework.web.socket.handler.TextWebSocketHandler
 import java.io.IOException
 
@@ -43,7 +44,7 @@ class WebsocketClientHandler(
             if (xSelfId == 0L) {
                 return
             }
-            val bot = botFactory.createBot(xSelfId, session)
+            val bot = botFactory.createBot(xSelfId, ConcurrentWebSocketSessionDecorator(session, 3000, 40960))
             botContainer.bots[xSelfId] = bot
             log.info("{} connected", xSelfId)
         } catch (e: IOException) {

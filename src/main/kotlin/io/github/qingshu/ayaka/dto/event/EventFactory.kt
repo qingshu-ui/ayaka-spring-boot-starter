@@ -1,7 +1,6 @@
 package io.github.qingshu.ayaka.dto.event
 
 import com.alibaba.fastjson2.JSONObject
-import com.fasterxml.jackson.databind.util.LRUMap
 import io.github.qingshu.ayaka.bot.BotContainer
 import io.github.qingshu.ayaka.plugin.BotPlugin
 import io.github.qingshu.ayaka.utils.RefectionUtils
