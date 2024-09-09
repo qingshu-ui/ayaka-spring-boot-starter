@@ -2,9 +2,9 @@ package io.github.qingshu.ayaka.utils
 
 import com.alibaba.fastjson2.JSONObject
 import com.fasterxml.jackson.databind.util.LRUMap
-import io.github.qingshu.ayaka.propreties.WebsocketProperties
 import io.github.qingshu.ayaka.dto.constant.AdapterEnum
 import io.github.qingshu.ayaka.dto.constant.SessionStatusEnum
+import io.github.qingshu.ayaka.propreties.WebsocketProperties
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.runBlocking
@@ -16,6 +16,7 @@ import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
 import java.util.*
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Copyright (c) 2024 qingshu.
@@ -26,10 +27,11 @@ import java.util.concurrent.CompletableFuture
  */
 @Component
 class ProtocolHelper @Autowired constructor(
-    private val echoMap: LRUMap<String, CompletableFuture<JSONObject>>,
+    private val echoMap: ConcurrentHashMap<String, CompletableFuture<JSONObject>>,
     private val websocketProperties: WebsocketProperties
 ) {
 
+    @Synchronized
     fun send(session: WebSocketSession, message:JSONObject): JSONObject {
 
         if (getAdapter(session) == AdapterEnum.SERVER) {
@@ -58,6 +60,8 @@ class ProtocolHelper @Autowired constructor(
                 result["status"] = "failed"
                 result["retcode"] = -1
                 result
+            }finally {
+                echoMap.remove(uuid)
             }
         }
         return result?: JSONObject()

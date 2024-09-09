@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.full.companionObject
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.memberFunctions
@@ -23,7 +24,7 @@ import kotlin.reflect.full.memberFunctions
  */
 @Component
 class EventFactory @Autowired constructor(
-    private val echoMap: LRUMap<String, CompletableFuture<JSONObject>>,
+    private val echoMap: ConcurrentHashMap<String, CompletableFuture<JSONObject>>,
     private val botContainer: BotContainer,
     listener: List<BotPlugin>,
     private val bus: IEventBus
@@ -53,7 +54,7 @@ class EventFactory @Autowired constructor(
     suspend fun postEvent(xSelfId: Long, resp: JSONObject) {
         log.debug("{}", resp)
         resp["echo"]?.let {
-            echoMap[it].complete(resp)
+            echoMap[it]?.complete(resp)
             return
         }
 

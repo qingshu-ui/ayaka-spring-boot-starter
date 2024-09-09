@@ -1,7 +1,6 @@
 package io.github.qingshu.ayaka.config
 
 import com.alibaba.fastjson2.JSONObject
-import com.fasterxml.jackson.databind.util.LRUMap
 import io.github.qingshu.ayaka.propreties.AsyncTaskProperties
 import io.github.qingshu.ayaka.propreties.PluginProperties
 import meteordevelopment.orbit.EventBus
@@ -15,6 +14,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 import java.lang.invoke.MethodHandles
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ThreadPoolExecutor
 import kotlin.system.exitProcess
 
@@ -31,8 +31,8 @@ class AyakaBeanProvider {
 
     @Bean
     @ConditionalOnMissingBean
-    fun echoMap(): LRUMap<String, CompletableFuture<JSONObject>> {
-        return LRUMap(128, 1024)
+    fun echoMap(): ConcurrentHashMap<String, CompletableFuture<JSONObject>> {
+        return ConcurrentHashMap()
     }
 
 
