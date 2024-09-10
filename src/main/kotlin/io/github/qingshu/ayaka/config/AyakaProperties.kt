@@ -1,4 +1,4 @@
-package io.github.qingshu.ayaka.propreties
+package io.github.qingshu.ayaka.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component

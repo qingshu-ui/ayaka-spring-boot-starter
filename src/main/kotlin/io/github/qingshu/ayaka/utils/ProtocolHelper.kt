@@ -4,7 +4,7 @@ import com.alibaba.fastjson2.JSONObject
 import com.fasterxml.jackson.databind.util.LRUMap
 import io.github.qingshu.ayaka.dto.constant.AdapterEnum
 import io.github.qingshu.ayaka.dto.constant.SessionStatusEnum
-import io.github.qingshu.ayaka.propreties.WebsocketProperties
+import io.github.qingshu.ayaka.config.WebsocketProperties
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.runBlocking

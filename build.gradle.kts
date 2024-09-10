@@ -38,9 +38,6 @@ dependencies {
     api("org.springframework.boot:spring-boot-starter-websocket")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     kapt("org.springframework.boot:spring-boot-configuration-processor")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 tasks.withType<Test> {

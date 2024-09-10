@@ -6,7 +6,7 @@ import io.github.qingshu.ayaka.bot.BotFactory
 import io.github.qingshu.ayaka.dto.constant.AdapterEnum
 import io.github.qingshu.ayaka.dto.constant.Connection
 import io.github.qingshu.ayaka.dto.event.EventFactory
-import io.github.qingshu.ayaka.propreties.WebsocketProperties
+import io.github.qingshu.ayaka.config.WebsocketProperties
 import io.github.qingshu.ayaka.utils.parseSelfId
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope

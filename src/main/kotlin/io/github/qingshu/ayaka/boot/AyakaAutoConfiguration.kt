@@ -1,8 +1,8 @@
-package io.github.qingshu.ayaka.config
+package io.github.qingshu.ayaka.boot
 
-import io.github.qingshu.ayaka.propreties.WebsocketClientProperties
-import io.github.qingshu.ayaka.propreties.WebsocketProperties
-import io.github.qingshu.ayaka.propreties.WebsocketServerProperties
+import io.github.qingshu.ayaka.config.WebsocketClientProperties
+import io.github.qingshu.ayaka.config.WebsocketProperties
+import io.github.qingshu.ayaka.config.WebsocketServerProperties
 import io.github.qingshu.ayaka.handler.WebsocketClientHandler
 import io.github.qingshu.ayaka.handler.WebsocketServerHandler
 import io.github.qingshu.ayaka.task.ScheduledTask
