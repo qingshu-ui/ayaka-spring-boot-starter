@@ -3,10 +3,10 @@ package io.github.qingshu.ayaka.boot
 import com.alibaba.fastjson2.JSONObject
 import io.github.qingshu.ayaka.bot.BotContainer
 import io.github.qingshu.ayaka.bot.BotFactory
+import io.github.qingshu.ayaka.config.*
 import io.github.qingshu.ayaka.dto.event.EventFactory
 import io.github.qingshu.ayaka.handler.WebsocketClientHandler
 import io.github.qingshu.ayaka.handler.WebsocketServerHandler
-import io.github.qingshu.ayaka.config.*
 import io.github.qingshu.ayaka.task.ScheduledTask
 import kotlinx.coroutines.*
 import meteordevelopment.orbit.EventBus
@@ -18,7 +18,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Lazy
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 import org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean
 import java.lang.invoke.MethodHandles
@@ -81,7 +80,6 @@ class Ayaka {
 
     @Bean
     @ConditionalOnMissingBean
-    @Lazy
     fun createWebSocketServerContainer(
         websocketProperties: WebsocketProperties, websocketServerProperties: WebsocketServerProperties
     ) = ServletServerContainerFactoryBean().apply {

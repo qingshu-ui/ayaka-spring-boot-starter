@@ -1,6 +1,7 @@
 package io.github.qingshu.ayaka.utils
 
 import com.alibaba.fastjson2.JSONObject
+import com.alibaba.fastjson2.JSONWriter
 import com.fasterxml.jackson.databind.util.LRUMap
 import io.github.qingshu.ayaka.dto.constant.AdapterEnum
 import io.github.qingshu.ayaka.dto.constant.SessionStatusEnum
@@ -48,7 +49,8 @@ class ProtocolHelper @Autowired constructor(
         val futureResp = CompletableFuture<JSONObject>()
         echoMap[uuid] = futureResp
         message["echo"] = uuid
-        session.sendMessage(TextMessage(message.toString()))
+        val jsonStr = message.toJSONString(JSONWriter.Feature.LargeObject)
+        session.sendMessage(TextMessage(jsonStr))
         val result = runBlocking{
             try {
                 withTimeout(websocketProperties.echoTimeout) {

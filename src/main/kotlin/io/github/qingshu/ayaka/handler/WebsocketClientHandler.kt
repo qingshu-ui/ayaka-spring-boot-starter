@@ -3,10 +3,10 @@ package io.github.qingshu.ayaka.handler
 import com.alibaba.fastjson2.JSON
 import io.github.qingshu.ayaka.bot.BotContainer
 import io.github.qingshu.ayaka.bot.BotFactory
+import io.github.qingshu.ayaka.config.WebsocketProperties
 import io.github.qingshu.ayaka.dto.constant.AdapterEnum
 import io.github.qingshu.ayaka.dto.constant.Connection
 import io.github.qingshu.ayaka.dto.event.EventFactory
-import io.github.qingshu.ayaka.config.WebsocketProperties
 import io.github.qingshu.ayaka.utils.parseSelfId
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.web.socket.CloseStatus
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
-import org.springframework.web.socket.handler.ConcurrentWebSocketSessionDecorator
 import org.springframework.web.socket.handler.TextWebSocketHandler
 import java.io.IOException
 
@@ -44,7 +43,7 @@ class WebsocketClientHandler(
             if (xSelfId == 0L) {
                 return
             }
-            val bot = botFactory.createBot(xSelfId, ConcurrentWebSocketSessionDecorator(session, 3000, 40960))
+            val bot = botFactory.createBot(xSelfId, session)
             botContainer.bots[xSelfId] = bot
             log.info("{} connected", xSelfId)
         } catch (e: IOException) {

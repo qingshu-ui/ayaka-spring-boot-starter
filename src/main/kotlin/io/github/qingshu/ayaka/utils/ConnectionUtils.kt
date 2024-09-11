@@ -5,11 +5,9 @@ import io.github.qingshu.ayaka.bot.BotFactory
 import io.github.qingshu.ayaka.dto.constant.AdapterEnum
 import io.github.qingshu.ayaka.dto.constant.Connection
 import io.github.qingshu.ayaka.dto.constant.SessionStatusEnum
-import io.github.qingshu.ayaka.handler.WebsocketServerHandler
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.web.socket.WebSocketSession
-import org.springframework.web.socket.handler.ConcurrentWebSocketSessionDecorator
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 
@@ -29,8 +27,8 @@ fun checkToken(session: WebSocketSession, token: String): Boolean {
 }
 
 fun handleFirstConnect(xSelfId: Long, session: WebSocketSession, botFactory: BotFactory): Bot {
-    WebsocketServerHandler.log.info("{} connected", xSelfId)
-    val bot = botFactory.createBot(xSelfId, ConcurrentWebSocketSessionDecorator(session, 3000, 40960))
+    log.info("{} connected", xSelfId)
+    val bot = botFactory.createBot(xSelfId, session)
     return bot
 }
 
@@ -50,7 +48,7 @@ fun handleReConnect(bot: Bot, xSelfId: Long, session: WebSocketSession) {
         null
     }
     oldContext.clear()
-    bot.session = ConcurrentWebSocketSessionDecorator(session, 3000, 40960)
+    bot.session = session
 }
 
 fun parseSelfId(session: WebSocketSession): Long {
