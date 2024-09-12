@@ -32,7 +32,6 @@ class ProtocolHelper @Autowired constructor(
     private val websocketProperties: WebsocketProperties
 ) {
 
-    @Synchronized
     fun send(session: WebSocketSession, message:JSONObject): JSONObject {
 
         if (getAdapter(session) == AdapterEnum.SERVER) {
@@ -50,7 +49,9 @@ class ProtocolHelper @Autowired constructor(
         echoMap[uuid] = futureResp
         message["echo"] = uuid
         val jsonStr = message.toJSONString(JSONWriter.Feature.LargeObject)
-        session.sendMessage(TextMessage(jsonStr))
+        synchronized(session){
+            session.sendMessage(TextMessage(jsonStr))
+        }
         val result = runBlocking{
             try {
                 withTimeout(websocketProperties.echoTimeout) {
