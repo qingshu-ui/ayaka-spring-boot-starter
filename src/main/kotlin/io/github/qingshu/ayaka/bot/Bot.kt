@@ -10,13 +10,10 @@ import io.github.qingshu.ayaka.dto.constant.ParamsKey
 import io.github.qingshu.ayaka.dto.event.message.AnyMessageEvent
 import io.github.qingshu.ayaka.dto.general.*
 import io.github.qingshu.ayaka.dto.resp.*
-import io.github.qingshu.ayaka.utils.ProtocolHelper
-import org.springframework.web.socket.WebSocketSession
 
 class Bot(
     var selfId: Long,
-    var session: WebSocketSession,
-    private var helper: ProtocolHelper,
+    var session: BotSession
 ) : OneBot, OpenShamrock {
 
     /**
@@ -51,7 +48,7 @@ class Bot(
         val api = ProtocolBody(
             action = ActionPathEnum.SEND_PRIVATE_MSG.path, params = params
         )
-        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
         return result.let {
             JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<MsgId>>() {})
         }
@@ -72,7 +69,7 @@ class Bot(
         val api = ProtocolBody(
             action = ActionPathEnum.SEND_GROUP_MSG.path, params = params
         )
-        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
         return result.let {
             JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<MsgId>>() {})
         }
@@ -86,7 +83,7 @@ class Bot(
         val api = ProtocolBody(
             action = ActionPathEnum.GET_GROUP_LIST.path, params = JSONObject()
         )
-        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
         return result.let {
             JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespList<GroupInfoResp>>() {})
         }
@@ -121,7 +118,7 @@ class Bot(
         val api = ProtocolBody(
             action = ActionPathEnum.DELETE_MSG.path, params = params
         )
-        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
         return result.let {
             JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRawResp>() {})
         }
@@ -139,7 +136,7 @@ class Bot(
         val api = ProtocolBody(
             action = ActionPathEnum.GET_MSG.path, params = params
         )
-        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
         return result.let {
             JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<GetMsgResp>>() {})
         }
@@ -159,7 +156,7 @@ class Bot(
         val api = ProtocolBody(
             action = ActionPathEnum.SEND_LIKE.path, params = params
         )
-        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
         return result.let {
             JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRawResp>() {})
         }
@@ -176,7 +173,7 @@ class Bot(
         val api = ProtocolBody(
             action = ActionPathEnum.SEND_GROUP_SIGN.path, params = params
         )
-        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
         return result.let {
             JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRawResp>() {})
         }
@@ -198,7 +195,7 @@ class Bot(
         val api = ProtocolBody(
             action = ActionPathEnum.SET_GROUP_KICK.path, params = params
         )
-        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
         return result.let {
             JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRawResp>() {})
         }
@@ -220,7 +217,7 @@ class Bot(
         val api = ProtocolBody(
             action = ActionPathEnum.SET_GROUP_BAN.path, params = params
         )
-        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
         return result.let {
             JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRawResp>() {})
         }
@@ -242,7 +239,7 @@ class Bot(
         val api = ProtocolBody(
             action = ActionPathEnum.SET_GROUP_ANONYMOUS_BAN.path, params = params
         )
-        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
         return result.let {
             JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRawResp>() {})
         }
@@ -262,7 +259,7 @@ class Bot(
         val api = ProtocolBody(
             action = ActionPathEnum.SET_GROUP_WHOLE_BAN.path, params = params
         )
-        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
         return result.let {
             JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRawResp>() {})
         }
@@ -284,7 +281,7 @@ class Bot(
         val api = ProtocolBody(
             action = ActionPathEnum.SET_GROUP_ADMIN.path, params = params
         )
-        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
         return result.let {
             JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRawResp>() {})
         }
@@ -304,7 +301,7 @@ class Bot(
         val api = ProtocolBody(
             action = ActionPathEnum.SET_GROUP_ANONYMOUS.path, params = params
         )
-        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
         return result.let {
             JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRawResp>() {})
         }
@@ -326,7 +323,7 @@ class Bot(
         val api = ProtocolBody(
             action = ActionPathEnum.SET_GROUP_CARD.path, params = params
         )
-        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
         return result.let {
             JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRawResp>() {})
         }
@@ -346,7 +343,7 @@ class Bot(
         val api = ProtocolBody(
             action = ActionPathEnum.SET_GROUP_NAME.path, params = params
         )
-        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
         return result.let {
             JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRawResp>() {})
         }
@@ -366,7 +363,7 @@ class Bot(
         val api = ProtocolBody(
             action = ActionPathEnum.SET_GROUP_LEAVE.path, params = params
         )
-        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
         return result.let {
             JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRawResp>() {})
         }
@@ -387,7 +384,7 @@ class Bot(
         val api = ProtocolBody(
             action = ActionPathEnum.SET_GROUP_SPECIAL_TITLE.path, params = params
         )
-        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
         return result.let {
             JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRawResp>() {})
         }
@@ -409,7 +406,7 @@ class Bot(
         val api = ProtocolBody(
             action = ActionPathEnum.SET_FRIEND_ADD_REQUEST.path, params = params
         )
-        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
         return result.let {
             JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRawResp>() {})
         }
@@ -433,7 +430,7 @@ class Bot(
         val api = ProtocolBody(
             action = ActionPathEnum.SET_GROUP_ADD_REQUEST.path, params = params
         )
-        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
         return result.let {
             JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRawResp>() {})
         }
@@ -449,7 +446,7 @@ class Bot(
         val api = ProtocolBody(
             action = ActionPathEnum.GET_LOGIN_INFO.path, params = JSONObject()
         )
-        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
         return result.let {
             JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<GetLoginInfoResp>>() {})
         }
@@ -469,7 +466,7 @@ class Bot(
         val api = ProtocolBody(
             action = ActionPathEnum.GET_STRANGER_INFO.path, params = params
         )
-        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
         return result.let {
             JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<StrangerInfoResp>>() {})
         }
@@ -484,7 +481,7 @@ class Bot(
         val api = ProtocolBody(
             action = ActionPathEnum.GET_FRIEND_LIST.path, params = JSONObject()
         )
-        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
         return result.let {
             JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<FriendInfoResp>>() {})
         }
@@ -504,7 +501,7 @@ class Bot(
         val api = ProtocolBody(
             action = ActionPathEnum.GET_GROUP_INFO.path, params = params
         )
-        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
         return result.let {
             JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<GroupInfoResp>>() {})
         }
@@ -528,7 +525,7 @@ class Bot(
         val api = ProtocolBody(
             action = ActionPathEnum.GET_GROUP_MEMBER_INFO.path, params = params
         )
-        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
         return result.let {
             JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<GroupMemberInfoResp>>() {})
         }
@@ -546,7 +543,7 @@ class Bot(
         val api = ProtocolBody(
             action = ActionPathEnum.GET_GROUP_MEMBER_LIST.path, params = params
         )
-        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
         return result.let {
             JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespList<GroupMemberInfoResp>>() {})
         }
@@ -566,7 +563,7 @@ class Bot(
         val api = ProtocolBody(
             action = ActionPathEnum.GET_GROUP_HONOR_INFO.path, params = params
         )
-        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
         return result.let {
             JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<GroupHonorInfoResp>>() {})
         }
@@ -581,7 +578,7 @@ class Bot(
         val api = ProtocolBody(
             action = ActionPathEnum.CAN_SEND_IMAGE.path, params = JSONObject()
         )
-        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
         return result.let {
             JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<BooleanResp>>() {})
         }
@@ -596,7 +593,7 @@ class Bot(
         val api = ProtocolBody(
             action = ActionPathEnum.CAN_SEND_RECORD.path, params = JSONObject()
         )
-        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
         return result.let {
             JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<BooleanResp>>() {})
         }
@@ -611,7 +608,7 @@ class Bot(
         val api = ProtocolBody(
             action = ActionPathEnum.GET_STATUS.path, params = JSONObject()
         )
-        val result = helper.send(session, JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
         return result.let {
             JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<GetStatusResp>>() {})
         }

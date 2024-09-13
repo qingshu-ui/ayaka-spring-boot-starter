@@ -2,6 +2,8 @@ package io.github.qingshu.ayaka.utils
 
 import io.github.qingshu.ayaka.bot.Bot
 import io.github.qingshu.ayaka.bot.BotFactory
+import io.github.qingshu.ayaka.bot.BotSessionFactory
+import io.github.qingshu.ayaka.bot.BotSessionImpl
 import io.github.qingshu.ayaka.dto.constant.AdapterEnum
 import io.github.qingshu.ayaka.dto.constant.Connection
 import io.github.qingshu.ayaka.dto.constant.SessionStatusEnum
@@ -26,15 +28,28 @@ fun checkToken(session: WebSocketSession, token: String): Boolean {
     return token.equals(clientToken, ignoreCase = true)
 }
 
-fun handleFirstConnect(xSelfId: Long, session: WebSocketSession, botFactory: BotFactory): Bot {
+fun handleFirstConnect(
+    xSelfId: Long,
+    session: WebSocketSession,
+    botFactory: BotFactory,
+    botSessionFactory: BotSessionFactory
+): Bot {
     log.info("{} connected", xSelfId)
-    val bot = botFactory.createBot(xSelfId, session)
+    val botSession = botSessionFactory.createSession(session)
+    val bot = botFactory.createBot(xSelfId, botSession)
     return bot
 }
 
-fun handleReConnect(bot: Bot, xSelfId: Long, session: WebSocketSession) {
+fun handleReConnect(bot: Bot, xSelfId: Long, session: WebSocketSession, botSessionFactory: BotSessionFactory) {
     log.info("Received reconnect from {}", xSelfId)
-    val oldContext = bot.session.attributes
+    lateinit var oldContext: MutableMap<String, Any>
+    if (bot.session is BotSessionImpl<*>) {
+        val botSession = (bot.session as BotSessionImpl<*>).session
+        if (botSession is WebSocketSession) {
+            oldContext = botSession.attributes
+        }
+    }
+//    val oldContext = bot.session.attributes
     val status = oldContext[Connection.SESSION_STATUS_KEY] as? SessionStatusEnum
     if (status == SessionStatusEnum.ONLINE) {
         session.close()
@@ -48,7 +63,7 @@ fun handleReConnect(bot: Bot, xSelfId: Long, session: WebSocketSession) {
         null
     }
     oldContext.clear()
-    bot.session = session
+    bot.session = botSessionFactory.createSession(session)
 }
 
 fun parseSelfId(session: WebSocketSession): Long {

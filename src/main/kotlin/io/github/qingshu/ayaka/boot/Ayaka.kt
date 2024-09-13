@@ -3,6 +3,7 @@ package io.github.qingshu.ayaka.boot
 import com.alibaba.fastjson2.JSONObject
 import io.github.qingshu.ayaka.bot.BotContainer
 import io.github.qingshu.ayaka.bot.BotFactory
+import io.github.qingshu.ayaka.bot.BotSessionFactory
 import io.github.qingshu.ayaka.config.*
 import io.github.qingshu.ayaka.dto.event.EventFactory
 import io.github.qingshu.ayaka.handler.WebsocketClientHandler
@@ -21,7 +22,6 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 import org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean
 import java.lang.invoke.MethodHandles
-import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ThreadPoolExecutor
 import kotlin.system.exitProcess
@@ -36,6 +36,10 @@ import kotlin.system.exitProcess
 @Configuration
 class Ayaka {
 
+    companion object {
+        private val log = LoggerFactory.getLogger(Ayaka::class.java)
+    }
+
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnProperty(value = ["ayaka.ws.client.enable"], havingValue = "true")
@@ -46,6 +50,7 @@ class Ayaka {
         eventFactory: EventFactory,
         coroutine: CoroutineScope,
         dispatcher: CoroutineDispatcher,
+        botSessionFactory: BotSessionFactory,
     ) = WebsocketClientHandler(
         wsp = websocketProperties,
         botContainer = botContainer,
@@ -53,6 +58,7 @@ class Ayaka {
         eventFactory = eventFactory,
         coroutine = coroutine,
         dispatcher = dispatcher,
+        botSessionFactory = botSessionFactory,
     )
 
     @Bean
@@ -67,6 +73,7 @@ class Ayaka {
         eventFactory: EventFactory,
         coroutine: CoroutineScope,
         dispatcher: CoroutineDispatcher,
+        botSessionFactory: BotSessionFactory,
     ) = WebsocketServerHandler(
         ayaka = ayakaProperties,
         botContainer = botContainer,
@@ -76,6 +83,7 @@ class Ayaka {
         eventFactory = eventFactory,
         coroutine = coroutine,
         dispatcher = dispatcher,
+        botSessionFactory = botSessionFactory,
     )
 
     @Bean
@@ -90,7 +98,7 @@ class Ayaka {
 
     @Bean
     @ConditionalOnMissingBean
-    fun echoMap(): ConcurrentHashMap<String, CompletableFuture<JSONObject>> {
+    fun echoMap(): ConcurrentHashMap<String, CompletableDeferred<JSONObject>> {
         return ConcurrentHashMap()
     }
 
@@ -128,16 +136,12 @@ class Ayaka {
     }
 
     @Bean
-    fun coroutineScope(): CoroutineScope {
-        return CoroutineScope(Dispatchers.IO + SupervisorJob())
+    fun coroutineScope(dispatcher: CoroutineDispatcher): CoroutineScope {
+        return CoroutineScope(dispatcher + SupervisorJob())
     }
 
     @Bean
     fun dispatcher(@Qualifier("ayakaTaskExecutor") executor: ThreadPoolTaskExecutor): CoroutineDispatcher {
         return executor.asCoroutineDispatcher()
-    }
-
-    companion object {
-        private val log = LoggerFactory.getLogger(Ayaka::class.java)
     }
 }

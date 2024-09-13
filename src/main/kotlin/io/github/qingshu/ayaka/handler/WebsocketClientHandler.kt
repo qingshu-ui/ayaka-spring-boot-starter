@@ -3,6 +3,7 @@ package io.github.qingshu.ayaka.handler
 import com.alibaba.fastjson2.JSON
 import io.github.qingshu.ayaka.bot.BotContainer
 import io.github.qingshu.ayaka.bot.BotFactory
+import io.github.qingshu.ayaka.bot.BotSessionFactory
 import io.github.qingshu.ayaka.config.WebsocketProperties
 import io.github.qingshu.ayaka.dto.constant.AdapterEnum
 import io.github.qingshu.ayaka.dto.constant.Connection
@@ -32,6 +33,7 @@ class WebsocketClientHandler(
     private val eventFactory: EventFactory,
     private val coroutine: CoroutineScope,
     private val dispatcher: CoroutineDispatcher,
+    private val botSessionFactory: BotSessionFactory,
 ) : TextWebSocketHandler() {
 
     override fun afterConnectionEstablished(session: WebSocketSession) {
@@ -43,7 +45,8 @@ class WebsocketClientHandler(
             if (xSelfId == 0L) {
                 return
             }
-            val bot = botFactory.createBot(xSelfId, session)
+            val botSession = botSessionFactory.createSession(session)
+            val bot = botFactory.createBot(xSelfId, botSession)
             botContainer.bots[xSelfId] = bot
             log.info("{} connected", xSelfId)
         } catch (e: IOException) {

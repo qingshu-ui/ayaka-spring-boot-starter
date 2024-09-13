@@ -1,14 +1,15 @@
 package io.github.qingshu.ayaka.dto.event
 
 import com.alibaba.fastjson2.JSONObject
+import io.github.qingshu.ayaka.bot.Bot
 import io.github.qingshu.ayaka.bot.BotContainer
 import io.github.qingshu.ayaka.plugin.BotPlugin
 import io.github.qingshu.ayaka.utils.RefectionUtils
+import kotlinx.coroutines.CompletableDeferred
 import meteordevelopment.orbit.IEventBus
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.full.companionObject
 import kotlin.reflect.full.companionObjectInstance
@@ -23,7 +24,7 @@ import kotlin.reflect.full.memberFunctions
  */
 @Component
 class EventFactory @Autowired constructor(
-    private val echoMap: ConcurrentHashMap<String, CompletableFuture<JSONObject>>,
+    private val echoMap: ConcurrentHashMap<String, CompletableDeferred<JSONObject>>,
     private val botContainer: BotContainer,
     listener: List<BotPlugin>,
     private val bus: IEventBus
@@ -71,6 +72,18 @@ class EventFactory @Autowired constructor(
                 it.bot = bot
                 bus.post(it)
             }
+        }
+    }
+
+    /**
+     * 将上报内容传递给事件监听器进行处理
+     * @param bot 从 http post 中获取或创建
+     * @param resp [JSONObject] of fastjson2
+     */
+    suspend fun postEvent(bot: Bot, resp: JSONObject) {
+        getEvent(resp).forEach {
+            it.bot = bot
+            bus.post(it)
         }
     }
 

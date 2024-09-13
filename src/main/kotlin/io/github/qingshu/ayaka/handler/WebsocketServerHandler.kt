@@ -3,12 +3,13 @@ package io.github.qingshu.ayaka.handler
 import com.alibaba.fastjson2.JSONObject
 import io.github.qingshu.ayaka.bot.BotContainer
 import io.github.qingshu.ayaka.bot.BotFactory
+import io.github.qingshu.ayaka.bot.BotSessionFactory
+import io.github.qingshu.ayaka.config.AyakaProperties
+import io.github.qingshu.ayaka.config.WebsocketProperties
 import io.github.qingshu.ayaka.dto.constant.AdapterEnum
 import io.github.qingshu.ayaka.dto.constant.Connection
 import io.github.qingshu.ayaka.dto.constant.SessionStatusEnum
 import io.github.qingshu.ayaka.dto.event.EventFactory
-import io.github.qingshu.ayaka.config.AyakaProperties
-import io.github.qingshu.ayaka.config.WebsocketProperties
 import io.github.qingshu.ayaka.task.ScheduledTask
 import io.github.qingshu.ayaka.utils.checkToken
 import io.github.qingshu.ayaka.utils.handleFirstConnect
@@ -41,6 +42,7 @@ class WebsocketServerHandler(
     private val eventFactory: EventFactory,
     private val coroutine: CoroutineScope,
     private val dispatcher: CoroutineDispatcher,
+    private val botSessionFactory: BotSessionFactory,
 ) : TextWebSocketHandler() {
 
     override fun afterConnectionEstablished(session: WebSocketSession) {
@@ -64,15 +66,15 @@ class WebsocketServerHandler(
                 context.clear()
                 session.close()
             } else {
-                val bot = handleFirstConnect(xSelfId, session, botFactory)
+                val bot = handleFirstConnect(xSelfId, session, botFactory, botSessionFactory)
                 botContainer.bots[xSelfId] = bot
             }
             return
         }
 
         botContainer.bots.compute(xSelfId) { _, bot ->
-            bot ?: return@compute handleFirstConnect(xSelfId, session, botFactory)
-            handleReConnect(bot, xSelfId, session)
+            bot ?: return@compute handleFirstConnect(xSelfId, session, botFactory, botSessionFactory)
+            handleReConnect(bot, xSelfId, session, botSessionFactory)
             bot
         }
 

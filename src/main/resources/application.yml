@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: ayaka-spring-boot-starter
+
+ayaka:
+  ws:
+    client:
+      enable: false
+      url: ws://127.0.0.1:5800
+    server:
+      enable: false
+      url: /ws/ayaka
+  http:
+    enable: true
+    endpoint: /ayaka
+    api-port: 5800
+
+  plugin:
+    plugin-package: io.github.qingshu.ayaka.plugin

@@ -1,6 +1,6 @@
 package io.github.qingshu.ayaka.bot
 
-import org.springframework.stereotype.Component
+import com.alibaba.fastjson2.JSONObject
 
 /**
  * Copyright (c) 2024 qingshu.
@@ -9,9 +9,6 @@ import org.springframework.stereotype.Component
  * This project is licensed under the GPL-3.0 License.
  * See the LICENSE file for details.
  */
-@Component
-class BotFactory {
-    fun createBot(xSelfId: Long, session: BotSession): Bot {
-        return Bot(xSelfId, session)
-    }
+interface BotSession {
+    fun sendMessage(message: JSONObject): JSONObject
 }
