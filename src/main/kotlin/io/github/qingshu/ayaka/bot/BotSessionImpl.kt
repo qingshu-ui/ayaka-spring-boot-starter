@@ -26,23 +26,32 @@ class BotSessionImpl<T>(
     }
 
     override fun sendMessage(message: JSONObject): JSONObject {
-        if (session is WebSocketSession) {
-            return helper.send(session, message)
+        return when (session) {
+            is WebSocketSession -> {
+                helper.send(session, message)
+            }
+
+            is String -> {
+                val api = message["action"] as String
+                val params = message["params"] as JSONObject
+                val url = "http://$session:${httpPost.apiPort}/$api"
+                val resp = NetUtils.post(url, params.toJSONString(JSONWriter.Feature.LargeObject))
+                lateinit var respStr: String
+                resp.use {
+                    respStr = it.body?.string() ?: "{\"status\":\"failed\",\"retcode\":-1,\"data\":null}"
+                }
+                val respJson = JSONObject.parseObject(respStr)
+                respJson
+            }
+
+            else -> {
+                log.warn("The session is an invalid: {}", session)
+                val invalid = JSONObject()
+                invalid["status"] = "failed"
+                invalid["retcode"] = -1
+                invalid["data"] = null
+                invalid
+            }
         }
-        if (session is String) {
-            val api = message["action"] as String
-            val params = message["params"] as JSONObject
-            val url = "http://$session:${httpPost.apiPort}/$api"
-            val resp = NetUtils.post(url, params.toJSONString(JSONWriter.Feature.LargeObject))
-            val respStr = resp.body?.string() ?: "{\"status\":\"failed\",\"retcode\":-1,\"data\":null}"
-            val respJson = JSONObject.parseObject(respStr)
-            return respJson
-        }
-        log.warn("The session is an invalid: {}", session)
-        val invalid = JSONObject()
-        invalid["status"] = "failed"
-        invalid["retcode"] = -1
-        invalid["data"] = null
-        return invalid
     }
 }

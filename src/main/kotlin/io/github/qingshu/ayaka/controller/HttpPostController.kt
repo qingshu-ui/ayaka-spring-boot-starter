@@ -1,6 +1,7 @@
 package io.github.qingshu.ayaka.controller
 
 import com.alibaba.fastjson2.JSONObject
+import io.github.qingshu.ayaka.annotation.HmacCheck
 import io.github.qingshu.ayaka.bot.BotFactory
 import io.github.qingshu.ayaka.bot.BotSessionFactory
 import io.github.qingshu.ayaka.dto.event.EventFactory
@@ -36,9 +37,10 @@ class HttpPostController(
         private val log = LoggerFactory.getLogger(HttpPostController::class.java)
     }
 
+    @HmacCheck
     @RequestMapping("\${ayaka.http.endpoint}", method = [RequestMethod.GET, RequestMethod.POST])
     fun post(
-        @RequestBody data: JSONObject,
+        @RequestBody payload: String,
         @RequestHeader headers: Map<String, Any>,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
@@ -47,7 +49,7 @@ class HttpPostController(
             val xSelfId = (headers["x-self-id"] as? String)?.toLong() ?: return@launch
             val botSession = botSessionFactory.createSession(request.remoteHost)
             val bot = botFactory.createBot(xSelfId, botSession)
-            eventFactory.postEvent(bot, data)
+            eventFactory.postEvent(bot, JSONObject.parseObject(payload))
         }
         return ResponseEntity.noContent().build()
     }

@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.EnableAspectJAutoProxy
 import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.web.socket.WebSocketHttpHeaders
 import org.springframework.web.socket.client.WebSocketConnectionManager
@@ -30,6 +31,7 @@ import kotlin.system.exitProcess
 @EnableAsync
 @Configuration
 @EnableWebSocket
+@EnableAspectJAutoProxy
 @ComponentScan("io.github.qingshu.ayaka")
 class AyakaAutoConfiguration @Autowired constructor(
     private val wsP: WebsocketProperties,

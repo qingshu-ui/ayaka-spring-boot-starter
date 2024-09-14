@@ -14,6 +14,7 @@ ayaka:
     enable: true
     endpoint: /ayaka
     api-port: 5800
+    secret: U1FfRzMxQkVvRjBBZ0g5N25tS3Z1YlR3T1NTd0xHNk0=
 
   plugin:
     plugin-package: io.github.qingshu.ayaka.plugin
