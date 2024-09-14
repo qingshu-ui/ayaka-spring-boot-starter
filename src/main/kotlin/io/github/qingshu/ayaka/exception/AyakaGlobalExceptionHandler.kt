@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
  * See the LICENSE file for details.
  */
 @ControllerAdvice
-class GlobalExceptionHandler {
+class AyakaGlobalExceptionHandler {
 
     @ExceptionHandler(HmacException::class)
     fun handleHmacException(e: HmacException): ResponseEntity<String> {

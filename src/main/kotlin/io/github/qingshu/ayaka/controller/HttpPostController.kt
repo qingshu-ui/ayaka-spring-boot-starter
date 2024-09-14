@@ -45,9 +45,10 @@ class HttpPostController(
         request: HttpServletRequest,
     ): ResponseEntity<String> {
         log.debug("Received: {}", request)
+        val remoteHost = request.remoteHost
         coroutineScope.launch {
             val xSelfId = (headers["x-self-id"] as? String)?.toLong() ?: return@launch
-            val botSession = botSessionFactory.createSession(request.remoteHost)
+            val botSession = botSessionFactory.createSession(remoteHost)
             val bot = botFactory.createBot(xSelfId, botSession)
             eventFactory.postEvent(bot, JSONObject.parseObject(payload))
         }
