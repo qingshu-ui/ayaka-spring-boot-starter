@@ -10,7 +10,7 @@ import io.github.qingshu.ayaka.dto.constant.AdapterEnum
 import io.github.qingshu.ayaka.dto.constant.Connection
 import io.github.qingshu.ayaka.dto.constant.SessionStatusEnum
 import io.github.qingshu.ayaka.dto.event.EventFactory
-import io.github.qingshu.ayaka.task.ScheduledTask
+import io.github.qingshu.ayaka.service.ScheduledTask
 import io.github.qingshu.ayaka.utils.checkToken
 import io.github.qingshu.ayaka.utils.handleFirstConnect
 import io.github.qingshu.ayaka.utils.handleReConnect

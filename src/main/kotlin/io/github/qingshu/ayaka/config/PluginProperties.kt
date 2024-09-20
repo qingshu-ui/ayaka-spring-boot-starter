@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component
 @ConfigurationProperties(prefix = "ayaka.plugin")
 data class PluginProperties(
     /**
-     * 插件所在的包全路径，此项必须在 application.yml 或者 .properties 中配置
+     * 插件所在的包全路径，此项必须在 application.yaml 或者 .properties 中配置
      */
-    var pluginPackage: String = ""
+    var pluginPackages: List<String> = emptyList()
 )

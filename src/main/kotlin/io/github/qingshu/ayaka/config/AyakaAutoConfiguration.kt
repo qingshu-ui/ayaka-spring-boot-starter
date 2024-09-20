@@ -1,11 +1,8 @@
-package io.github.qingshu.ayaka.boot
+package io.github.qingshu.ayaka.config
 
-import io.github.qingshu.ayaka.config.WebsocketClientProperties
-import io.github.qingshu.ayaka.config.WebsocketProperties
-import io.github.qingshu.ayaka.config.WebsocketServerProperties
 import io.github.qingshu.ayaka.handler.WebsocketClientHandler
 import io.github.qingshu.ayaka.handler.WebsocketServerHandler
-import io.github.qingshu.ayaka.task.ScheduledTask
+import io.github.qingshu.ayaka.service.ScheduledTask
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.ComponentScan

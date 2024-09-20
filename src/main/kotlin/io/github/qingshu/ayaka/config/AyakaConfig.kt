@@ -1,14 +1,13 @@
-package io.github.qingshu.ayaka.boot
+package io.github.qingshu.ayaka.config
 
 import com.alibaba.fastjson2.JSONObject
 import io.github.qingshu.ayaka.bot.BotContainer
 import io.github.qingshu.ayaka.bot.BotFactory
 import io.github.qingshu.ayaka.bot.BotSessionFactory
-import io.github.qingshu.ayaka.config.*
 import io.github.qingshu.ayaka.dto.event.EventFactory
 import io.github.qingshu.ayaka.handler.WebsocketClientHandler
 import io.github.qingshu.ayaka.handler.WebsocketServerHandler
-import io.github.qingshu.ayaka.task.ScheduledTask
+import io.github.qingshu.ayaka.service.ScheduledTask
 import kotlinx.coroutines.*
 import meteordevelopment.orbit.EventBus
 import meteordevelopment.orbit.IEventBus
@@ -34,10 +33,10 @@ import kotlin.system.exitProcess
  * See the LICENSE file for details.
  */
 @Configuration
-class Ayaka {
+class AyakaConfig {
 
     companion object {
-        private val log = LoggerFactory.getLogger(Ayaka::class.java)
+        private val log = LoggerFactory.getLogger(AyakaConfig::class.java)
     }
 
     @Bean
@@ -126,8 +125,10 @@ class Ayaka {
         }
 
         val bus = EventBus()
-        if (pluginProperties.pluginPackage.isNotEmpty()) {
-            bus.registerLambdaFactory(pluginProperties.pluginPackage, lambdaFactory)
+        if (pluginProperties.pluginPackages.isNotEmpty()) {
+            pluginProperties.pluginPackages.forEach {
+                bus.registerLambdaFactory(it, lambdaFactory)
+            }
         } else {
             log.warn("The 'BotPlugin' package path is not specified.")
             exitProcess(-1)

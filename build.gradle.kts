@@ -52,14 +52,14 @@ kotlin {
     }
 }
 
-//tasks.jar {
-//    enabled = true
-//    archiveClassifier.set("")
-//}
+tasks.jar {
+    enabled = true
+    archiveClassifier.set("")
+}
 
-//tasks.bootJar {
-//    enabled = false
-//}
+tasks.bootJar {
+    enabled = false
+}
 
 publishing {
     publications {
