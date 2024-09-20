@@ -7,6 +7,8 @@ import io.github.qingshu.ayaka.utils.NetUtils
 import io.github.qingshu.ayaka.utils.ProtocolHelper
 import org.slf4j.LoggerFactory
 import org.springframework.web.socket.WebSocketSession
+import java.net.Inet6Address
+import java.net.InetAddress
 
 /**
  * Copyright (c) 2024 qingshu.
@@ -23,34 +25,56 @@ class BotSessionImpl<T>(
 
     companion object {
         private val log = LoggerFactory.getLogger(BotSessionImpl::class.java)
+
+        private val FAILED_RESPONSE = JSONObject().apply {
+            put("status", "failed")
+            put("retcode", -1)
+            put("data", null)
+        }
+    }
+
+    private fun isValidIPv6(url: String): Boolean {
+        return try {
+            InetAddress.getByName(url) is Inet6Address
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    private fun formatUrl(protocol: String, url: String, port: Long, path: String): String {
+        if (isValidIPv6(url)) {
+            return "$protocol://[$url]:$port/$path"
+        }
+        return "$protocol://$url:$port/$path"
     }
 
     override fun sendMessage(message: JSONObject): JSONObject {
         return when (session) {
-            is WebSocketSession -> {
-                helper.send(session, message)
-            }
+            is WebSocketSession -> helper.send(session, message)
 
             is String -> {
-                val api = message["action"] as String
                 val params = message["params"] as JSONObject
-                val url = "http://$session:${httpPost.apiPort}/$api"
+                val api = message["action"] as String
+                val url = formatUrl(
+                    protocol = "http",
+                    url = session,
+                    port = httpPost.apiPort,
+                    path = api
+                )
                 val resp = NetUtils.post(url, params.toJSONString(JSONWriter.Feature.LargeObject))
-                lateinit var respStr: String
                 resp.use {
-                    respStr = it.body?.string() ?: "{\"status\":\"failed\",\"retcode\":-1,\"data\":null}"
+                    val respStr = resp.body?.string()
+                    if (respStr.isNullOrEmpty()) {
+                        log.warn("The $api has been sent successfully, but the response content is empty")
+                        return FAILED_RESPONSE
+                    }
+                    return JSONObject.parseObject(respStr) ?: FAILED_RESPONSE
                 }
-                val respJson = JSONObject.parseObject(respStr)
-                respJson
             }
 
             else -> {
                 log.warn("The session is an invalid: {}", session)
-                val invalid = JSONObject()
-                invalid["status"] = "failed"
-                invalid["retcode"] = -1
-                invalid["data"] = null
-                invalid
+                FAILED_RESPONSE
             }
         }
     }
