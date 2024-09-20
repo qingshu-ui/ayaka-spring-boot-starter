@@ -1,7 +1,9 @@
 package io.github.qingshu.ayaka.utils
 
+import com.alibaba.fastjson2.JSON
 import io.github.qingshu.ayaka.dto.ArrayMsg
 import io.github.qingshu.ayaka.dto.constant.MsgTypeEnum
+import io.github.qingshu.ayaka.dto.event.message.MessageEvent
 import org.slf4j.LoggerFactory
 
 /**
@@ -87,8 +89,9 @@ fun raw2ArrayMsg(rawMsg: String): List<ArrayMsg> {
                 data["text"] = unescape(s)
                 item.data = data
             } else {
-                val type = MsgTypeEnum.typeOf(matches.groupValues[1])
-                val params = matches.groupValues[2].split(",")
+
+                val type = MsgTypeEnum.typeOf(matches.group(1))
+                val params = matches.group(2).split(",")
                 item.setType(type)
                 params.filter { it.isNotEmpty() }.forEach { args ->
                     val (k, v) = args.split("=", limit = 2)
@@ -152,4 +155,14 @@ fun getVideoUrlInMsg(msgList: List<ArrayMsg>): List<String> {
 fun getAtList(msgList: List<ArrayMsg>): List<Long> {
     return msgList.filter { MsgTypeEnum.AT == it.getType() && "all" != (it.data["qq"] ?: "") }
         .map { it.data["qq"]?.toLong() ?: 0L }.toList()
+}
+
+fun rowConvert(msg: String, event: MessageEvent) {
+    if (JSON.isValidArray(msg)) {
+        val arrayMsg = JSON.parseArray(msg, ArrayMsg::class.java)
+        event.arrayMsg = arrayMsg
+        event.message = arrayMsg2Code(arrayMsg)
+        return
+    }
+    event.arrayMsg = raw2ArrayMsg(msg)
 }

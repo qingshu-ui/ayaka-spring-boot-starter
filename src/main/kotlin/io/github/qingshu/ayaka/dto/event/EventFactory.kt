@@ -3,8 +3,10 @@ package io.github.qingshu.ayaka.dto.event
 import com.alibaba.fastjson2.JSONObject
 import io.github.qingshu.ayaka.bot.Bot
 import io.github.qingshu.ayaka.bot.BotContainer
+import io.github.qingshu.ayaka.dto.event.message.MessageEvent
 import io.github.qingshu.ayaka.plugin.BotPlugin
 import io.github.qingshu.ayaka.utils.RefectionUtils
+import io.github.qingshu.ayaka.utils.rowConvert
 import kotlinx.coroutines.CompletableDeferred
 import meteordevelopment.orbit.IEventBus
 import org.slf4j.LoggerFactory
@@ -40,7 +42,10 @@ class EventFactory @Autowired constructor(
             val canHandleFun = event.companionObject?.memberFunctions?.find { it.name == "canHandle" }
             val canHandle = canHandleFun?.call(event.companionObjectInstance, json) as Boolean
             if (canHandle) {
-                events.add(json.to(event.java))
+                val instance = json.to(event.java)
+                if (instance is MessageEvent)
+                    rowConvert(instance.message ?: "", instance)
+                events.add(instance)
             }
         }
         return events

@@ -1,6 +1,8 @@
 package io.github.qingshu.ayaka.utils
 
 import java.util.Collections.synchronizedMap
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 /**
  * Copyright (c) 2024 qingshu.
@@ -11,7 +13,7 @@ import java.util.Collections.synchronizedMap
  */
 object RegexUtils {
 
-    private val cache = synchronizedMap(mutableMapOf<String, Regex>())
+    private val cache = synchronizedMap(mutableMapOf<String, Pattern>())
 
     /**
      * 正则匹配
@@ -19,8 +21,9 @@ object RegexUtils {
      * @param text  匹配内容
      * @return [MatchResult]
      */
-    fun matcher(regex: String, text: String): MatchResult? {
-        val pattern = cache.getOrPut(regex) { Regex(regex) }
-        return pattern.matchEntire(text)
+    fun matcher(regex: String, text: String): Matcher? {
+        val pattern = cache.computeIfAbsent(regex) { Pattern.compile(it) }
+        val matcher = pattern.matcher(text)
+        return if (matcher.matches()) matcher else null
     }
 }

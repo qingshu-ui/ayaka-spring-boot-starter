@@ -43,7 +43,7 @@ class HttpPostController(
         @RequestBody payload: String,
         @RequestHeader headers: Map<String, Any>,
         request: HttpServletRequest,
-    ): ResponseEntity<String> {
+    ): ResponseEntity<Map<String, Any>> {
         log.debug("Received: {}", request)
         val remoteHost = request.remoteHost
         coroutineScope.launch {
