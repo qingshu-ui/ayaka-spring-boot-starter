@@ -1,6 +1,6 @@
 package io.github.qingshu.ayaka.handler
 
-import com.alibaba.fastjson2.JSONObject
+import com.fasterxml.jackson.databind.node.ObjectNode
 import io.github.qingshu.ayaka.bot.BotContainer
 import io.github.qingshu.ayaka.bot.BotFactory
 import io.github.qingshu.ayaka.bot.BotSessionFactory
@@ -11,10 +11,7 @@ import io.github.qingshu.ayaka.dto.constant.Connection
 import io.github.qingshu.ayaka.dto.constant.SessionStatusEnum
 import io.github.qingshu.ayaka.dto.event.EventFactory
 import io.github.qingshu.ayaka.service.ScheduledTask
-import io.github.qingshu.ayaka.utils.checkToken
-import io.github.qingshu.ayaka.utils.handleFirstConnect
-import io.github.qingshu.ayaka.utils.handleReConnect
-import io.github.qingshu.ayaka.utils.parseSelfId
+import io.github.qingshu.ayaka.utils.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -103,7 +100,7 @@ class WebsocketServerHandler(
 
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
         val xSelfId = parseSelfId(session)
-        val result = JSONObject.parseObject(message.payload)
+        val result = mapper.readTree(message.payload) as ObjectNode
         coroutine.launch(dispatcher) {
             eventFactory.postEvent(xSelfId, result)
         }

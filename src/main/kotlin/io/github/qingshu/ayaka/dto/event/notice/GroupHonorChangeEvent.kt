@@ -1,7 +1,7 @@
 package io.github.qingshu.ayaka.dto.event.notice
 
-import com.alibaba.fastjson2.JSONObject
-import com.alibaba.fastjson2.annotation.JSONField
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.node.ObjectNode
 import io.github.qingshu.ayaka.dto.constant.ParamsKey.NOTICE_TYPE
 import io.github.qingshu.ayaka.dto.constant.ParamsKey.POST_TYPE
 import io.github.qingshu.ayaka.dto.constant.ParamsKey.SUB_TYPE
@@ -15,14 +15,14 @@ import io.github.qingshu.ayaka.dto.constant.ParamsKey.SUB_TYPE
  */
 class GroupHonorChangeEvent : NoticeEvent() {
 
-    @JSONField(name = "sub_type")
-    var subType: String? = null
+    @JsonProperty("sub_type")
+    lateinit var subType: String
 
-    @JSONField(name = "group_id")
-    var groupId: Long? = null
+    @JsonProperty("group_id")
+    var groupId: Long = 0
 
-    @JSONField(name = "honor_type")
-    var honorType: String? = null
+    @JsonProperty("honor_type")
+    lateinit var honorType: String
 
     override fun setCancelled(cancelled: Boolean) {
         this.block = cancelled
@@ -37,11 +37,7 @@ class GroupHonorChangeEvent : NoticeEvent() {
             events.add(GroupHonorChangeEvent::class)
         }
 
-        fun canHandle(json: JSONObject): Boolean {
-            return when {
-                "notice" == json[POST_TYPE] -> "notify" == json[NOTICE_TYPE] && "honor" == json[SUB_TYPE]
-                else -> false
-            }
-        }
+        fun canHandle(json: ObjectNode) =
+            "notice" == json[POST_TYPE].asText() && "notify" == json[NOTICE_TYPE].asText() && "honor" == json[SUB_TYPE].asText()
     }
 }

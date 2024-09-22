@@ -1,6 +1,6 @@
 package io.github.qingshu.ayaka.dto.resp
 
-import com.alibaba.fastjson2.annotation.JSONField
+import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
  * Copyright (c) 2024 qingshu.
@@ -10,5 +10,5 @@ import com.alibaba.fastjson2.annotation.JSONField
  * See the LICENSE file for details.
  */
 data class MsgId(
-    @JSONField(name = "message_id") val messageId: Int?
+    @JsonProperty("message_id") val messageId: Int = 0,
 )

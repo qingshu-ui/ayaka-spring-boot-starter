@@ -1,6 +1,6 @@
 package io.github.qingshu.ayaka.dto.general
 
-import com.alibaba.fastjson2.annotation.JSONField
+import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
  * Copyright (c) 2024 qingshu.
@@ -10,7 +10,7 @@ import com.alibaba.fastjson2.annotation.JSONField
  * See the LICENSE file for details.
  */
 data class Anonymous(
-    @JSONField(name = "id") var id: Long?,
-    @JSONField(name = "name") val name: String?,
-    @JSONField(name = "flag") val flag: String?,
+    @JsonProperty("id") var id: Long = 0,
+    @JsonProperty("name") val name: String = "",
+    @JsonProperty("flag") val flag: String = "",
 )

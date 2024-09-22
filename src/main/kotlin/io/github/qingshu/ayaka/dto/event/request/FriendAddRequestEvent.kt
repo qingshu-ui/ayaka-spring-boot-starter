@@ -1,7 +1,7 @@
 package io.github.qingshu.ayaka.dto.event.request
 
-import com.alibaba.fastjson2.JSONObject
-import com.alibaba.fastjson2.annotation.JSONField
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.node.ObjectNode
 import io.github.qingshu.ayaka.dto.constant.ParamsKey.POST_TYPE
 import io.github.qingshu.ayaka.dto.constant.ParamsKey.REQUEST_TYPE
 import io.github.qingshu.ayaka.dto.event.GeneralEvent
@@ -15,17 +15,17 @@ import io.github.qingshu.ayaka.dto.event.GeneralEvent
  */
 class FriendAddRequestEvent : GeneralEvent() {
 
-    @JSONField(name = "request_type")
-    var requestType: String? = null
+    @JsonProperty("request_type")
+    lateinit var requestType: String
 
-    @JSONField(name = "user_id")
-    var userId: Long? = null
+    @JsonProperty("user_id")
+    var userId: Long = 0
 
-    @JSONField(name = "comment")
-    var comment: String? = null
+    @JsonProperty("comment")
+    lateinit var comment: String
 
-    @JSONField(name = "flag")
-    var flag: String? = null
+    @JsonProperty("flag")
+    lateinit var flag: String
 
     override fun setCancelled(cancelled: Boolean) {
         this.block = cancelled
@@ -41,11 +41,7 @@ class FriendAddRequestEvent : GeneralEvent() {
             events.add(FriendAddRequestEvent::class)
         }
 
-        fun canHandle(json: JSONObject): Boolean {
-            return when {
-                "request" == json[POST_TYPE] -> "friend" == json[REQUEST_TYPE]
-                else -> false
-            }
-        }
+        fun canHandle(json: ObjectNode) =
+            "request" == json[POST_TYPE].asText() && "friend" == json[REQUEST_TYPE].asText()
     }
 }

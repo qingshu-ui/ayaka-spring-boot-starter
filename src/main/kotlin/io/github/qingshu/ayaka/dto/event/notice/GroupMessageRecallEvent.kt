@@ -1,7 +1,7 @@
 package io.github.qingshu.ayaka.dto.event.notice
 
-import com.alibaba.fastjson2.JSONObject
-import com.alibaba.fastjson2.annotation.JSONField
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.node.ObjectNode
 import io.github.qingshu.ayaka.dto.constant.ParamsKey.NOTICE_TYPE
 import io.github.qingshu.ayaka.dto.constant.ParamsKey.POST_TYPE
 
@@ -14,14 +14,14 @@ import io.github.qingshu.ayaka.dto.constant.ParamsKey.POST_TYPE
  */
 class GroupMessageRecallEvent: NoticeEvent() {
 
-    @JSONField(name = "group_id")
-    var groupId: Long? = null
+    @JsonProperty("group_id")
+    var groupId: Long = 0
 
-    @JSONField(name = "operator_id")
-    var operatorId: Long? = null
+    @JsonProperty("operator_id")
+    var operatorId: Long = 0
 
-    @JSONField(name = "message_id")
-    var messageId: Int? = null
+    @JsonProperty("message_id")
+    var messageId: Int = 0
 
     override fun setCancelled(cancelled: Boolean) {
         this.block = cancelled
@@ -36,11 +36,7 @@ class GroupMessageRecallEvent: NoticeEvent() {
             events.add(GroupMessageRecallEvent::class)
         }
 
-        fun canHandle(json: JSONObject): Boolean {
-            return when {
-                "notice" == json[POST_TYPE] -> "group_recall" == json[NOTICE_TYPE]
-                else -> false
-            }
-        }
+        fun canHandle(json: ObjectNode) =
+            "notice" == json[POST_TYPE].asText() && "group_recall" == json[NOTICE_TYPE].asText()
     }
 }

@@ -1,6 +1,7 @@
 package io.github.qingshu.ayaka.dto.event.message
 
-import com.alibaba.fastjson2.JSONObject
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.node.ObjectNode
 
 /**
  * Copyright (c) 2024 qingshu.
@@ -10,9 +11,9 @@ import com.alibaba.fastjson2.JSONObject
  * See the LICENSE file for details.
  */
 data class AnyMessageEvent(
-    override var messageType: String? = null,
-    override var groupId: Long? = null,
-    override var userId: Long? = null,
+    @JsonProperty("message_type") override var messageType: String,
+    @JsonProperty("group_id") override var groupId: Long,
+    @JsonProperty("user_id") override var userId: Long,
 ) : GroupMessageEvent() {
 
     override fun setCancelled(cancelled: Boolean) {
@@ -28,8 +29,7 @@ data class AnyMessageEvent(
             events.add(AnyMessageEvent::class)
         }
 
-        fun canHandle(json: JSONObject): Boolean{
-            return "message" == json["post_type"]
-        }
+        fun canHandle(json: ObjectNode) =
+            "message" == json["post_type"].asText()
     }
 }

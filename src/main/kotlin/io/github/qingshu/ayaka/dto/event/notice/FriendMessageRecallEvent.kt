@@ -1,7 +1,7 @@
 package io.github.qingshu.ayaka.dto.event.notice
 
-import com.alibaba.fastjson2.JSONObject
-import com.alibaba.fastjson2.annotation.JSONField
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.node.ObjectNode
 import io.github.qingshu.ayaka.dto.constant.ParamsKey.NOTICE_TYPE
 import io.github.qingshu.ayaka.dto.constant.ParamsKey.POST_TYPE
 
@@ -22,19 +22,15 @@ class FriendMessageRecallEvent : NoticeEvent() {
         return this.block
     }
 
-    @JSONField(name = "message_id")
-    var messageId: Int? = null
+    @JsonProperty("message_id")
+    var messageId: Int = 0
 
     companion object {
         init {
             events.add(FriendMessageRecallEvent::class)
         }
 
-        fun canHandle(json: JSONObject): Boolean {
-            return when {
-                "notice" == json[POST_TYPE] -> "friend_recall" == json[NOTICE_TYPE]
-                else -> false
-            }
-        }
+        fun canHandle(json: ObjectNode) =
+            "notice" == json[POST_TYPE].asText() && "friend_recall" == json[NOTICE_TYPE].asText()
     }
 }

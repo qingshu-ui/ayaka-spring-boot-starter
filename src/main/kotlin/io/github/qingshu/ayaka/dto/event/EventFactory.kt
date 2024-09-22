@@ -1,11 +1,12 @@
 package io.github.qingshu.ayaka.dto.event
 
-import com.alibaba.fastjson2.JSONObject
+import com.fasterxml.jackson.databind.node.ObjectNode
 import io.github.qingshu.ayaka.bot.Bot
 import io.github.qingshu.ayaka.bot.BotContainer
 import io.github.qingshu.ayaka.dto.event.message.MessageEvent
 import io.github.qingshu.ayaka.plugin.BotPlugin
 import io.github.qingshu.ayaka.utils.RefectionUtils
+import io.github.qingshu.ayaka.utils.mapper
 import io.github.qingshu.ayaka.utils.rowConvert
 import kotlinx.coroutines.CompletableDeferred
 import meteordevelopment.orbit.IEventBus
@@ -26,7 +27,7 @@ import kotlin.reflect.full.memberFunctions
  */
 @Component
 class EventFactory @Autowired constructor(
-    private val echoMap: ConcurrentHashMap<String, CompletableDeferred<JSONObject>>,
+    private val echoMap: ConcurrentHashMap<String, CompletableDeferred<ObjectNode>>,
     private val botContainer: BotContainer,
     listener: List<BotPlugin>,
     private val bus: IEventBus
@@ -36,15 +37,15 @@ class EventFactory @Autowired constructor(
         listener.forEach(bus::subscribe)
     }
 
-    private fun getEvent(json: JSONObject): List<GeneralEvent> {
+    private fun getEvent(json: ObjectNode): List<GeneralEvent> {
         val events = arrayListOf<GeneralEvent>()
         GeneralEvent.events.forEach { event ->
             val canHandleFun = event.companionObject?.memberFunctions?.find { it.name == "canHandle" }
             val canHandle = canHandleFun?.call(event.companionObjectInstance, json) as Boolean
             if (canHandle) {
-                val instance = json.to(event.java)
+                val instance = mapper.treeToValue(json, event.java)
                 if (instance is MessageEvent)
-                    rowConvert(instance.message ?: "", instance)
+                    rowConvert(instance.message, instance)
                 events.add(instance)
             }
         }
@@ -56,10 +57,11 @@ class EventFactory @Autowired constructor(
      * @param xSelfId 接收上报消息的 QQ 号
      * @param resp [JSONObject] of fastjson2
      */
-    suspend fun postEvent(xSelfId: Long, resp: JSONObject) {
+    suspend fun postEvent(xSelfId: Long, resp: ObjectNode) {
         log.debug("{}", resp)
-        resp["echo"]?.let {
-            echoMap[it]?.complete(resp)
+        if(resp.has("echo")){
+            val echo = resp.get("echo").asText()
+            echoMap[echo]?.complete(resp)
             return
         }
 
@@ -85,7 +87,7 @@ class EventFactory @Autowired constructor(
      * @param bot 从 http post 中获取或创建
      * @param resp [JSONObject] of fastjson2
      */
-    suspend fun postEvent(bot: Bot, resp: JSONObject) {
+    suspend fun postEvent(bot: Bot, resp: ObjectNode) {
         getEvent(resp).forEach {
             it.bot = bot
             bus.post(it)

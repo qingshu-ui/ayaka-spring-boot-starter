@@ -1,6 +1,6 @@
 package io.github.qingshu.ayaka.handler
 
-import com.alibaba.fastjson2.JSON
+import com.fasterxml.jackson.databind.node.ObjectNode
 import io.github.qingshu.ayaka.bot.BotContainer
 import io.github.qingshu.ayaka.bot.BotFactory
 import io.github.qingshu.ayaka.bot.BotSessionFactory
@@ -8,6 +8,8 @@ import io.github.qingshu.ayaka.config.WebsocketProperties
 import io.github.qingshu.ayaka.dto.constant.AdapterEnum
 import io.github.qingshu.ayaka.dto.constant.Connection
 import io.github.qingshu.ayaka.dto.event.EventFactory
+import io.github.qingshu.ayaka.utils.isValidJsonObj
+import io.github.qingshu.ayaka.utils.mapper
 import io.github.qingshu.ayaka.utils.parseSelfId
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -64,9 +66,9 @@ class WebsocketClientHandler(
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
         var xSelfId = parseSelfId(session)
         if (xSelfId == 0L) {
-            val valid = JSON.isValid(message.payload)
+            val valid = message.payload.isValidJsonObj(mapper)
             if (valid) {
-                val selfId = JSON.parseObject(message.payload).getOrDefault("self_id", "").toString()
+                val selfId = mapper.readTree(message.payload).get("self_id").asText("")
                 session.attributes["x-self-id"] = selfId
                 xSelfId = parseSelfId(session)
             }
@@ -74,7 +76,7 @@ class WebsocketClientHandler(
                 afterConnectionEstablished(session)
             }
         }
-        val result = JSON.parseObject(message.payload)
+        val result = mapper.readTree(message.payload) as ObjectNode
         coroutine.launch(dispatcher) {
             eventFactory.postEvent(xSelfId, result)
         }

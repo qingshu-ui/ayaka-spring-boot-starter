@@ -1,7 +1,8 @@
 package io.github.qingshu.ayaka.bot
 
-import com.alibaba.fastjson2.JSONObject
-import com.alibaba.fastjson2.JSONWriter
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
 import io.github.qingshu.ayaka.config.HttpPostProperties
 import io.github.qingshu.ayaka.utils.NetUtils
 import io.github.qingshu.ayaka.utils.ProtocolHelper
@@ -25,11 +26,14 @@ class BotSessionImpl<T>(
 
     companion object {
         private val log = LoggerFactory.getLogger(BotSessionImpl::class.java)
+        private val mapper = ObjectMapper().apply {
+            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        }
 
-        private val FAILED_RESPONSE = JSONObject().apply {
+        private val FAILED_RESPONSE = mapper.createObjectNode().apply {
             put("status", "failed")
             put("retcode", -1)
-            put("data", null)
+            putNull("data")
         }
     }
 
@@ -41,6 +45,7 @@ class BotSessionImpl<T>(
         }
     }
 
+    @Suppress("SameParameterValue")
     private fun formatUrl(protocol: String, url: String, port: Long, path: String): String {
         if (isValidIPv6(url)) {
             return "$protocol://[$url]:$port/$path"
@@ -48,27 +53,27 @@ class BotSessionImpl<T>(
         return "$protocol://$url:$port/$path"
     }
 
-    override fun sendMessage(message: JSONObject): JSONObject {
+    override fun sendMessage(message: ObjectNode): ObjectNode {
         return when (session) {
             is WebSocketSession -> helper.send(session, message)
 
             is String -> {
-                val params = message["params"] as JSONObject
-                val api = message["action"] as String
+                val params = message["params"] as ObjectNode
+                val api = message["action"].asText()
                 val url = formatUrl(
                     protocol = "http",
                     url = session,
                     port = httpPost.apiPort,
                     path = api
                 )
-                val resp = NetUtils.post(url, params.toJSONString(JSONWriter.Feature.LargeObject))
+                val resp = NetUtils.post(url, mapper.writeValueAsString(params))
                 resp.use {
-                    val respStr = resp.body?.string()
+                    val respStr = it.body?.string()
                     if (respStr.isNullOrEmpty()) {
                         log.warn("The $api has been sent successfully, but the response content is empty")
                         return FAILED_RESPONSE
                     }
-                    return JSONObject.parseObject(respStr) ?: FAILED_RESPONSE
+                    return mapper.readTree(respStr) as? ObjectNode ?: FAILED_RESPONSE
                 }
             }
 

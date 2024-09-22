@@ -1,6 +1,6 @@
 package io.github.qingshu.ayaka.bot
 
-import com.alibaba.fastjson2.JSONObject
+import com.fasterxml.jackson.databind.node.ObjectNode
 
 /**
  * Copyright (c) 2024 qingshu.
@@ -10,5 +10,5 @@ import com.alibaba.fastjson2.JSONObject
  * See the LICENSE file for details.
  */
 interface BotSession {
-    fun sendMessage(message: JSONObject): JSONObject
+    fun sendMessage(message: ObjectNode): ObjectNode
 }

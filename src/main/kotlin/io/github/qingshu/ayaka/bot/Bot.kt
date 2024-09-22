@@ -1,20 +1,20 @@
 package io.github.qingshu.ayaka.bot
 
-import com.alibaba.fastjson2.JSON
-import com.alibaba.fastjson2.JSONObject
-import com.alibaba.fastjson2.TypeReference
-import io.github.qingshu.ayaka.bot.compatible.OneBot
-import io.github.qingshu.ayaka.bot.compatible.OpenShamrock
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.JsonNode
+import io.github.qingshu.ayaka.bot.action.GoCQHTTPExtend
+import io.github.qingshu.ayaka.bot.action.OneBot
 import io.github.qingshu.ayaka.dto.constant.ActionPathEnum
 import io.github.qingshu.ayaka.dto.constant.ParamsKey
 import io.github.qingshu.ayaka.dto.event.message.AnyMessageEvent
 import io.github.qingshu.ayaka.dto.general.*
 import io.github.qingshu.ayaka.dto.resp.*
+import io.github.qingshu.ayaka.utils.mapper
 
 class Bot(
     var selfId: Long,
     var session: BotSession
-) : OneBot, OpenShamrock {
+) : OneBot, GoCQHTTPExtend {
 
     /**
      * 发送私聊消息
@@ -24,7 +24,7 @@ class Bot(
      * @return result [GeneralRespData] of [MsgId]
      */
     override fun sendPrivateMsg(userId: Long, msg: String, autoEscape: Boolean): GeneralRespData<MsgId> {
-        return sendPrivateMsg(null, userId, msg, autoEscape)
+        return sendPrivateMsg(0, userId, msg, autoEscape)
     }
 
     /**
@@ -36,21 +36,22 @@ class Bot(
      * @return result [GeneralRespData] of [MsgId]
      */
     override fun sendPrivateMsg(
-        groupId: Long?, userId: Long, msg: String, autoEscape: Boolean
+        groupId: Long, userId: Long, msg: String, autoEscape: Boolean
     ): GeneralRespData<MsgId> {
-        val params = JSONObject()
-        if (groupId != null) {
-            params[ParamsKey.GROUP_ID] = groupId
+        val params = mapper.createObjectNode()
+        if (groupId != 0L) {
+            params.put(ParamsKey.GROUP_ID, groupId)
         }
-        params[ParamsKey.USER_ID] = userId
-        params[ParamsKey.MESSAGE] = msg
-        params[ParamsKey.AUTO_ESCAPE] = autoEscape
+        params.put(ParamsKey.USER_ID, userId)
+        params.put(ParamsKey.MESSAGE, msg)
+        params.put(ParamsKey.AUTO_ESCAPE, autoEscape)
+
         val api = ProtocolBody(
             action = ActionPathEnum.SEND_PRIVATE_MSG.path, params = params
         )
-        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<MsgId>>() {})
+            mapper.treeToValue(it, object : TypeReference<GeneralRespData<MsgId>>() {})
         }
     }
 
@@ -62,16 +63,16 @@ class Bot(
      * @return result [GeneralRespData] of [MsgId]
      */
     override fun sendGroupMsg(groupId: Long, msg: String, autoEscape: Boolean): GeneralRespData<MsgId> {
-        val params = JSONObject()
-        params[ParamsKey.GROUP_ID] = groupId
-        params[ParamsKey.MESSAGE] = msg
-        params[ParamsKey.AUTO_ESCAPE] = autoEscape
+        val params = mapper.createObjectNode()
+        params.put(ParamsKey.GROUP_ID, groupId)
+        params.put(ParamsKey.MESSAGE, msg)
+        params.put(ParamsKey.AUTO_ESCAPE, autoEscape)
         val api = ProtocolBody(
             action = ActionPathEnum.SEND_GROUP_MSG.path, params = params
         )
-        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<MsgId>>() {})
+            mapper.treeToValue(it, object : TypeReference<GeneralRespData<MsgId>>() {})
         }
     }
 
@@ -81,11 +82,11 @@ class Bot(
      */
     override fun getGroupList(): GeneralRespList<GroupInfoResp> {
         val api = ProtocolBody(
-            action = ActionPathEnum.GET_GROUP_LIST.path, params = JSONObject()
+            action = ActionPathEnum.GET_GROUP_LIST.path, params = mapper.createObjectNode()
         )
-        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespList<GroupInfoResp>>() {})
+            mapper.treeToValue(it, object : TypeReference<GeneralRespList<GroupInfoResp>>() {})
         }
     }
 
@@ -98,10 +99,10 @@ class Bot(
      */
     override fun sendMsg(event: AnyMessageEvent, msg: String, autoEscape: Boolean): GeneralRespData<MsgId> {
         return when (event.messageType) {
-            ParamsKey.GROUP -> sendGroupMsg(event.groupId!!, msg, autoEscape)
-            ParamsKey.PRIVATE -> sendPrivateMsg(event.userId!!, msg, autoEscape)
+            ParamsKey.GROUP -> sendGroupMsg(event.groupId, msg, autoEscape)
+            ParamsKey.PRIVATE -> sendPrivateMsg(event.userId, msg, autoEscape)
             else -> GeneralRespData(
-                status = "failed", data = null, retCode = -1
+                status = "failed", data = MsgId(-1), retCode = -1
             )
         }
     }
@@ -113,14 +114,14 @@ class Bot(
      * @return result [GeneralRawResp]
      */
     override fun deleteMsg(msgId: Int): GeneralRawResp {
-        val params = JSONObject()
-        params[ParamsKey.MESSAGE_ID] = msgId
+        val params = mapper.createObjectNode()
+        params.put(ParamsKey.MESSAGE_ID, msgId)
         val api = ProtocolBody(
             action = ActionPathEnum.DELETE_MSG.path, params = params
         )
-        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRawResp>() {})
+            mapper.treeToValue(it, object : TypeReference<GeneralRawResp>() {})
         }
     }
 
@@ -131,14 +132,14 @@ class Bot(
      * @return result [GeneralRespData] of [GetMsgResp]
      */
     override fun getMsg(msgId: Int): GeneralRespData<GetMsgResp> {
-        val params = JSONObject()
-        params[ParamsKey.MESSAGE_ID] = msgId
+        val params = mapper.createObjectNode()
+        params.put(ParamsKey.MESSAGE_ID, msgId)
         val api = ProtocolBody(
             action = ActionPathEnum.GET_MSG.path, params = params
         )
-        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<GetMsgResp>>() {})
+            mapper.treeToValue(it, object : TypeReference<GeneralRespData<GetMsgResp>>() {})
         }
     }
 
@@ -150,15 +151,15 @@ class Bot(
      * @return result [GeneralRawResp]
      */
     override fun sendLike(userId: Long, times: Int): GeneralRawResp {
-        val params = JSONObject()
-        params[ParamsKey.USER_ID] = userId
-        params[ParamsKey.TIMES] = times
+        val params = mapper.createObjectNode()
+        params.put(ParamsKey.USER_ID, userId)
+        params.put(ParamsKey.TIMES, times)
         val api = ProtocolBody(
             action = ActionPathEnum.SEND_LIKE.path, params = params
         )
-        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRawResp>() {})
+            mapper.treeToValue(it, object : TypeReference<GeneralRawResp>() {})
         }
     }
 
@@ -168,14 +169,14 @@ class Bot(
      * @return result [GeneralRawResp]
      */
     override fun sendGroupSign(groupId: Long): GeneralRawResp {
-        val params = JSONObject()
-        params[ParamsKey.GROUP_ID] = groupId
+        val params = mapper.createObjectNode()
+        params.put(ParamsKey.GROUP_ID, groupId)
         val api = ProtocolBody(
             action = ActionPathEnum.SEND_GROUP_SIGN.path, params = params
         )
-        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRawResp>() {})
+            mapper.treeToValue(it, object : TypeReference<GeneralRawResp>() {})
         }
     }
 
@@ -188,16 +189,16 @@ class Bot(
      * @return result [GeneralRawResp]
      */
     override fun setGroupKick(groupId: Long, userId: Long, rejectAddRequest: Boolean): GeneralRawResp {
-        val params = JSONObject()
-        params[ParamsKey.GROUP_ID] = groupId
-        params[ParamsKey.USER_ID] = userId
-        params[ParamsKey.REJECT_ADD_REQUEST] = rejectAddRequest
+        val params = mapper.createObjectNode()
+        params.put(ParamsKey.GROUP_ID, groupId)
+        params.put(ParamsKey.USER_ID, userId)
+        params.put(ParamsKey.REJECT_ADD_REQUEST, rejectAddRequest)
         val api = ProtocolBody(
             action = ActionPathEnum.SET_GROUP_KICK.path, params = params
         )
-        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRawResp>() {})
+            mapper.treeToValue(it, object : TypeReference<GeneralRawResp>() {})
         }
     }
 
@@ -210,16 +211,16 @@ class Bot(
      * @return result [GeneralRawResp]
      */
     override fun setGroupBan(groupId: Long, userId: Long, duration: Int): GeneralRawResp {
-        val params = JSONObject()
-        params[ParamsKey.GROUP_ID] = groupId
-        params[ParamsKey.USER_ID] = userId
-        params[ParamsKey.DURATION] = duration
+        val params = mapper.createObjectNode()
+        params.put(ParamsKey.GROUP_ID, groupId)
+        params.put(ParamsKey.USER_ID, userId)
+        params.put(ParamsKey.DURATION, duration)
         val api = ProtocolBody(
             action = ActionPathEnum.SET_GROUP_BAN.path, params = params
         )
-        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRawResp>() {})
+            mapper.treeToValue(it, object : TypeReference<GeneralRawResp>() {})
         }
     }
 
@@ -232,16 +233,16 @@ class Bot(
      * @return result [GeneralRawResp]
      */
     override fun setGroupAnonymousBan(groupId: Long, anonymous: Anonymous, duration: Int): GeneralRawResp {
-        val params = JSONObject()
-        params[ParamsKey.GROUP_ID] = groupId
-        params[ParamsKey.ANONYMOUS] = anonymous
-        params[ParamsKey.DURATION] = duration
+        val params = mapper.createObjectNode()
+        params.put(ParamsKey.GROUP_ID, groupId)
+        params.set<JsonNode>(ParamsKey.ANONYMOUS, mapper.valueToTree(anonymous))
+        params.put(ParamsKey.DURATION, duration)
         val api = ProtocolBody(
             action = ActionPathEnum.SET_GROUP_ANONYMOUS_BAN.path, params = params
         )
-        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRawResp>() {})
+            mapper.treeToValue(it, object : TypeReference<GeneralRawResp>() {})
         }
     }
 
@@ -253,15 +254,15 @@ class Bot(
      * @return result [GeneralRawResp]
      */
     override fun setGroupWholeBan(groupId: Long, enable: Boolean): GeneralRawResp {
-        val params = JSONObject()
-        params[ParamsKey.GROUP_ID] = groupId
-        params[ParamsKey.ENABLE] = enable
+        val params = mapper.createObjectNode()
+        params.put(ParamsKey.GROUP_ID, groupId)
+        params.put(ParamsKey.ENABLE, enable)
         val api = ProtocolBody(
             action = ActionPathEnum.SET_GROUP_WHOLE_BAN.path, params = params
         )
-        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRawResp>() {})
+            mapper.treeToValue(it, object : TypeReference<GeneralRawResp>() {})
         }
     }
 
@@ -274,16 +275,16 @@ class Bot(
      * @return result [GeneralRawResp]
      */
     override fun setGroupAdmin(groupId: Long, userId: Long, enable: Boolean): GeneralRawResp {
-        val params = JSONObject()
-        params[ParamsKey.GROUP_ID] = groupId
-        params[ParamsKey.USER_ID] = userId
-        params[ParamsKey.ENABLE] = enable
+        val params = mapper.createObjectNode()
+        params.put(ParamsKey.GROUP_ID, groupId)
+        params.put(ParamsKey.USER_ID, userId)
+        params.put(ParamsKey.ENABLE, enable)
         val api = ProtocolBody(
             action = ActionPathEnum.SET_GROUP_ADMIN.path, params = params
         )
-        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRawResp>() {})
+            mapper.treeToValue(it, object : TypeReference<GeneralRawResp>() {})
         }
     }
 
@@ -295,15 +296,15 @@ class Bot(
      * @return result [GeneralRawResp]
      */
     override fun setGroupAnonymous(groupId: Long, enable: Boolean): GeneralRawResp {
-        val params = JSONObject()
-        params[ParamsKey.GROUP_ID] = groupId
-        params[ParamsKey.ENABLE] = enable
+        val params = mapper.createObjectNode()
+        params.put(ParamsKey.GROUP_ID, groupId)
+        params.put(ParamsKey.ENABLE, enable)
         val api = ProtocolBody(
             action = ActionPathEnum.SET_GROUP_ANONYMOUS.path, params = params
         )
-        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRawResp>() {})
+            mapper.treeToValue(it, object : TypeReference<GeneralRawResp>() {})
         }
     }
 
@@ -316,16 +317,16 @@ class Bot(
      * @return result [GeneralRawResp]
      */
     override fun setGroupCard(groupId: Long, userId: Long, card: String): GeneralRawResp {
-        val params = JSONObject()
-        params[ParamsKey.GROUP_ID] = groupId
-        params[ParamsKey.USER_ID] = userId
-        params[ParamsKey.CARD] = card
+        val params = mapper.createObjectNode()
+        params.put(ParamsKey.GROUP_ID, groupId)
+        params.put(ParamsKey.USER_ID, userId)
+        params.put(ParamsKey.CARD, card)
         val api = ProtocolBody(
             action = ActionPathEnum.SET_GROUP_CARD.path, params = params
         )
-        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRawResp>() {})
+            mapper.treeToValue(it, object : TypeReference<GeneralRawResp>() {})
         }
     }
 
@@ -337,15 +338,15 @@ class Bot(
      * @return result [GeneralRawResp]
      */
     override fun setGroupName(groupId: Long, groupName: String): GeneralRawResp {
-        val params = JSONObject()
-        params[ParamsKey.GROUP_ID] = groupId
-        params[ParamsKey.GROUP_NAME] = groupName
+        val params = mapper.createObjectNode()
+        params.put(ParamsKey.GROUP_ID, groupId)
+        params.put(ParamsKey.GROUP_NAME, groupName)
         val api = ProtocolBody(
             action = ActionPathEnum.SET_GROUP_NAME.path, params = params
         )
-        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRawResp>() {})
+            mapper.treeToValue(it, object : TypeReference<GeneralRawResp>() {})
         }
     }
 
@@ -357,15 +358,15 @@ class Bot(
      * @return result [GeneralRawResp]
      */
     override fun setGroupLeave(groupId: Long, isDismiss: Boolean): GeneralRawResp {
-        val params = JSONObject()
-        params[ParamsKey.GROUP_ID] = groupId
-        params[ParamsKey.IS_DISMISS] = isDismiss
+        val params = mapper.createObjectNode()
+        params.put(ParamsKey.GROUP_ID, groupId)
+        params.put(ParamsKey.IS_DISMISS, isDismiss)
         val api = ProtocolBody(
             action = ActionPathEnum.SET_GROUP_LEAVE.path, params = params
         )
-        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRawResp>() {})
+            mapper.treeToValue(it, object : TypeReference<GeneralRawResp>() {})
         }
     }
 
@@ -377,16 +378,16 @@ class Bot(
      * @return result [GeneralRawResp]
      */
     override fun setGroupSpecialTitle(groupId: Long, userId: Long, title: String): GeneralRawResp {
-        val params = JSONObject()
-        params[ParamsKey.GROUP_ID] = groupId
-        params[ParamsKey.USER_ID] = userId
-        params[ParamsKey.SPECIAL_TITLE] = title
+        val params = mapper.createObjectNode()
+        params.put(ParamsKey.GROUP_ID, groupId)
+        params.put(ParamsKey.USER_ID, userId)
+        params.put(ParamsKey.SPECIAL_TITLE, title)
         val api = ProtocolBody(
             action = ActionPathEnum.SET_GROUP_SPECIAL_TITLE.path, params = params
         )
-        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRawResp>() {})
+            mapper.treeToValue(it, object : TypeReference<GeneralRawResp>() {})
         }
     }
 
@@ -399,16 +400,16 @@ class Bot(
      * @return result [GeneralRawResp]
      */
     override fun setFriendAddRequest(flag: String, approve: Boolean, remark: String): GeneralRawResp {
-        val params = JSONObject()
-        params[ParamsKey.FLAG] = flag
-        params[ParamsKey.APPROVE] = approve
-        params[ParamsKey.REMARK] = remark
+        val params = mapper.createObjectNode()
+        params.put(ParamsKey.FLAG, flag)
+        params.put(ParamsKey.APPROVE, approve)
+        params.put(ParamsKey.REMARK, remark)
         val api = ProtocolBody(
             action = ActionPathEnum.SET_FRIEND_ADD_REQUEST.path, params = params
         )
-        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRawResp>() {})
+            mapper.treeToValue(it, object : TypeReference<GeneralRawResp>() {})
         }
     }
 
@@ -422,17 +423,17 @@ class Bot(
      * @return result [GeneralRawResp]
      */
     override fun setGroupAddRequest(flag: String, subType: String, approve: Boolean, reason: String): GeneralRawResp {
-        val params = JSONObject()
-        params[ParamsKey.FLAG] = flag
-        params[ParamsKey.SUB_TYPE] = subType
-        params[ParamsKey.APPROVE] = approve
-        params[ParamsKey.REASON] = reason
+        val params = mapper.createObjectNode()
+        params.put(ParamsKey.FLAG, flag)
+        params.put(ParamsKey.SUB_TYPE, subType)
+        params.put(ParamsKey.APPROVE, approve)
+        params.put(ParamsKey.REASON, reason)
         val api = ProtocolBody(
             action = ActionPathEnum.SET_GROUP_ADD_REQUEST.path, params = params
         )
-        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRawResp>() {})
+            mapper.treeToValue(it, object : TypeReference<GeneralRawResp>() {})
         }
     }
 
@@ -444,11 +445,11 @@ class Bot(
      */
     override fun getLoginInfo(): GeneralRespData<GetLoginInfoResp> {
         val api = ProtocolBody(
-            action = ActionPathEnum.GET_LOGIN_INFO.path, params = JSONObject()
+            action = ActionPathEnum.GET_LOGIN_INFO.path, params = mapper.createObjectNode()
         )
-        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<GetLoginInfoResp>>() {})
+            mapper.treeToValue(it, object : TypeReference<GeneralRespData<GetLoginInfoResp>>() {})
         }
     }
 
@@ -460,15 +461,15 @@ class Bot(
      * @return result [GeneralRespData] of [StrangerInfoResp]
      */
     override fun getStrangerInfo(userId: Long, noCache: Boolean): GeneralRespData<StrangerInfoResp> {
-        val params = JSONObject()
-        params[ParamsKey.USER_ID] = userId
-        params[ParamsKey.NO_CACHE] = noCache
+        val params = mapper.createObjectNode()
+        params.put(ParamsKey.USER_ID, userId)
+        params.put(ParamsKey.NO_CACHE, noCache)
         val api = ProtocolBody(
             action = ActionPathEnum.GET_STRANGER_INFO.path, params = params
         )
-        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<StrangerInfoResp>>() {})
+            mapper.treeToValue(it, object : TypeReference<GeneralRespData<StrangerInfoResp>>() {})
         }
     }
 
@@ -479,11 +480,11 @@ class Bot(
      */
     override fun getFriendList(): GeneralRespData<FriendInfoResp> {
         val api = ProtocolBody(
-            action = ActionPathEnum.GET_FRIEND_LIST.path, params = JSONObject()
+            action = ActionPathEnum.GET_FRIEND_LIST.path, params = mapper.createObjectNode()
         )
-        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<FriendInfoResp>>() {})
+            mapper.treeToValue(it, object : TypeReference<GeneralRespData<FriendInfoResp>>() {})
         }
     }
 
@@ -495,15 +496,15 @@ class Bot(
      * @return result [GeneralRespData] of [GroupInfoResp]
      */
     override fun getGroupInfo(groupId: Long, noCache: Boolean): GeneralRespData<GroupInfoResp> {
-        val params = JSONObject()
-        params[ParamsKey.GROUP_ID] = groupId
-        params[ParamsKey.NO_CACHE] = noCache
+        val params = mapper.createObjectNode()
+        params.put(ParamsKey.GROUP_ID, groupId)
+        params.put(ParamsKey.NO_CACHE, noCache)
         val api = ProtocolBody(
             action = ActionPathEnum.GET_GROUP_INFO.path, params = params
         )
-        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<GroupInfoResp>>() {})
+            mapper.treeToValue(it, object : TypeReference<GeneralRespData<GroupInfoResp>>() {})
         }
     }
 
@@ -518,16 +519,16 @@ class Bot(
     override fun getGroupMemberInfo(
         groupId: Long, userId: Long, noCache: Boolean
     ): GeneralRespData<GroupMemberInfoResp> {
-        val params = JSONObject()
-        params[ParamsKey.GROUP_ID] = groupId
-        params[ParamsKey.USER_ID] = userId
-        params[ParamsKey.NO_CACHE] = noCache
+        val params = mapper.createObjectNode()
+        params.put(ParamsKey.GROUP_ID, groupId)
+        params.put(ParamsKey.USER_ID, userId)
+        params.put(ParamsKey.NO_CACHE, noCache)
         val api = ProtocolBody(
             action = ActionPathEnum.GET_GROUP_MEMBER_INFO.path, params = params
         )
-        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<GroupMemberInfoResp>>() {})
+            mapper.treeToValue(it, object : TypeReference<GeneralRespData<GroupMemberInfoResp>>() {})
         }
     }
 
@@ -538,14 +539,14 @@ class Bot(
      * @return result [GeneralRespList] of [GroupMemberInfoResp]
      */
     override fun getGroupMemberList(groupId: Long): GeneralRespList<GroupMemberInfoResp> {
-        val params = JSONObject()
-        params[ParamsKey.GROUP_ID] = groupId
+        val params = mapper.createObjectNode()
+        params.put(ParamsKey.GROUP_ID, groupId)
         val api = ProtocolBody(
             action = ActionPathEnum.GET_GROUP_MEMBER_LIST.path, params = params
         )
-        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespList<GroupMemberInfoResp>>() {})
+            mapper.treeToValue(it, object : TypeReference<GeneralRespList<GroupMemberInfoResp>>() {})
         }
     }
 
@@ -557,15 +558,15 @@ class Bot(
      * @return result [GeneralRespData] of [GroupHonorInfoResp]
      */
     override fun getGroupHonorInfo(groupId: Long, type: String): GeneralRespData<GroupHonorInfoResp> {
-        val params = JSONObject()
-        params[ParamsKey.GROUP_ID] = groupId
-        params[ParamsKey.TYPE] = type
+        val params = mapper.createObjectNode()
+        params.put(ParamsKey.GROUP_ID, groupId)
+        params.put(ParamsKey.TYPE, type)
         val api = ProtocolBody(
             action = ActionPathEnum.GET_GROUP_HONOR_INFO.path, params = params
         )
-        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<GroupHonorInfoResp>>() {})
+            mapper.treeToValue(it, object : TypeReference<GeneralRespData<GroupHonorInfoResp>>() {})
         }
     }
 
@@ -576,11 +577,11 @@ class Bot(
      */
     override fun canSendImage(): GeneralRespData<BooleanResp> {
         val api = ProtocolBody(
-            action = ActionPathEnum.CAN_SEND_IMAGE.path, params = JSONObject()
+            action = ActionPathEnum.CAN_SEND_IMAGE.path, params = mapper.createObjectNode()
         )
-        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<BooleanResp>>() {})
+            mapper.treeToValue(it, object : TypeReference<GeneralRespData<BooleanResp>>() {})
         }
     }
 
@@ -591,11 +592,11 @@ class Bot(
      */
     override fun canSendRecord(): GeneralRespData<BooleanResp> {
         val api = ProtocolBody(
-            action = ActionPathEnum.CAN_SEND_RECORD.path, params = JSONObject()
+            action = ActionPathEnum.CAN_SEND_RECORD.path, params = mapper.createObjectNode()
         )
-        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<BooleanResp>>() {})
+            mapper.treeToValue(it, object : TypeReference<GeneralRespData<BooleanResp>>() {})
         }
     }
 
@@ -606,11 +607,11 @@ class Bot(
      */
     override fun getStatus(): GeneralRespData<GetStatusResp> {
         val api = ProtocolBody(
-            action = ActionPathEnum.GET_STATUS.path, params = JSONObject()
+            action = ActionPathEnum.GET_STATUS.path, params = mapper.createObjectNode()
         )
-        val result = session.sendMessage(JSON.toJSON(api) as JSONObject)
+        val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            JSON.parseObject(it.toJSONString(), object : TypeReference<GeneralRespData<GetStatusResp>>() {})
+            mapper.treeToValue(it, object : TypeReference<GeneralRespData<GetStatusResp>>() {})
         }
     }
 }

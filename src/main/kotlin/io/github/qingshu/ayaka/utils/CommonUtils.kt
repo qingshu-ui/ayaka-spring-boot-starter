@@ -76,7 +76,7 @@ object CommonUtils {
 
     private fun filterCheck(event: MessageEvent, filter: MessageHandlerFilter): CheckResult {
         var matcher: Matcher? = null
-        val rawMessage = msgExtract(event.message!!, event.arrayMsg, filter.at, event.selfId!!)
+        val rawMessage = msgExtract(event.message, event.arrayMsg, filter.at, event.selfId)
 
         // check regex
         if (filter.cmd.isNotBlank() && RegexUtils.matcher(filter.cmd, rawMessage).also { matcher = it } == null) {
@@ -86,7 +86,7 @@ object CommonUtils {
         // check @at
         if (CommonEnum.GROUP.value == event.messageType && filter.at != AtEnum.OFF && atCheck(
                 event.arrayMsg,
-                event.selfId!!, filter.at
+                event.selfId, filter.at
             )
         ) {
             return CheckResult()
@@ -113,9 +113,9 @@ object CommonUtils {
         }
 
         // check group msg
-        if (filter.groups.isNotEmpty() && CommonEnum.GROUP.value == event.messageType!!) {
+        if (filter.groups.isNotEmpty() && CommonEnum.GROUP.value == event.messageType) {
             val groupMsgEvent = event as GroupMessageEvent
-            val flag = cache.getSortedGroups(filter.groups).binarySearch(groupMsgEvent.groupId!!) >= 0
+            val flag = cache.getSortedGroups(filter.groups).binarySearch(groupMsgEvent.groupId) >= 0
             if (!flag) return CheckResult()
         }
 
@@ -123,7 +123,7 @@ object CommonUtils {
         if (filter.senders.isNotEmpty()) {
             val senders = filter.senders
             senders.sort()
-            val flag = cache.getSortedSenders(filter.senders).binarySearch(event.userId!!) >= 0
+            val flag = cache.getSortedSenders(filter.senders).binarySearch(event.userId) >= 0
             if (!flag) return CheckResult()
         }
 

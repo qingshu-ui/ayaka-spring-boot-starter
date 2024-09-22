@@ -1,6 +1,7 @@
 package io.github.qingshu.ayaka.dto.general
 
-import com.alibaba.fastjson2.annotation.JSONField
+import com.fasterxml.jackson.annotation.JsonProperty
+import io.github.qingshu.ayaka.utils.EMPTY_STRING
 
 /**
  * Copyright (c) 2024 qingshu.
@@ -10,7 +11,7 @@ import com.alibaba.fastjson2.annotation.JSONField
  * See the LICENSE file for details.
  */
 data class GeneralRawResp(
-    @JSONField(name = "status") val status: String?,
-    @JSONField(name = "retcode") val retCode: Int?,
-    @JSONField(name = "echo") val echo: String?,
+    @JsonProperty("status") val status: String = EMPTY_STRING,
+    @JsonProperty("retcode") val retCode: Int = 0,
+    @JsonProperty("echo") val echo: String = EMPTY_STRING,
 )

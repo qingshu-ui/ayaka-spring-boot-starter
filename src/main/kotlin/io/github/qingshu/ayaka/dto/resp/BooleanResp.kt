@@ -1,7 +1,7 @@
 package io.github.qingshu.ayaka.dto.resp
 
-import com.alibaba.fastjson2.annotation.JSONField
+import com.fasterxml.jackson.annotation.JsonProperty
 
 data class BooleanResp(
-    @JSONField(name = "yes") val yes: Boolean?
+    @JsonProperty("yes") val yes: Boolean = false,
 )

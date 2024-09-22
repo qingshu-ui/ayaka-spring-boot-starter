@@ -1,30 +1,64 @@
 package io.github.qingshu.ayaka.dto.event.message
 
-import com.alibaba.fastjson2.JSONObject
-import com.alibaba.fastjson2.annotation.JSONField
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.node.ObjectNode
 import io.github.qingshu.ayaka.dto.general.Anonymous
 
 open class GroupMessageEvent : MessageEvent() {
-    @JSONField(name = "message_id") open var messageId: Int? = null
-    @JSONField(name = "sub_type") open var subType: String? = null
-    @JSONField(name = "avatar") open var avatar: String? = null
-    @JSONField(name = "real_message_type") open var realMessageType: String? = null
-    @JSONField(name = "is_binded_group_id") open var isBindedGroupId: Boolean? = null
-    @JSONField(name = "group_id") open var groupId: Long? = null
-    @JSONField(name = "anonymous") open var anonymous: Anonymous? = null
-    @JSONField(name = "sender") open var sender: GroupSender? = null
-    @JSONField(name = "is_binded_user_id") open var isBindedUserId: Boolean? = null
+    @JsonProperty("message_id")
+    open var messageId: Int = 0
+
+    @JsonProperty("sub_type")
+    open lateinit var subType: String
+
+    @JsonProperty("avatar")
+    open lateinit var avatar: String
+
+    @JsonProperty("real_message_type")
+    open lateinit var realMessageType: String
+
+    @JsonProperty("is_binded_group_id")
+    open var isBindedGroupId: Boolean = false
+
+    @JsonProperty("group_id")
+    open var groupId: Long = 0
+
+    @JsonProperty("anonymous")
+    open lateinit var anonymous: Anonymous
+
+    @JsonProperty("sender")
+    open lateinit var sender: GroupSender
+
+    @JsonProperty("is_binded_user_id")
+    open var isBindedUserId: Boolean = false
 
     class GroupSender {
-        @JSONField(name = "user_id") var userId: Long? = null
-        @JSONField(name = "nickname") var nickname: String? = null
-        @JSONField(name = "card") var card: String? = null
-        @JSONField(name = "sex") var sex: String? = null
-        @JSONField(name = "age") var age: Int? = null
-        @JSONField(name = "area") var area: String? = null
-        @JSONField(name = "level") var level: String? = null
-        @JSONField(name = "role") var role: String? = null
-        @JSONField(name = "title") var title: String? = null
+        @JsonProperty("user_id")
+        var userId: Long = 0
+
+        @JsonProperty("nickname")
+        lateinit var nickname: String
+
+        @JsonProperty("card")
+        lateinit var card: String
+
+        @JsonProperty("sex")
+        lateinit var sex: String
+
+        @JsonProperty("age")
+        var age: Int = 0
+
+        @JsonProperty("area")
+        lateinit var area: String
+
+        @JsonProperty("level")
+        lateinit var level: String
+
+        @JsonProperty("role")
+        lateinit var role: String
+
+        @JsonProperty("title")
+        lateinit var title: String
     }
 
     override fun setCancelled(cancelled: Boolean) {
@@ -40,11 +74,7 @@ open class GroupMessageEvent : MessageEvent() {
             events.add(GroupMessageEvent::class)
         }
 
-        fun canHandle(json: JSONObject): Boolean{
-            return when {
-                "message" == json["post_type"] -> "group" == json["message_type"]
-                else -> false
-            }
-        }
+        fun canHandle(json: ObjectNode) =
+            "message" == json["post_type"].asText() && "group" == json["message_type"].asText()
     }
 }

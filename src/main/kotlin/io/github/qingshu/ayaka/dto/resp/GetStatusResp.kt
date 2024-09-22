@@ -1,8 +1,8 @@
 package io.github.qingshu.ayaka.dto.resp
 
-import com.alibaba.fastjson2.annotation.JSONField
+import com.fasterxml.jackson.annotation.JsonProperty
 
 data class GetStatusResp(
-    @JSONField(name = "online") val online: Boolean?,
-    @JSONField(name = "good") val good: Boolean?,
+    @JsonProperty("online") val online: Boolean = false,
+    @JsonProperty("good") val good: Boolean = false,
 )

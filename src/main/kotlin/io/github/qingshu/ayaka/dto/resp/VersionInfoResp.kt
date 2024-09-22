@@ -1,9 +1,10 @@
 package io.github.qingshu.ayaka.dto.resp
 
-import com.alibaba.fastjson2.annotation.JSONField
+import com.fasterxml.jackson.annotation.JsonProperty
+import io.github.qingshu.ayaka.utils.EMPTY_STRING
 
 data class VersionInfoResp(
-    @JSONField(name = "app_name") val appName: String?,
-    @JSONField(name = "app_version") val appVersion: String?,
-    @JSONField(name = "protocol_version") val protocolVersion: String?,
+    @JsonProperty("app_name") val appName: String = EMPTY_STRING,
+    @JsonProperty("app_version") val appVersion: String = EMPTY_STRING,
+    @JsonProperty("protocol_version") val protocolVersion: String = EMPTY_STRING,
 )

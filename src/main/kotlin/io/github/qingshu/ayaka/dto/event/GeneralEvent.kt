@@ -1,6 +1,6 @@
 package io.github.qingshu.ayaka.dto.event
 
-import com.alibaba.fastjson2.annotation.JSONField
+import com.fasterxml.jackson.annotation.JsonProperty
 import io.github.qingshu.ayaka.bot.Bot
 import meteordevelopment.orbit.ICancellable
 import kotlin.reflect.KClass
@@ -14,10 +14,10 @@ import kotlin.reflect.KClass
  */
 abstract class GeneralEvent : ICancellable {
 
-    @JSONField(name = "post_type") open var postType: String? = null
-    @JSONField(name = "time") open var time: Long? = null
-    @JSONField(name = "self_id") open var selfId: Long? = null
-    @JSONField(serialize = false, deserialize = false) open var bot: Bot? = null
+    @JsonProperty("post_type") open lateinit var postType: String
+    @JsonProperty("time") open var time: Long = 0
+    @JsonProperty("self_id") open var selfId: Long = 0
+    open lateinit var bot: Bot
 
     protected var block = false
 

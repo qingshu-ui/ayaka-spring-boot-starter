@@ -1,6 +1,9 @@
 package io.github.qingshu.ayaka.utils
 
-import com.alibaba.fastjson2.JSON
+import com.fasterxml.jackson.core.JsonProcessingException
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.github.qingshu.ayaka.dto.ArrayMsg
 import io.github.qingshu.ayaka.dto.constant.MsgTypeEnum
 import io.github.qingshu.ayaka.dto.event.message.MessageEvent
@@ -16,6 +19,11 @@ import org.slf4j.LoggerFactory
 class AyakaUtils
 
 private val log = LoggerFactory.getLogger(AyakaUtils::class.java)
+val mapper = ObjectMapper().apply {
+    configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+    registerModule(KotlinModule.Builder().build())
+}
+const val EMPTY_STRING = ""
 
 private const val CQ_CODE_SPLIT = "(?<=\\[CQ:[^]]{1,99999}])|(?=\\[CQ:[^]]{1,99999}])"
 private const val CQ_CODE_REGEX = "\\[CQ:([^,\\[\\]]+)((?:,[^,=\\[\\]]+=[^,\\[\\]]*)*)]"
@@ -158,11 +166,30 @@ fun getAtList(msgList: List<ArrayMsg>): List<Long> {
 }
 
 fun rowConvert(msg: String, event: MessageEvent) {
-    if (JSON.isValidArray(msg)) {
-        val arrayMsg = JSON.parseArray(msg, ArrayMsg::class.java)
+    if (msg.isValidJsonArr(mapper)) {
+        val type = mapper.typeFactory.constructParametricType(List::class.java, ArrayMsg::class.java)
+        val arrayMsg: List<ArrayMsg> = mapper.readValue(msg, type)
         event.arrayMsg = arrayMsg
         event.message = arrayMsg2Code(arrayMsg)
         return
     }
     event.arrayMsg = raw2ArrayMsg(msg)
+}
+
+fun String.isValidJsonObj(mapper: ObjectMapper): Boolean {
+    return try {
+        mapper.readTree(this)
+        true
+    } catch (_: JsonProcessingException) {
+        false
+    }
+}
+
+fun String.isValidJsonArr(mapper: ObjectMapper): Boolean {
+    return try {
+        val node = mapper.readTree(this)
+        node.isArray
+    } catch (_: JsonProcessingException) {
+        false
+    }
 }

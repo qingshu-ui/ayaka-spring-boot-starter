@@ -1,7 +1,7 @@
 package io.github.qingshu.ayaka.dto.event.message
 
-import com.alibaba.fastjson2.JSONObject
-import com.alibaba.fastjson2.annotation.JSONField
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.node.ObjectNode
 
 /**
  * Copyright (c) 2024 qingshu.
@@ -11,17 +11,33 @@ import com.alibaba.fastjson2.annotation.JSONField
  * See the LICENSE file for details.
  */
 class PrivateMessageEvent : MessageEvent() {
-    @JSONField(name = "message_id") var messageId: Int? = null
-    @JSONField(name = "sub_type") var subType: String? = null
-    @JSONField(name = "sender") var sender: PrivateSender? = null
-    @JSONField(name = "temp_source") var tempSource: Int? = null
+    @JsonProperty("message_id")
+    var messageId: Int = 0
+
+    @JsonProperty("sub_type")
+    lateinit var subType: String
+
+    @JsonProperty("sender")
+    lateinit var sender: PrivateSender
+
+    @JsonProperty("temp_source")
+    var tempSource: Int = 0
 
     class PrivateSender {
-        @JSONField(name = "group_id") var groupId: Long? = null
-        @JSONField(name = "user_id") var userId: Long? = null
-        @JSONField(name = "nickname") var nickname: String? = null
-        @JSONField(name = "sex") var sex: String? = null
-        @JSONField(name = "age") var age: Int? = null
+        @JsonProperty("group_id")
+        var groupId: Long = 0
+
+        @JsonProperty("user_id")
+        var userId: Long = 0
+
+        @JsonProperty("nickname")
+        lateinit var nickname: String
+
+        @JsonProperty("sex")
+        lateinit var sex: String
+
+        @JsonProperty("age")
+        var age: Int = 0
     }
 
     companion object {
@@ -29,12 +45,8 @@ class PrivateMessageEvent : MessageEvent() {
             events.add(PrivateMessageEvent::class)
         }
 
-        fun canHandle(json: JSONObject): Boolean {
-            return when {
-                "message" == json["post_type"] -> "private" == json["message_type"]
-                else -> false
-            }
-        }
+        fun canHandle(json: ObjectNode) =
+            "message" == json["post_type"].asText() && "private" == json["message_type"].asText()
     }
 
     override fun setCancelled(cancelled: Boolean) {

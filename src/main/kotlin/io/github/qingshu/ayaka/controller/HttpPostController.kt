@@ -1,10 +1,11 @@
 package io.github.qingshu.ayaka.controller
 
-import com.alibaba.fastjson2.JSONObject
+import com.fasterxml.jackson.databind.node.ObjectNode
 import io.github.qingshu.ayaka.annotation.HmacCheck
 import io.github.qingshu.ayaka.bot.BotFactory
 import io.github.qingshu.ayaka.bot.BotSessionFactory
 import io.github.qingshu.ayaka.dto.event.EventFactory
+import io.github.qingshu.ayaka.utils.mapper
 import jakarta.servlet.http.HttpServletRequest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -50,7 +51,7 @@ class HttpPostController(
             val xSelfId = (headers["x-self-id"] as? String)?.toLong() ?: return@launch
             val botSession = botSessionFactory.createSession(remoteHost)
             val bot = botFactory.createBot(xSelfId, botSession)
-            eventFactory.postEvent(bot, JSONObject.parseObject(payload))
+            eventFactory.postEvent(bot, mapper.readTree(payload) as ObjectNode)
         }
         return ResponseEntity.noContent().build()
     }

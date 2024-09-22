@@ -1,7 +1,6 @@
 package io.github.qingshu.ayaka.utils
 
-import com.alibaba.fastjson2.JSONObject
-import com.alibaba.fastjson2.JSONWriter
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.util.LRUMap
 import io.github.qingshu.ayaka.config.WebsocketProperties
 import io.github.qingshu.ayaka.dto.constant.AdapterEnum
@@ -27,11 +26,11 @@ import java.util.concurrent.ConcurrentHashMap
  */
 @Component
 class ProtocolHelper @Autowired constructor(
-    private val echoMap: ConcurrentHashMap<String, CompletableDeferred<JSONObject>>,
-    private val websocketProperties: WebsocketProperties
+    private val echoMap: ConcurrentHashMap<String, CompletableDeferred<ObjectNode>>,
+    private val websocketProperties: WebsocketProperties,
 ) {
 
-    fun send(session: WebSocketSession, message:JSONObject): JSONObject {
+    fun send(session: WebSocketSession, message: ObjectNode): ObjectNode {
 
         if (getAdapter(session) == AdapterEnum.SERVER) {
             val status = getSessionStatus(session)
@@ -44,10 +43,10 @@ class ProtocolHelper @Autowired constructor(
         }
 
         val uuid = UUID.randomUUID().toString()
-        val futureResp = CompletableDeferred<JSONObject>()
+        val futureResp = CompletableDeferred<ObjectNode>()
         echoMap[uuid] = futureResp
-        message["echo"] = uuid
-        val jsonStr = message.toJSONString(JSONWriter.Feature.LargeObject)
+        message.put("echo", uuid)
+        val jsonStr = mapper.writeValueAsString(message)
         synchronized(session){
             session.sendMessage(TextMessage(jsonStr))
         }
@@ -58,9 +57,9 @@ class ProtocolHelper @Autowired constructor(
                 }
             }catch (e: TimeoutCancellationException){
                 log.warn("Action {} failed, reason: {}", message["action"], e.message)
-                val result = JSONObject()
-                result["status"] = "failed"
-                result["retcode"] = -1
+                val result = mapper.createObjectNode()
+                result.put("status", "failed")
+                result.put("retcode", -1)
                 result
             }finally {
                 echoMap.remove(uuid)

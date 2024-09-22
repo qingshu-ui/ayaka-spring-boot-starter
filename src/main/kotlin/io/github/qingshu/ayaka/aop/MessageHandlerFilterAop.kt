@@ -7,11 +7,7 @@ import io.github.qingshu.ayaka.utils.CommonUtils
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
-import org.aspectj.lang.annotation.Pointcut
-import org.aspectj.lang.reflect.MethodSignature
 import org.springframework.stereotype.Component
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.jvm.kotlinFunction
 
 /**
  * Copyright (c) 2024 qingshu.
@@ -24,16 +20,10 @@ import kotlin.reflect.jvm.kotlinFunction
 @Component
 class MessageHandlerFilterAop {
 
-    @Pointcut("@annotation(io.github.qingshu.ayaka.annotation.MessageHandlerFilter)")
-    fun messageFilterMethod() {
-    }
-
-    @Around("messageFilterMethod()")
-    fun messageFilter(joinPoint: ProceedingJoinPoint): Any? {
+    @Around("@annotation(filter)")
+    fun messageFilter(joinPoint: ProceedingJoinPoint, filter: MessageHandlerFilter): Any? {
         return try {
-            val event = joinPoint.args.singleOrNull() as? MessageEvent ?: return null
-            val method = (joinPoint.signature as? MethodSignature)?.method?.kotlinFunction ?: return null
-            val filter = method.findAnnotation<MessageHandlerFilter>() ?: return null
+            val event = joinPoint.args.singleOrNull() as? MessageEvent ?: return joinPoint.proceed()
             val checkResult = CommonUtils.allFilterCheck(event, filter)
             if (checkResult.result) {
                 event.matcher = checkResult.matcher

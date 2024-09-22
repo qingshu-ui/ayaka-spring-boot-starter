@@ -1,7 +1,7 @@
 package io.github.qingshu.ayaka.dto.event.request
 
-import com.alibaba.fastjson2.JSONObject
-import com.alibaba.fastjson2.annotation.JSONField
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.node.ObjectNode
 import io.github.qingshu.ayaka.dto.constant.ParamsKey.POST_TYPE
 import io.github.qingshu.ayaka.dto.constant.ParamsKey.REQUEST_TYPE
 import io.github.qingshu.ayaka.dto.event.GeneralEvent
@@ -14,26 +14,26 @@ import io.github.qingshu.ayaka.dto.event.GeneralEvent
  * See the LICENSE file for details.
  */
 class GroupAddRequestEvent : GeneralEvent() {
-    @JSONField(name = "request_type")
-    var requestType: String? = null
+    @JsonProperty("request_type")
+    lateinit var requestType: String
 
-    @JSONField(name = "user_id")
-    var userId: Long? = null
+    @JsonProperty("user_id")
+    var userId: Long = 0
 
-    @JSONField(name = "comment")
-    var comment: String? = null
+    @JsonProperty("comment")
+    lateinit var comment: String
 
-    @JSONField(name = "flag")
-    var flag: String? = null
+    @JsonProperty("flag")
+    lateinit var flag: String
 
-    @JSONField(name = "sub_type")
-    var subType: String? = null
+    @JsonProperty("sub_type")
+    lateinit var subType: String
 
-    @JSONField(name = "group_id")
-    var groupId: Long? = null
+    @JsonProperty("group_id")
+    var groupId: Long = 0
 
-    @JSONField(name = "invitor_id")
-    var invitorId: Long? = null
+    @JsonProperty("invitor_id")
+    var invitorId: Long = 0
 
     override fun setCancelled(cancelled: Boolean) {
         this.block = cancelled
@@ -48,11 +48,7 @@ class GroupAddRequestEvent : GeneralEvent() {
             events.add(GroupAddRequestEvent::class)
         }
 
-        fun canHandle(json: JSONObject): Boolean {
-            return when {
-                "request" == json[POST_TYPE] -> "group" == json[REQUEST_TYPE]
-                else -> false
-            }
-        }
+        fun canHandle(json: ObjectNode) =
+            "request" == json[POST_TYPE].asText() && "group" == json[REQUEST_TYPE].asText()
     }
 }

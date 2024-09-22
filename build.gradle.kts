@@ -34,11 +34,11 @@ repositories {
 dependencies {
     api(kotlin("reflect"))
     api("meteordevelopment:orbit:0.2.3")
-    api("com.alibaba.fastjson2:fastjson2:2.0.52")
     api("org.springframework.boot:spring-boot-starter-websocket")
     api("org.springframework.boot:spring-boot-starter-aop")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     api("com.squareup.okhttp3:okhttp:4.12.0")
+    api("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2")
     kapt("org.springframework.boot:spring-boot-configuration-processor")
 }
 

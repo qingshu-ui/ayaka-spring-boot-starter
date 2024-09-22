@@ -1,6 +1,6 @@
 package io.github.qingshu.ayaka.dto.event.notice
 
-import com.alibaba.fastjson2.annotation.JSONField
+import com.fasterxml.jackson.annotation.JsonProperty
 import io.github.qingshu.ayaka.dto.event.GeneralEvent
 
 /**
@@ -11,11 +11,11 @@ import io.github.qingshu.ayaka.dto.event.GeneralEvent
  * See the LICENSE file for details.
  */
 open class NoticeEvent : GeneralEvent() {
-    @JSONField(name = "notice_type")
-    open var noticeType: String? = null
+    @JsonProperty("notice_type")
+    open lateinit var noticeType: String
 
-    @JSONField(name = "user_id")
-    open var userId: Long? = null
+    @JsonProperty("user_id")
+    open var userId: Long = 0
 
     override fun setCancelled(cancelled: Boolean) {
         this.block = cancelled

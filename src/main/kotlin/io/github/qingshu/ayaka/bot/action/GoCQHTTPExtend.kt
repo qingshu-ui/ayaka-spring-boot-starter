@@ -1,4 +1,4 @@
-package io.github.qingshu.ayaka.bot.compatible
+package io.github.qingshu.ayaka.bot.action
 
 import io.github.qingshu.ayaka.dto.general.GeneralRawResp
 
@@ -9,7 +9,7 @@ import io.github.qingshu.ayaka.dto.general.GeneralRawResp
  * This project is licensed under the GPL-3.0 License.
  * See the LICENSE file for details.
  */
-interface OpenShamrock {
+interface GoCQHTTPExtend {
     /**
      * 群打卡
      * @param groupId 群号

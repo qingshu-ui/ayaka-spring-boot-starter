@@ -1,7 +1,7 @@
 package io.github.qingshu.ayaka.dto.event.notice
 
-import com.alibaba.fastjson2.JSONObject
-import com.alibaba.fastjson2.annotation.JSONField
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.node.ObjectNode
 import io.github.qingshu.ayaka.dto.constant.ParamsKey.NOTICE_TYPE
 import io.github.qingshu.ayaka.dto.constant.ParamsKey.POST_TYPE
 
@@ -14,27 +14,27 @@ import io.github.qingshu.ayaka.dto.constant.ParamsKey.POST_TYPE
  */
 class GroupFileUploadEvent : NoticeEvent() {
 
-    @JSONField(name = "group_id")
-    var groupId: Long? = null
+    @JsonProperty("group_id")
+    var groupId: Long = 0
 
-    @JSONField(name = "file")
-    var file: File? = null
+    @JsonProperty("file")
+    lateinit var file: File
 
     class File {
-        @JSONField(name = "id")
-        var id: String? = null
+        @JsonProperty("id")
+        lateinit var id: String
 
-        @JSONField(name = "name")
-        var name: String? = null
+        @JsonProperty("name")
+        lateinit var name: String
 
-        @JSONField(name = "size")
-        var size: Long? = null
+        @JsonProperty("size")
+        var size: Long = 0
 
-        @JSONField(name = "busid")
-        var busid: Long? = null
+        @JsonProperty("busid")
+        var busid: Long = 0
 
-        @JSONField(name = "url")
-        var url: String? = null
+        @JsonProperty("url")
+        lateinit var url: String
     }
 
     override fun setCancelled(cancelled: Boolean) {
@@ -50,11 +50,7 @@ class GroupFileUploadEvent : NoticeEvent() {
             events.add(GroupFileUploadEvent::class)
         }
 
-        fun canHandle(json: JSONObject): Boolean {
-            return when{
-                "notice" == json[POST_TYPE] -> "group_upload" == json[NOTICE_TYPE]
-                else -> false
-            }
-        }
+        fun canHandle(json: ObjectNode) =
+            "notice" == json[POST_TYPE].asText() && "group_upload" == json[NOTICE_TYPE].asText()
     }
 }

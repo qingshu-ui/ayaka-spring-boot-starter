@@ -1,21 +1,33 @@
 package io.github.qingshu.ayaka.dto.event.message
 
-import com.alibaba.fastjson2.annotation.JSONField
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import io.github.qingshu.ayaka.dto.ArrayMsg
 import io.github.qingshu.ayaka.dto.event.GeneralEvent
+import io.github.qingshu.ayaka.utils.ArrayJsonDeserializer
 import java.util.regex.Matcher
 
 open class MessageEvent: GeneralEvent(){
-    @JSONField(name = "message_type") open var messageType: String? = null
-    @JSONField(name = "user_id") open var userId: Long? = null
-    @JSONField(name = "message") open var message: String? = null
-    @JSONField(name = "raw_message") open var rawMessage: String? = null
-    @JSONField(name = "font") open var font: Int? = null
+    @JsonProperty("message_type")
+    open lateinit var messageType: String
 
-    @JSONField(serialize = false, deserialize = false)
+    @JsonProperty("user_id")
+    open var userId: Long = 0
+
+    @JsonDeserialize(using = ArrayJsonDeserializer::class)
+    @JsonProperty("message")
+    open lateinit var message: String
+
+    @JsonProperty("raw_message")
+    open lateinit var rawMessage: String
+
+    @JsonProperty("font")
+    open var font: Int = 0
+
+    @JsonIgnore
     open var matcher: Matcher? = null
 
-    @JSONField(serialize = false, deserialize = false)
     open var arrayMsg: List<ArrayMsg> = emptyList()
 
     override fun setCancelled(cancelled: Boolean) {
@@ -33,6 +45,6 @@ open class MessageEvent: GeneralEvent(){
      */
     fun isAt(userId: Long): Boolean {
         val atPattern = "\\[CQ:at,qq=$userId(,[^]]*)?\\]".toRegex()
-        return atPattern.find(rawMessage ?: "") != null
+        return atPattern.find(rawMessage) != null
     }
 }

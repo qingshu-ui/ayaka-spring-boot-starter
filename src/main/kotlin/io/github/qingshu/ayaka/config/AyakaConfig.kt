@@ -1,6 +1,6 @@
 package io.github.qingshu.ayaka.config
 
-import com.alibaba.fastjson2.JSONObject
+import com.fasterxml.jackson.databind.node.ObjectNode
 import io.github.qingshu.ayaka.bot.BotContainer
 import io.github.qingshu.ayaka.bot.BotFactory
 import io.github.qingshu.ayaka.bot.BotSessionFactory
@@ -97,7 +97,7 @@ class AyakaConfig {
 
     @Bean
     @ConditionalOnMissingBean
-    fun echoMap(): ConcurrentHashMap<String, CompletableDeferred<JSONObject>> {
+    fun echoMap(): ConcurrentHashMap<String, CompletableDeferred<ObjectNode>> {
         return ConcurrentHashMap()
     }
 

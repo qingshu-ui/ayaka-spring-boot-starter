@@ -1,13 +1,17 @@
 package io.github.qingshu.ayaka.dto.resp
 
-import com.alibaba.fastjson2.annotation.JSONField
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonSetter
+import io.github.qingshu.ayaka.utils.EMPTY_STRING
 
-data class GroupInfoResp(
-    @JSONField(name = "group_id") val groupId: Long?,
-    @JSONField(name = "group_name") val groupName: String?,
-    @JSONField(name = "group_memo") val groupMemo: String?,
-    @JSONField(name = "group_create_time") val groupCreateTime: Int?,
-    @JSONField(name = "group_level") val groupLevel: Int?,
-    @JSONField(name = "member_count") val memberCount: Int?,
-    @JSONField(name = "max_member_count") val maxMemberCount: Int?,
+data class GroupInfoResp @JsonCreator constructor(
+    @JsonProperty("group_id") val groupId: Long = 0,
+    @JsonProperty("group_name") val groupName: String = EMPTY_STRING,
+    @JsonSetter
+    @JsonProperty("group_memo") val groupMemo: String = EMPTY_STRING,
+    @JsonProperty("group_create_time") val groupCreateTime: Int = 0,
+    @JsonProperty("group_level") val groupLevel: Int = 0,
+    @JsonProperty("member_count") val memberCount: Int = 0,
+    @JsonProperty("max_member_count") val maxMemberCount: Int = 0,
 )

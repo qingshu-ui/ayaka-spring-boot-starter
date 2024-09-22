@@ -1,8 +1,9 @@
 package io.github.qingshu.ayaka.dto.resp
 
-import com.alibaba.fastjson2.annotation.JSONField
+import com.fasterxml.jackson.annotation.JsonProperty
+import io.github.qingshu.ayaka.utils.EMPTY_STRING
 
 data class GetLoginInfoResp(
-    @JSONField(name = "nickname") val nickname: String?,
-    @JSONField(name = "user_id") val userId: Long?
+    @JsonProperty("nickname") val nickname: String = EMPTY_STRING,
+    @JsonProperty("user_id") val userId: Long = 0,
 )

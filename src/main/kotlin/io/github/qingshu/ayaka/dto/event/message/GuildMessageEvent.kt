@@ -1,7 +1,7 @@
 package io.github.qingshu.ayaka.dto.event.message
 
-import com.alibaba.fastjson2.JSONObject
-import com.alibaba.fastjson2.annotation.JSONField
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.node.ObjectNode
 
 /**
  * Copyright (c) 2024 qingshu.
@@ -12,17 +12,33 @@ import com.alibaba.fastjson2.annotation.JSONField
  */
 class GuildMessageEvent: MessageEvent() {
 
-    @JSONField(name = "message_id") var messageId: String? = null
-    @JSONField(name = "sub_type") var subType: String? = null
-    @JSONField(name = "guild_id") var guildId: String? = null
-    @JSONField(name = "channel_id") var channelId: String? = null
-    @JSONField(name = "self_tiny_id") var selfTinyId: String? = null
-    @JSONField(name = "sender") var sender: Sender? = null
+    @JsonProperty("message_id")
+    lateinit var messageId: String
+
+    @JsonProperty("sub_type")
+    lateinit var subType: String
+
+    @JsonProperty("guild_id")
+    lateinit var guildId: String
+
+    @JsonProperty("channel_id")
+    lateinit var channelId: String
+
+    @JsonProperty("self_tiny_id")
+    lateinit var selfTinyId: String
+
+    @JsonProperty("sender")
+    lateinit var sender: Sender
 
     class Sender {
-        @JSONField(name = "user_id") var userId: Long? = null
-        @JSONField(name = "tiny_id") var tinyId: String? = null
-        @JSONField(name = "nickname") var nickname: String? = null
+        @JsonProperty("user_id")
+        var userId: Long = 0
+
+        @JsonProperty("tiny_id")
+        lateinit var tinyId: String
+
+        @JsonProperty("nickname")
+        lateinit var nickname: String
     }
 
     override fun setCancelled(cancelled: Boolean) {
@@ -38,12 +54,8 @@ class GuildMessageEvent: MessageEvent() {
             events.add(GuildMessageEvent::class)
         }
 
-        fun canHandle(json: JSONObject): Boolean{
-            return when {
-                "message" == json["post_type"] -> "guild" == json["message_type"]
-                else -> false
-            }
-        }
+        fun canHandle(json: ObjectNode) =
+            "message" == json["post_type"].asText() && "guild" == json["message_type"].asText()
     }
 
 }

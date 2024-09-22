@@ -1,4 +1,4 @@
-package io.github.qingshu.ayaka.bot.compatible
+package io.github.qingshu.ayaka.bot.action
 
 import io.github.qingshu.ayaka.dto.event.message.AnyMessageEvent
 import io.github.qingshu.ayaka.dto.general.Anonymous
@@ -32,7 +32,7 @@ interface OneBot {
      * @param autoEscape 消息内容是否作为纯文本发送，不解析 CQ 码
      * @return result [GeneralRespData] of [MsgId]
      */
-    fun sendPrivateMsg(groupId: Long?, userId: Long, msg: String, autoEscape: Boolean = false): GeneralRespData<MsgId>
+    fun sendPrivateMsg(groupId: Long, userId: Long, msg: String, autoEscape: Boolean = false): GeneralRespData<MsgId>
 
     /**
      * 发送群消息
@@ -198,7 +198,6 @@ interface OneBot {
      * @return result [GeneralRawResp]
      */
     fun setGroupAddRequest(flag: String, subType: String, approve: Boolean, reason: String): GeneralRawResp
-
 
     /**
      * 获取登录号信息

@@ -1,7 +1,7 @@
 package io.github.qingshu.ayaka.dto.event.meta
 
-import com.alibaba.fastjson2.JSONObject
-import com.alibaba.fastjson2.annotation.JSONField
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.node.ObjectNode
 import io.github.qingshu.ayaka.dto.constant.ParamsKey.META_EVENT_TYPE
 import io.github.qingshu.ayaka.dto.constant.ParamsKey.POST_TYPE
 import io.github.qingshu.ayaka.dto.event.GeneralEvent
@@ -14,56 +14,56 @@ import io.github.qingshu.ayaka.dto.event.GeneralEvent
  * See the LICENSE file for details.
  */
 class HeartbeatMetaEvent: GeneralEvent() {
-    @JSONField(name = "time")
-    var interval: Long? = null
+    @JsonProperty("time")
+    var interval: Long = 0
 
-    @JSONField(name = "status")
-    var status: Status? = null
+    @JsonProperty("status")
+    lateinit var status: Status
 
     class Status {
-        @JSONField(name = "app_initialized")
-        var appInitialized: Boolean? = null
+        @JsonProperty("app_initialized")
+        var appInitialized: Boolean = false
 
-        @JSONField(name = "app_enabled")
-        var appEnabled: Boolean? = null
+        @JsonProperty("app_enabled")
+        var appEnabled: Boolean = false
 
-        @JSONField(name = "app_good")
-        var appIsGood: Boolean? = null
+        @JsonProperty("app_good")
+        var appIsGood: Boolean = false
 
-        @JSONField(name = "plugins_good")
-        var pluginsIsGood: Boolean? = null
+        @JsonProperty("plugins_good")
+        var pluginsIsGood: Boolean = false
 
-        @JSONField(name = "online")
-        var online: Boolean? = null
+        @JsonProperty("online")
+        var online: Boolean = false
 
-        @JSONField(name = "stat")
-        var stat: StatusStatistics? = null
+        @JsonProperty("stat")
+        lateinit var stat: StatusStatistics
     }
 
     class StatusStatistics {
-        @JSONField(name = "packet_received")
-        var packetReceived: Long? = null
+        @JsonProperty("packet_received")
+        var packetReceived: Long = 0
 
-        @JSONField(name = "packet_sent")
-        var packetSent: Long? = null
+        @JsonProperty("packet_sent")
+        var packetSent: Long = 0
 
-        @JSONField(name = "packet_lost")
-        var packetLost: Long? = null
+        @JsonProperty("packet_lost")
+        var packetLost: Long = 0
 
-        @JSONField(name = "message_received")
-        var messageReceived: Long? = null
+        @JsonProperty("message_received")
+        var messageReceived: Long = 0
 
-        @JSONField(name = "message_sent")
-        var messageSent: Long? = null
+        @JsonProperty("message_sent")
+        var messageSent: Long = 0
 
-        @JSONField(name = "disconnect_times")
-        var disconnectTimes: Long? = null
+        @JsonProperty("disconnect_times")
+        var disconnectTimes: Long = 0
 
-        @JSONField(name = "lost_times")
-        var lostTimes: Long? = null
+        @JsonProperty("lost_times")
+        var lostTimes: Long = 0
 
-        @JSONField(name = "last_message_time")
-        var lastMessageTime: Long? = null
+        @JsonProperty("last_message_time")
+        var lastMessageTime: Long = 0
     }
 
     override fun setCancelled(cancelled: Boolean) {
@@ -79,11 +79,7 @@ class HeartbeatMetaEvent: GeneralEvent() {
             events.add(HeartbeatMetaEvent::class)
         }
 
-        fun canHandle(json: JSONObject): Boolean {
-            return when{
-                "meta_event" == json[POST_TYPE] -> "heartbeat" == json[META_EVENT_TYPE]
-                else -> false
-            }
-        }
+        fun canHandle(json: ObjectNode) =
+            "meta_event" == json[POST_TYPE].asText() && "heartbeat" == json[META_EVENT_TYPE].asText()
     }
 }

@@ -1,21 +1,22 @@
 package io.github.qingshu.ayaka.dto.resp
 
-import com.alibaba.fastjson2.annotation.JSONField
+import com.fasterxml.jackson.annotation.JsonProperty
+import io.github.qingshu.ayaka.utils.EMPTY_STRING
 
 data class GroupMemberInfoResp(
-    @JSONField(name = "group_id") val groupId: Long?,
-    @JSONField(name = "user_id") val userId: Long?,
-    @JSONField(name = "nickname") val nickname: String?,
-    @JSONField(name = "card") val card: String?,
-    @JSONField(name = "sex") val sex: String?,
-    @JSONField(name = "age") val age: Int?,
-    @JSONField(name = "area") val area: String?,
-    @JSONField(name = "join_time") val joinTime: Int?,
-    @JSONField(name = "last_sent_time") val lastSentTime: Int?,
-    @JSONField(name = "level") val level: String?,
-    @JSONField(name = "role") val role: String?,
-    @JSONField(name = "unfriendly") val unfriendly: Boolean?,
-    @JSONField(name = "title") val title: String?,
-    @JSONField(name = "title_expire_time") val titleExpireTime: Long?,
-    @JSONField(name = "card_changeable") val cardChangeable: Boolean?,
+    @JsonProperty("group_id") val groupId: Long = 0,
+    @JsonProperty("user_id") val userId: Long = 0,
+    @JsonProperty("nickname") val nickname: String = EMPTY_STRING,
+    @JsonProperty("card") val card: String = EMPTY_STRING,
+    @JsonProperty("sex") val sex: String = EMPTY_STRING,
+    @JsonProperty("age") val age: Int = 0,
+    @JsonProperty("area") val area: String = EMPTY_STRING,
+    @JsonProperty("join_time") val joinTime: Int = 0,
+    @JsonProperty("last_sent_time") val lastSentTime: Int = 0,
+    @JsonProperty("level") val level: String = EMPTY_STRING,
+    @JsonProperty("role") val role: String = EMPTY_STRING,
+    @JsonProperty("unfriendly") val unfriendly: Boolean = false,
+    @JsonProperty("title") val title: String = EMPTY_STRING,
+    @JsonProperty("title_expire_time") val titleExpireTime: Long = 0,
+    @JsonProperty("card_changeable") val cardChangeable: Boolean = false,
 )
