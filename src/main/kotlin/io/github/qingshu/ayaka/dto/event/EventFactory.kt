@@ -55,7 +55,7 @@ class EventFactory @Autowired constructor(
     /**
      * 将上报内容传递给事件监听器进行处理
      * @param xSelfId 接收上报消息的 QQ 号
-     * @param resp [JSONObject] of fastjson2
+     * @param resp [ObjectNode] of fastjson2
      */
     suspend fun postEvent(xSelfId: Long, resp: ObjectNode) {
         log.debug("{}", resp)
@@ -85,7 +85,7 @@ class EventFactory @Autowired constructor(
     /**
      * 将上报内容传递给事件监听器进行处理
      * @param bot 从 http post 中获取或创建
-     * @param resp [JSONObject] of fastjson2
+     * @param resp [ObjectNode] of fastjson2
      */
     suspend fun postEvent(bot: Bot, resp: ObjectNode) {
         getEvent(resp).forEach {

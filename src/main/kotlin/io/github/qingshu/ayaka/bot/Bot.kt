@@ -13,7 +13,7 @@ import io.github.qingshu.ayaka.utils.mapper
 
 class Bot(
     var selfId: Long,
-    var session: BotSession
+    var session: BotSession,
 ) : OneBot, GoCQHTTPExtend {
 
     /**

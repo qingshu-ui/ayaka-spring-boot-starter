@@ -280,7 +280,7 @@ interface OneBot {
     fun getStatus(): GeneralRespData<GetStatusResp>
 
     /* Unrealized API for onebot v11
-    fun getForwardMsg(): GeneralRespData<JSONObject>
+    fun getForwardMsg(): GeneralRespData<ObjectNode>
     fun getCookies(): GeneralRespData<GetCooliesResp>
     fun getCsrfToken(): GeneralRespData<CsrfTokenResp>
     fun getCredentials(): GeneralRespData<CredentialsResp>
