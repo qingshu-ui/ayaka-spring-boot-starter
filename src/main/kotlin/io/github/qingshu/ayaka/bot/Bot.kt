@@ -2,6 +2,7 @@ package io.github.qingshu.ayaka.bot
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ArrayNode
 import io.github.qingshu.ayaka.bot.action.GoCQHTTPExtend
 import io.github.qingshu.ayaka.bot.action.OneBot
 import io.github.qingshu.ayaka.dto.constant.ActionPathEnum
@@ -21,9 +22,9 @@ class Bot(
      * @param userId 对方 QQ 号
      * @param msg 消息内容
      * @param autoEscape 消息内容是否作为纯文本发送，不解析 CQ 码
-     * @return result [GeneralRespData] of [MsgId]
+     * @return result [RespData] of [MsgId]
      */
-    override fun sendPrivateMsg(userId: Long, msg: String, autoEscape: Boolean): GeneralRespData<MsgId> {
+    override fun sendPrivateMsg(userId: Long, msg: String, autoEscape: Boolean): RespData<MsgId> {
         return sendPrivateMsg(0, userId, msg, autoEscape)
     }
 
@@ -33,11 +34,11 @@ class Bot(
      * @param userId 对方 QQ 号
      * @param msg 消息内容
      * @param autoEscape 消息内容是否作为纯文本发送，不解析 CQ 码
-     * @return result [GeneralRespData] of [MsgId]
+     * @return result [RespData] of [MsgId]
      */
     override fun sendPrivateMsg(
         groupId: Long, userId: Long, msg: String, autoEscape: Boolean
-    ): GeneralRespData<MsgId> {
+    ): RespData<MsgId> {
         val params = mapper.createObjectNode()
         if (groupId != 0L) {
             params.put(ParamsKey.GROUP_ID, groupId)
@@ -51,7 +52,7 @@ class Bot(
         )
         val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            mapper.treeToValue(it, object : TypeReference<GeneralRespData<MsgId>>() {})
+            mapper.treeToValue(it, object : TypeReference<RespData<MsgId>>() {})
         }
     }
 
@@ -60,9 +61,9 @@ class Bot(
      * @param groupId 群号
      * @param msg 消息内容
      * @param autoEscape 消息内容是否作为纯文本发送，不解析 CQ 码
-     * @return result [GeneralRespData] of [MsgId]
+     * @return result [RespData] of [MsgId]
      */
-    override fun sendGroupMsg(groupId: Long, msg: String, autoEscape: Boolean): GeneralRespData<MsgId> {
+    override fun sendGroupMsg(groupId: Long, msg: String, autoEscape: Boolean): RespData<MsgId> {
         val params = mapper.createObjectNode()
         params.put(ParamsKey.GROUP_ID, groupId)
         params.put(ParamsKey.MESSAGE, msg)
@@ -72,21 +73,21 @@ class Bot(
         )
         val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            mapper.treeToValue(it, object : TypeReference<GeneralRespData<MsgId>>() {})
+            mapper.treeToValue(it, object : TypeReference<RespData<MsgId>>() {})
         }
     }
 
     /**
      * 获取群列表
-     * @return result [GeneralRespList] of [GroupInfoResp]
+     * @return result [RespList] of [GroupInfoResp]
      */
-    override fun getGroupList(): GeneralRespList<GroupInfoResp> {
+    override fun getGroupList(): RespList<GroupInfoResp> {
         val api = ProtocolBody(
             action = ActionPathEnum.GET_GROUP_LIST.path, params = mapper.createObjectNode()
         )
         val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            mapper.treeToValue(it, object : TypeReference<GeneralRespList<GroupInfoResp>>() {})
+            mapper.treeToValue(it, object : TypeReference<RespList<GroupInfoResp>>() {})
         }
     }
 
@@ -95,13 +96,13 @@ class Bot(
      * @param event [AnyMessageEvent]
      * @param msg 消息内容
      * @param autoEscape 消息内容是否作为纯文本发送，不解析 CQ 码
-     * @return result [GeneralRespData] of [MsgId]
+     * @return result [RespData] of [MsgId]
      */
-    override fun sendMsg(event: AnyMessageEvent, msg: String, autoEscape: Boolean): GeneralRespData<MsgId> {
+    override fun sendMsg(event: AnyMessageEvent, msg: String, autoEscape: Boolean): RespData<MsgId> {
         return when (event.messageType) {
             ParamsKey.GROUP -> sendGroupMsg(event.groupId, msg, autoEscape)
             ParamsKey.PRIVATE -> sendPrivateMsg(event.userId, msg, autoEscape)
-            else -> GeneralRespData(
+            else -> RespData(
                 status = "failed", data = MsgId(-1), retCode = -1
             )
         }
@@ -111,9 +112,9 @@ class Bot(
      * 撤回消息
      *
      * @param msgId 消息 ID
-     * @return result [GeneralRawResp]
+     * @return result [RawResp]
      */
-    override fun deleteMsg(msgId: Int): GeneralRawResp {
+    override fun deleteMsg(msgId: Int): RawResp {
         val params = mapper.createObjectNode()
         params.put(ParamsKey.MESSAGE_ID, msgId)
         val api = ProtocolBody(
@@ -121,7 +122,7 @@ class Bot(
         )
         val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            mapper.treeToValue(it, object : TypeReference<GeneralRawResp>() {})
+            mapper.treeToValue(it, object : TypeReference<RawResp>() {})
         }
     }
 
@@ -129,9 +130,9 @@ class Bot(
      * 获取消息
      *
      * @param msgId 消息 ID
-     * @return result [GeneralRespData] of [GetMsgResp]
+     * @return result [RespData] of [GetMsgResp]
      */
-    override fun getMsg(msgId: Int): GeneralRespData<GetMsgResp> {
+    override fun getMsg(msgId: Int): RespData<GetMsgResp> {
         val params = mapper.createObjectNode()
         params.put(ParamsKey.MESSAGE_ID, msgId)
         val api = ProtocolBody(
@@ -139,7 +140,7 @@ class Bot(
         )
         val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            mapper.treeToValue(it, object : TypeReference<GeneralRespData<GetMsgResp>>() {})
+            mapper.treeToValue(it, object : TypeReference<RespData<GetMsgResp>>() {})
         }
     }
 
@@ -148,9 +149,9 @@ class Bot(
      *
      * @param userId 目标用户
      * @param times  点赞次数（每个好友每天最多 10 次，机器人为 Super VIP 则提高到 20次）
-     * @return result [GeneralRawResp]
+     * @return result [RawResp]
      */
-    override fun sendLike(userId: Long, times: Int): GeneralRawResp {
+    override fun sendLike(userId: Long, times: Int): RawResp {
         val params = mapper.createObjectNode()
         params.put(ParamsKey.USER_ID, userId)
         params.put(ParamsKey.TIMES, times)
@@ -159,16 +160,16 @@ class Bot(
         )
         val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            mapper.treeToValue(it, object : TypeReference<GeneralRawResp>() {})
+            mapper.treeToValue(it, object : TypeReference<RawResp>() {})
         }
     }
 
     /**
      * 群打卡
      * @param groupId 群号
-     * @return result [GeneralRawResp]
+     * @return result [RawResp]
      */
-    override fun sendGroupSign(groupId: Long): GeneralRawResp {
+    override fun sendGroupSign(groupId: Long): RawResp {
         val params = mapper.createObjectNode()
         params.put(ParamsKey.GROUP_ID, groupId)
         val api = ProtocolBody(
@@ -176,7 +177,7 @@ class Bot(
         )
         val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            mapper.treeToValue(it, object : TypeReference<GeneralRawResp>() {})
+            mapper.treeToValue(it, object : TypeReference<RawResp>() {})
         }
     }
 
@@ -186,9 +187,9 @@ class Bot(
      * @param groupId 群号
      * @param userId 要踢的 QQ 号
      * @param rejectAddRequest 拒绝此人的加群请求 (默认false)
-     * @return result [GeneralRawResp]
+     * @return result [RawResp]
      */
-    override fun setGroupKick(groupId: Long, userId: Long, rejectAddRequest: Boolean): GeneralRawResp {
+    override fun setGroupKick(groupId: Long, userId: Long, rejectAddRequest: Boolean): RawResp {
         val params = mapper.createObjectNode()
         params.put(ParamsKey.GROUP_ID, groupId)
         params.put(ParamsKey.USER_ID, userId)
@@ -198,7 +199,7 @@ class Bot(
         )
         val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            mapper.treeToValue(it, object : TypeReference<GeneralRawResp>() {})
+            mapper.treeToValue(it, object : TypeReference<RawResp>() {})
         }
     }
 
@@ -208,9 +209,9 @@ class Bot(
      * @param groupId 群号
      * @param userId 要禁言的 QQ 号
      * @param duration 禁言时长, 单位秒, 0 表示取消禁言 (默认30 * 60)
-     * @return result [GeneralRawResp]
+     * @return result [RawResp]
      */
-    override fun setGroupBan(groupId: Long, userId: Long, duration: Int): GeneralRawResp {
+    override fun setGroupBan(groupId: Long, userId: Long, duration: Int): RawResp {
         val params = mapper.createObjectNode()
         params.put(ParamsKey.GROUP_ID, groupId)
         params.put(ParamsKey.USER_ID, userId)
@@ -220,7 +221,7 @@ class Bot(
         )
         val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            mapper.treeToValue(it, object : TypeReference<GeneralRawResp>() {})
+            mapper.treeToValue(it, object : TypeReference<RawResp>() {})
         }
     }
 
@@ -230,9 +231,9 @@ class Bot(
      * @param groupId 群号
      * @param anonymous 要禁言的匿名用户对象（群消息上报的 anonymous 字段）
      * @param duration 禁言时长，单位秒，无法取消匿名用户禁言
-     * @return result [GeneralRawResp]
+     * @return result [RawResp]
      */
-    override fun setGroupAnonymousBan(groupId: Long, anonymous: Anonymous, duration: Int): GeneralRawResp {
+    override fun setGroupAnonymousBan(groupId: Long, anonymous: Anonymous, duration: Int): RawResp {
         val params = mapper.createObjectNode()
         params.put(ParamsKey.GROUP_ID, groupId)
         params.set<JsonNode>(ParamsKey.ANONYMOUS, mapper.valueToTree(anonymous))
@@ -242,7 +243,7 @@ class Bot(
         )
         val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            mapper.treeToValue(it, object : TypeReference<GeneralRawResp>() {})
+            mapper.treeToValue(it, object : TypeReference<RawResp>() {})
         }
     }
 
@@ -251,9 +252,9 @@ class Bot(
      *
      * @param groupId 群号
      * @param enable  是否禁言（默认True,False为取消禁言）
-     * @return result [GeneralRawResp]
+     * @return result [RawResp]
      */
-    override fun setGroupWholeBan(groupId: Long, enable: Boolean): GeneralRawResp {
+    override fun setGroupWholeBan(groupId: Long, enable: Boolean): RawResp {
         val params = mapper.createObjectNode()
         params.put(ParamsKey.GROUP_ID, groupId)
         params.put(ParamsKey.ENABLE, enable)
@@ -262,7 +263,7 @@ class Bot(
         )
         val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            mapper.treeToValue(it, object : TypeReference<GeneralRawResp>() {})
+            mapper.treeToValue(it, object : TypeReference<RawResp>() {})
         }
     }
 
@@ -272,9 +273,9 @@ class Bot(
      * @param groupId 群号
      * @param userId  要设置管理员的 QQ 号
      * @param enable  true 为设置，false 为取消
-     * @return result [GeneralRawResp]
+     * @return result [RawResp]
      */
-    override fun setGroupAdmin(groupId: Long, userId: Long, enable: Boolean): GeneralRawResp {
+    override fun setGroupAdmin(groupId: Long, userId: Long, enable: Boolean): RawResp {
         val params = mapper.createObjectNode()
         params.put(ParamsKey.GROUP_ID, groupId)
         params.put(ParamsKey.USER_ID, userId)
@@ -284,7 +285,7 @@ class Bot(
         )
         val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            mapper.treeToValue(it, object : TypeReference<GeneralRawResp>() {})
+            mapper.treeToValue(it, object : TypeReference<RawResp>() {})
         }
     }
 
@@ -293,9 +294,9 @@ class Bot(
      *
      * @param groupId 群号
      * @param enable  是否允许匿名聊天
-     * @return result [GeneralRawResp]
+     * @return result [RawResp]
      */
-    override fun setGroupAnonymous(groupId: Long, enable: Boolean): GeneralRawResp {
+    override fun setGroupAnonymous(groupId: Long, enable: Boolean): RawResp {
         val params = mapper.createObjectNode()
         params.put(ParamsKey.GROUP_ID, groupId)
         params.put(ParamsKey.ENABLE, enable)
@@ -304,7 +305,7 @@ class Bot(
         )
         val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            mapper.treeToValue(it, object : TypeReference<GeneralRawResp>() {})
+            mapper.treeToValue(it, object : TypeReference<RawResp>() {})
         }
     }
 
@@ -314,9 +315,9 @@ class Bot(
      * @param groupId 群号
      * @param userId  要设置的 QQ 号
      * @param card    群名片内容，不填或空字符串表示删除群名片
-     * @return result [GeneralRawResp]
+     * @return result [RawResp]
      */
-    override fun setGroupCard(groupId: Long, userId: Long, card: String): GeneralRawResp {
+    override fun setGroupCard(groupId: Long, userId: Long, card: String): RawResp {
         val params = mapper.createObjectNode()
         params.put(ParamsKey.GROUP_ID, groupId)
         params.put(ParamsKey.USER_ID, userId)
@@ -326,7 +327,7 @@ class Bot(
         )
         val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            mapper.treeToValue(it, object : TypeReference<GeneralRawResp>() {})
+            mapper.treeToValue(it, object : TypeReference<RawResp>() {})
         }
     }
 
@@ -335,9 +336,9 @@ class Bot(
      *
      * @param groupId   群号
      * @param groupName 新群名
-     * @return result [GeneralRawResp]
+     * @return result [RawResp]
      */
-    override fun setGroupName(groupId: Long, groupName: String): GeneralRawResp {
+    override fun setGroupName(groupId: Long, groupName: String): RawResp {
         val params = mapper.createObjectNode()
         params.put(ParamsKey.GROUP_ID, groupId)
         params.put(ParamsKey.GROUP_NAME, groupName)
@@ -346,7 +347,7 @@ class Bot(
         )
         val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            mapper.treeToValue(it, object : TypeReference<GeneralRawResp>() {})
+            mapper.treeToValue(it, object : TypeReference<RawResp>() {})
         }
     }
 
@@ -355,9 +356,9 @@ class Bot(
      *
      * @param groupId   群号
      * @param isDismiss 是否解散, 如果登录号是群主, 则仅在此项为 true 时能够解散
-     * @return result [GeneralRawResp]
+     * @return result [RawResp]
      */
-    override fun setGroupLeave(groupId: Long, isDismiss: Boolean): GeneralRawResp {
+    override fun setGroupLeave(groupId: Long, isDismiss: Boolean): RawResp {
         val params = mapper.createObjectNode()
         params.put(ParamsKey.GROUP_ID, groupId)
         params.put(ParamsKey.IS_DISMISS, isDismiss)
@@ -366,7 +367,7 @@ class Bot(
         )
         val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            mapper.treeToValue(it, object : TypeReference<GeneralRawResp>() {})
+            mapper.treeToValue(it, object : TypeReference<RawResp>() {})
         }
     }
 
@@ -375,9 +376,9 @@ class Bot(
      * @param groupId 群号
      * @param userId QQ号
      * @param title 专属头衔，不填或空字符串表示删除专属头衔
-     * @return result [GeneralRawResp]
+     * @return result [RawResp]
      */
-    override fun setGroupSpecialTitle(groupId: Long, userId: Long, title: String): GeneralRawResp {
+    override fun setGroupSpecialTitle(groupId: Long, userId: Long, title: String): RawResp {
         val params = mapper.createObjectNode()
         params.put(ParamsKey.GROUP_ID, groupId)
         params.put(ParamsKey.USER_ID, userId)
@@ -387,7 +388,7 @@ class Bot(
         )
         val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            mapper.treeToValue(it, object : TypeReference<GeneralRawResp>() {})
+            mapper.treeToValue(it, object : TypeReference<RawResp>() {})
         }
     }
 
@@ -397,9 +398,9 @@ class Bot(
      * @param flag    加好友请求的 flag（需从上报的数据中获得）
      * @param approve 是否同意请求(默认为true)
      * @param remark  添加后的好友备注（仅在同意时有效）
-     * @return result [GeneralRawResp]
+     * @return result [RawResp]
      */
-    override fun setFriendAddRequest(flag: String, approve: Boolean, remark: String): GeneralRawResp {
+    override fun setFriendAddRequest(flag: String, approve: Boolean, remark: String): RawResp {
         val params = mapper.createObjectNode()
         params.put(ParamsKey.FLAG, flag)
         params.put(ParamsKey.APPROVE, approve)
@@ -409,7 +410,7 @@ class Bot(
         )
         val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            mapper.treeToValue(it, object : TypeReference<GeneralRawResp>() {})
+            mapper.treeToValue(it, object : TypeReference<RawResp>() {})
         }
     }
 
@@ -420,9 +421,9 @@ class Bot(
      * @param subType add 或 invite，请求类型（需要和上报消息中的 sub_type 字段相符）
      * @param approve 是否同意请求／邀请
      * @param reason  拒绝理由（仅在拒绝时有效）
-     * @return result [GeneralRawResp]
+     * @return result [RawResp]
      */
-    override fun setGroupAddRequest(flag: String, subType: String, approve: Boolean, reason: String): GeneralRawResp {
+    override fun setGroupAddRequest(flag: String, subType: String, approve: Boolean, reason: String): RawResp {
         val params = mapper.createObjectNode()
         params.put(ParamsKey.FLAG, flag)
         params.put(ParamsKey.SUB_TYPE, subType)
@@ -433,7 +434,7 @@ class Bot(
         )
         val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            mapper.treeToValue(it, object : TypeReference<GeneralRawResp>() {})
+            mapper.treeToValue(it, object : TypeReference<RawResp>() {})
         }
     }
 
@@ -441,15 +442,15 @@ class Bot(
     /**
      * 获取登录号信息
      *
-     * @return result [GeneralRespData] of [GetLoginInfoResp]
+     * @return result [RespData] of [GetLoginInfoResp]
      */
-    override fun getLoginInfo(): GeneralRespData<GetLoginInfoResp> {
+    override fun getLoginInfo(): RespData<GetLoginInfoResp> {
         val api = ProtocolBody(
             action = ActionPathEnum.GET_LOGIN_INFO.path, params = mapper.createObjectNode()
         )
         val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            mapper.treeToValue(it, object : TypeReference<GeneralRespData<GetLoginInfoResp>>() {})
+            mapper.treeToValue(it, object : TypeReference<RespData<GetLoginInfoResp>>() {})
         }
     }
 
@@ -458,9 +459,9 @@ class Bot(
      *
      * @param userId  QQ 号
      * @param noCache 是否不使用缓存（使用缓存可能更新不及时，但响应更快）
-     * @return result [GeneralRespData] of [StrangerInfoResp]
+     * @return result [RespData] of [StrangerInfoResp]
      */
-    override fun getStrangerInfo(userId: Long, noCache: Boolean): GeneralRespData<StrangerInfoResp> {
+    override fun getStrangerInfo(userId: Long, noCache: Boolean): RespData<StrangerInfoResp> {
         val params = mapper.createObjectNode()
         params.put(ParamsKey.USER_ID, userId)
         params.put(ParamsKey.NO_CACHE, noCache)
@@ -469,22 +470,22 @@ class Bot(
         )
         val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            mapper.treeToValue(it, object : TypeReference<GeneralRespData<StrangerInfoResp>>() {})
+            mapper.treeToValue(it, object : TypeReference<RespData<StrangerInfoResp>>() {})
         }
     }
 
     /**
      * 获取好友列表
      *
-     * @return result [GeneralRespData] of [FriendInfoResp]
+     * @return result [RespData] of [FriendInfoResp]
      */
-    override fun getFriendList(): GeneralRespData<FriendInfoResp> {
+    override fun getFriendList(): RespData<FriendInfoResp> {
         val api = ProtocolBody(
             action = ActionPathEnum.GET_FRIEND_LIST.path, params = mapper.createObjectNode()
         )
         val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            mapper.treeToValue(it, object : TypeReference<GeneralRespData<FriendInfoResp>>() {})
+            mapper.treeToValue(it, object : TypeReference<RespData<FriendInfoResp>>() {})
         }
     }
 
@@ -493,9 +494,9 @@ class Bot(
      *
      * @param groupId 群号
      * @param noCache 是否不使用缓存（使用缓存可能更新不及时，但响应更快）
-     * @return result [GeneralRespData] of [GroupInfoResp]
+     * @return result [RespData] of [GroupInfoResp]
      */
-    override fun getGroupInfo(groupId: Long, noCache: Boolean): GeneralRespData<GroupInfoResp> {
+    override fun getGroupInfo(groupId: Long, noCache: Boolean): RespData<GroupInfoResp> {
         val params = mapper.createObjectNode()
         params.put(ParamsKey.GROUP_ID, groupId)
         params.put(ParamsKey.NO_CACHE, noCache)
@@ -504,7 +505,7 @@ class Bot(
         )
         val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            mapper.treeToValue(it, object : TypeReference<GeneralRespData<GroupInfoResp>>() {})
+            mapper.treeToValue(it, object : TypeReference<RespData<GroupInfoResp>>() {})
         }
     }
 
@@ -514,11 +515,11 @@ class Bot(
      * @param groupId 群号
      * @param userId  QQ 号
      * @param noCache 是否不使用缓存（使用缓存可能更新不及时，但响应更快）
-     * @return result [GeneralRespData] of [GroupMemberInfoResp]
+     * @return result [RespData] of [GroupMemberInfoResp]
      */
     override fun getGroupMemberInfo(
         groupId: Long, userId: Long, noCache: Boolean
-    ): GeneralRespData<GroupMemberInfoResp> {
+    ): RespData<GroupMemberInfoResp> {
         val params = mapper.createObjectNode()
         params.put(ParamsKey.GROUP_ID, groupId)
         params.put(ParamsKey.USER_ID, userId)
@@ -528,7 +529,7 @@ class Bot(
         )
         val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            mapper.treeToValue(it, object : TypeReference<GeneralRespData<GroupMemberInfoResp>>() {})
+            mapper.treeToValue(it, object : TypeReference<RespData<GroupMemberInfoResp>>() {})
         }
     }
 
@@ -536,9 +537,9 @@ class Bot(
      * 获取群成员列表
      *
      * @param groupId 群号
-     * @return result [GeneralRespList] of [GroupMemberInfoResp]
+     * @return result [RespList] of [GroupMemberInfoResp]
      */
-    override fun getGroupMemberList(groupId: Long): GeneralRespList<GroupMemberInfoResp> {
+    override fun getGroupMemberList(groupId: Long): RespList<GroupMemberInfoResp> {
         val params = mapper.createObjectNode()
         params.put(ParamsKey.GROUP_ID, groupId)
         val api = ProtocolBody(
@@ -546,7 +547,7 @@ class Bot(
         )
         val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            mapper.treeToValue(it, object : TypeReference<GeneralRespList<GroupMemberInfoResp>>() {})
+            mapper.treeToValue(it, object : TypeReference<RespList<GroupMemberInfoResp>>() {})
         }
     }
 
@@ -555,9 +556,9 @@ class Bot(
      *
      * @param groupId 群号
      * @param type    要获取的群荣誉类型, 可传入 talkative performer legend strong_newbie emotion 以分别获取单个类型的群荣誉数据, 或传入 all 获取所有数据
-     * @return result [GeneralRespData] of [GroupHonorInfoResp]
+     * @return result [RespData] of [GroupHonorInfoResp]
      */
-    override fun getGroupHonorInfo(groupId: Long, type: String): GeneralRespData<GroupHonorInfoResp> {
+    override fun getGroupHonorInfo(groupId: Long, type: String): RespData<GroupHonorInfoResp> {
         val params = mapper.createObjectNode()
         params.put(ParamsKey.GROUP_ID, groupId)
         params.put(ParamsKey.TYPE, type)
@@ -566,52 +567,112 @@ class Bot(
         )
         val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            mapper.treeToValue(it, object : TypeReference<GeneralRespData<GroupHonorInfoResp>>() {})
+            mapper.treeToValue(it, object : TypeReference<RespData<GroupHonorInfoResp>>() {})
         }
     }
 
     /**
      * 检查是否可以发送图片
      *
-     * @return result [GeneralRespData] of [BooleanResp]
+     * @return result [RespData] of [BooleanResp]
      */
-    override fun canSendImage(): GeneralRespData<BooleanResp> {
+    override fun canSendImage(): RespData<BooleanResp> {
         val api = ProtocolBody(
             action = ActionPathEnum.CAN_SEND_IMAGE.path, params = mapper.createObjectNode()
         )
         val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            mapper.treeToValue(it, object : TypeReference<GeneralRespData<BooleanResp>>() {})
+            mapper.treeToValue(it, object : TypeReference<RespData<BooleanResp>>() {})
         }
     }
 
     /**
      * 检查是否可以发送语音
      *
-     * @return result [GeneralRespData] of [BooleanResp]
+     * @return result [RespData] of [BooleanResp]
      */
-    override fun canSendRecord(): GeneralRespData<BooleanResp> {
+    override fun canSendRecord(): RespData<BooleanResp> {
         val api = ProtocolBody(
             action = ActionPathEnum.CAN_SEND_RECORD.path, params = mapper.createObjectNode()
         )
         val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            mapper.treeToValue(it, object : TypeReference<GeneralRespData<BooleanResp>>() {})
+            mapper.treeToValue(it, object : TypeReference<RespData<BooleanResp>>() {})
         }
     }
 
     /**
      * 获取状态
      *
-     * @return result [GeneralRespData] of [GetStatusResp]
+     * @return result [RespData] of [GetStatusResp]
      */
-    override fun getStatus(): GeneralRespData<GetStatusResp> {
+    override fun getStatus(): RespData<GetStatusResp> {
         val api = ProtocolBody(
             action = ActionPathEnum.GET_STATUS.path, params = mapper.createObjectNode()
         )
         val result = session.sendMessage(mapper.valueToTree(api))
         return result.let {
-            mapper.treeToValue(it, object : TypeReference<GeneralRespData<GetStatusResp>>() {})
+            mapper.treeToValue(it, object : TypeReference<RespData<GetStatusResp>>() {})
+        }
+    }
+
+    /**
+     * 发送合并转发
+     * @param event 事件
+     * @param msg   自定义转发消息
+     * @return [RespData]
+     */
+    override fun sendForwardMsg(event: AnyMessageEvent, msg: List<Map<String, Any>>): RespData<MsgId> {
+        val params = mapper.createObjectNode()
+        when (event.messageType) {
+            ParamsKey.GROUP -> params.put(ParamsKey.GROUP_ID, event.groupId)
+            ParamsKey.PRIVATE -> params.put(ParamsKey.USER_ID, event.userId)
+        }
+        params.set<ArrayNode>(ParamsKey.MESSAGES, mapper.valueToTree(msg))
+        val api = ProtocolBody(
+            action = ActionPathEnum.SEND_FORWARD_MSG.path, params = params
+        )
+        val result = session.sendMessage(mapper.valueToTree(api))
+        return result.let {
+            mapper.treeToValue(it, object : TypeReference<RespData<MsgId>>() {})
+        }
+    }
+
+    /**
+     * 发送合并转发 (私聊)
+     * @param userId 目标用户
+     * @param msg    自定义转发消息
+     * @return [RespData]
+     */
+    override fun sendPrivateForwardMsg(userId: Long, msg: List<Map<String, Any>>): RespData<MsgId> {
+        val params = mapper.createObjectNode()
+        params.put(ParamsKey.USER_ID, userId)
+        params.set<ArrayNode>(ParamsKey.MESSAGES, mapper.valueToTree(msg))
+        val api = ProtocolBody(
+            action = ActionPathEnum.SEND_PRIVATE_FORWARD_MSG.path, params = params
+        )
+        val result = session.sendMessage(mapper.valueToTree(api))
+        return result.let {
+            mapper.treeToValue(it, object : TypeReference<RespData<MsgId>>() {})
+        }
+    }
+
+    /**
+     * 发送合并转发 (群聊)
+     * @param groupId 群号
+     * @param msg    自定义转发消息
+     * @return [RespData]
+     */
+    override fun sendGroupForwardMsg(groupId: Long, msg: List<Map<String, Any>>): RespData<MsgId> {
+        val params = mapper.createObjectNode()
+        params.put(ParamsKey.GROUP_ID, groupId)
+        params.set<ArrayNode>(ParamsKey.MESSAGES, mapper.valueToTree(msg))
+        val api = ProtocolBody(
+            action = ActionPathEnum.SEND_GROUP_FORWARD_MSG.path, params = params
+        )
+        val result = session.sendMessage(mapper.valueToTree(api))
+        return result.let {
+            mapper.treeToValue(it, object : TypeReference<RespData<MsgId>>() {})
         }
     }
 }

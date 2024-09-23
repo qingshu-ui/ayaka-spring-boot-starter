@@ -23,6 +23,14 @@ object NetUtils {
         return client.newCall(req).execute()
     }
 
+    fun post(url: String, json: String, readTimeout: Long): Response {
+        val req = Request.Builder().url(url).post(json.toRequestBody(mediaType))
+        return client
+            .newBuilder()
+            .readTimeout(readTimeout, TimeUnit.MILLISECONDS)
+            .build().newCall(req.build()).execute()
+    }
+
     fun post(url: String, json: String, headers: Map<String, String>): Response {
         val req = Request.Builder().url(url).post(json.toRequestBody(mediaType))
         headers.forEach {

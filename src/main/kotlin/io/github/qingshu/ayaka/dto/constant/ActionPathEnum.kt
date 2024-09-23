@@ -89,5 +89,6 @@ enum class ActionPathEnum(val path: String) {
     GET_CREDENTIALS("get_credentials"),
     SET_GROUP_ANONYMOUS_BAN("set_group_anonymous_ban"),
     GET_STATUS("get_status"),
+    SEND_FORWARD_MSG("send_forward_msg"),
     SET_GROUP_ANONYMOUS("set_group_anonymous");
 }

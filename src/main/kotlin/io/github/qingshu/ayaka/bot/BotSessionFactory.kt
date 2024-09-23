@@ -1,6 +1,7 @@
 package io.github.qingshu.ayaka.bot
 
 import io.github.qingshu.ayaka.config.HttpPostProperties
+import io.github.qingshu.ayaka.config.WebsocketProperties
 import io.github.qingshu.ayaka.utils.ProtocolHelper
 import org.springframework.stereotype.Component
 
@@ -15,9 +16,10 @@ import org.springframework.stereotype.Component
 class BotSessionFactory(
     private val helper: ProtocolHelper,
     private val httpCfg: HttpPostProperties,
+    private val websocketProperties: WebsocketProperties
 ) {
 
     fun <T> createSession(session: T): BotSession {
-        return BotSessionImpl(session, helper, httpCfg)
+        return BotSessionImpl(session, helper, httpCfg, websocketProperties.echoTimeout)
     }
 }

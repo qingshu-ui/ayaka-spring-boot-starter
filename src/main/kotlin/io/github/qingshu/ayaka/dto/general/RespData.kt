@@ -10,7 +10,7 @@ import io.github.qingshu.ayaka.utils.EMPTY_STRING
  * This project is licensed under the GPL-3.0 License.
  * See the LICENSE file for details.
  */
-data class GeneralRespData<T>(
+data class RespData<T>(
     @JsonProperty("status") val status: String = EMPTY_STRING,
     @JsonProperty("retcode") val retCode: Int = 0,
     @JsonProperty("data") val data: T,

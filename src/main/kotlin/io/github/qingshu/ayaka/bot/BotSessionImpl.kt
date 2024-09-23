@@ -22,6 +22,7 @@ class BotSessionImpl<T>(
     val session: T,
     private val helper: ProtocolHelper,
     private val httpPost: HttpPostProperties,
+    private val respWaitTimeout: Long,
 ) : BotSession {
 
     companion object {
@@ -66,7 +67,7 @@ class BotSessionImpl<T>(
                     port = httpPost.apiPort,
                     path = api
                 )
-                val resp = NetUtils.post(url, mapper.writeValueAsString(params))
+                val resp = NetUtils.post(url, mapper.writeValueAsString(params), respWaitTimeout)
                 resp.use {
                     val respStr = it.body?.string()
                     if (respStr.isNullOrEmpty()) {
