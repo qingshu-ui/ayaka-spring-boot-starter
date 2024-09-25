@@ -30,7 +30,7 @@ object CommonUtils {
         if (arrayMsg.isEmpty()) return null
         var index = 0
         var item = arrayMsg[index]
-        var rawTarget = item.data.getOrDefault("qq", "0")
+        var rawTarget = item.data.getOrDefault("qq", "0").toString()
         var target = if (CommonEnum.AT_ALL.value == rawTarget) 0L else rawTarget.toLong()
         index = arrayMsg.size - 1
         if ((target == 0L || target != selfId) && index >= 0) {
@@ -39,7 +39,7 @@ object CommonUtils {
             if (MsgTypeEnum.TEXT == item.getType() && index >= 0) {
                 item = arrayMsg[index]
             }
-            rawTarget = item.data.getOrDefault("qq", "0")
+            rawTarget = item.data.getOrDefault("qq", "0").toString()
             target = if (CommonEnum.AT_ALL.value == rawTarget) 0L else rawTarget.toLong()
             if (target == 0L || target != selfId) {
                 return null
@@ -52,12 +52,12 @@ object CommonUtils {
         val opt = atParse(arrayMsg, selfId)
         return when (at) {
             AtEnum.NEED -> opt?.let { item ->
-                val target = item.data["qq"]?.toLongOrNull() ?: 0L
+                val target = item.data["qq"]?.toString()?.toLongOrNull() ?: 0L
                 target == 0L || target != selfId
             } ?: true
 
             AtEnum.BOTH -> opt?.let { item ->
-                val target = item.data["qq"]?.toLongOrNull() ?: 0L
+                val target = item.data["qq"]?.toString()?.toLongOrNull() ?: 0L
                 target == selfId
             } ?: false
 

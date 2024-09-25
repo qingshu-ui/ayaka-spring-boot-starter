@@ -4,7 +4,7 @@ import io.github.qingshu.ayaka.dto.constant.MsgTypeEnum
 
 class ArrayMsg {
     lateinit var type: String
-    lateinit var data: Map<String, String>
+    lateinit var data: Map<String, Any>
 
     fun getType(): MsgTypeEnum {
         return MsgTypeEnum.valueOf(type.uppercase())
@@ -25,7 +25,7 @@ class ArrayMsg {
 
     fun toCQCode(): String {
         if ("text".equals(type, true)) {
-            return data.getOrDefault("text", "")
+            return data.getOrDefault("text", "").toString()
         }
         return buildString {
             append("[CQ:")

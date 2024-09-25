@@ -127,11 +127,11 @@ fun arrayMsg2Code(arrayMsg: List<ArrayMsg>): String {
                 append("[CQ:")
                 append(item.getType().path)
                 item.data.forEach { (k, v) ->
-                    append(",$k=${unescape(v)}")
+                    append(",$k=${unescape(v.toString())}")
                 }
                 append("]")
             } else {
-                append(escape(item.data[MsgTypeEnum.TEXT.path]!!))
+                append(escape(item.data[MsgTypeEnum.TEXT.path]?.toString()!!))
             }
         }
     }
@@ -143,7 +143,7 @@ fun arrayMsg2Code(arrayMsg: List<ArrayMsg>): String {
  * @return [List]
  */
 fun getImgUrlInMsg(msgList: List<ArrayMsg>): List<String> {
-    return msgList.filter { MsgTypeEnum.IMAGE == it.getType() }.map { it.data["url"] ?: "" }.toList()
+    return msgList.filter { MsgTypeEnum.IMAGE == it.getType() }.map { it.data["url"]?.toString() ?: "" }.toList()
 }
 
 /**
@@ -152,7 +152,7 @@ fun getImgUrlInMsg(msgList: List<ArrayMsg>): List<String> {
  * @return [List]
  */
 fun getVideoUrlInMsg(msgList: List<ArrayMsg>): List<String> {
-    return msgList.filter { MsgTypeEnum.VIDEO == it.getType() }.map { it.data["url"] ?: "" }.toList()
+    return msgList.filter { MsgTypeEnum.VIDEO == it.getType() }.map { it.data["url"]?.toString() ?: "" }.toList()
 }
 
 /**
@@ -162,7 +162,7 @@ fun getVideoUrlInMsg(msgList: List<ArrayMsg>): List<String> {
  */
 fun getAtList(msgList: List<ArrayMsg>): List<Long> {
     return msgList.filter { MsgTypeEnum.AT == it.getType() && "all" != (it.data["qq"] ?: "") }
-        .map { it.data["qq"]?.toLong() ?: 0L }.toList()
+        .map { it.data["qq"]?.toString()?.toLong() ?: 0L }.toList()
 }
 
 fun rowConvert(msg: String, event: MessageEvent) {
