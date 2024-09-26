@@ -12,13 +12,9 @@ class CacheUtils(
     private val sendersMap: HashMap<Int, LongArray> = hashMapOf(),
 ) {
 
-    fun getSortedSenders(senders: LongArray): LongArray {
-        return getSortedArray(senders, sendersMap)
-    }
+    fun getSortedSenders(senders: LongArray): LongArray = getSortedArray(senders, sendersMap)
 
-    fun getSortedGroups(groups: LongArray): LongArray {
-        return getSortedArray(groups, groupsMap)
-    }
+    fun getSortedGroups(groups: LongArray): LongArray = getSortedArray(groups, groupsMap)
 
     private fun getSortedArray(array: LongArray, map: HashMap<Int, LongArray>): LongArray {
         val key = array.contentHashCode()

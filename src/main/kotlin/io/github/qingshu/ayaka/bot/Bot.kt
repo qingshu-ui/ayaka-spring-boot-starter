@@ -24,9 +24,8 @@ class Bot(
      * @param autoEscape 消息内容是否作为纯文本发送，不解析 CQ 码
      * @return result [RespData] of [MsgId]
      */
-    override fun sendPrivateMsg(userId: Long, msg: String, autoEscape: Boolean): RespData<MsgId> {
-        return sendPrivateMsg(0, userId, msg, autoEscape)
-    }
+    override fun sendPrivateMsg(userId: Long, msg: String, autoEscape: Boolean): RespData<MsgId> =
+        sendPrivateMsg(0, userId, msg, autoEscape)
 
     /**
      * 发送私聊消息

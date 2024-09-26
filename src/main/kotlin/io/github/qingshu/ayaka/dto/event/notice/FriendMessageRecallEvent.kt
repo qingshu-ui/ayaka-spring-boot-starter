@@ -18,9 +18,7 @@ class FriendMessageRecallEvent : NoticeEvent() {
         this.block = cancelled
     }
 
-    override fun isCancelled(): Boolean {
-        return this.block
-    }
+    override fun isCancelled(): Boolean = this.block
 
     @JsonProperty("message_id")
     var messageId: Int = 0

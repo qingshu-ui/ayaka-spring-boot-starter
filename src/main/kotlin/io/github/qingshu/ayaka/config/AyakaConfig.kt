@@ -97,9 +97,7 @@ class AyakaConfig {
 
     @Bean
     @ConditionalOnMissingBean
-    fun echoMap(): ConcurrentHashMap<String, CompletableDeferred<ObjectNode>> {
-        return ConcurrentHashMap()
-    }
+    fun echoMap(): ConcurrentHashMap<String, CompletableDeferred<ObjectNode>> = ConcurrentHashMap()
 
     @Bean("ayakaTaskExecutor")
     @ConditionalOnProperty(value = ["ayaka.task.enable-async"], havingValue = "true", matchIfMissing = true)
@@ -137,12 +135,9 @@ class AyakaConfig {
     }
 
     @Bean
-    fun coroutineScope(dispatcher: CoroutineDispatcher): CoroutineScope {
-        return CoroutineScope(dispatcher + SupervisorJob())
-    }
+    fun coroutineScope(dispatcher: CoroutineDispatcher): CoroutineScope = CoroutineScope(dispatcher + SupervisorJob())
 
     @Bean
-    fun dispatcher(@Qualifier("ayakaTaskExecutor") executor: ThreadPoolTaskExecutor): CoroutineDispatcher {
-        return executor.asCoroutineDispatcher()
-    }
+    fun dispatcher(@Qualifier("ayakaTaskExecutor") executor: ThreadPoolTaskExecutor): CoroutineDispatcher =
+        executor.asCoroutineDispatcher()
 }

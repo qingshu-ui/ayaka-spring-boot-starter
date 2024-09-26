@@ -6,9 +6,7 @@ class ArrayMsg {
     lateinit var type: String
     lateinit var data: Map<String, Any>
 
-    fun getType(): MsgTypeEnum {
-        return MsgTypeEnum.valueOf(type.uppercase())
-    }
+    fun getType(): MsgTypeEnum = MsgTypeEnum.valueOf(type.uppercase())
 
     fun setType(typeEnum: MsgTypeEnum?): ArrayMsg {
         type = if (null == typeEnum || !MsgTypeEnum.valid(typeEnum))

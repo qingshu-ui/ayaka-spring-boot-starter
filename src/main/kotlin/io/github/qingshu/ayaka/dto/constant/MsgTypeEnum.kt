@@ -177,12 +177,8 @@ enum class MsgTypeEnum(val path: String) {
 
     companion object {
 
-        fun typeOf(type: String): MsgTypeEnum {
-            return entries.find { it.name.equals(type, true) } ?: UNKNOWN
-        }
+        fun typeOf(type: String): MsgTypeEnum = entries.find { it.name.equals(type, true) } ?: UNKNOWN
 
-        fun valid(type: MsgTypeEnum): Boolean {
-            return entries.contains(type)
-        }
+        fun valid(type: MsgTypeEnum): Boolean = entries.contains(type)
     }
 }

@@ -34,9 +34,7 @@ open class MessageEvent: GeneralEvent(){
         this.block = cancelled
     }
 
-    override fun isCancelled(): Boolean {
-        return this.block
-    }
+    override fun isCancelled(): Boolean = this.block
 
     /**
      * 消息是否提及某人

@@ -11,7 +11,5 @@ import org.springframework.stereotype.Component
  */
 @Component
 class BotFactory {
-    fun createBot(xSelfId: Long, session: BotSession): Bot {
-        return Bot(xSelfId, session)
-    }
+    fun createBot(xSelfId: Long, session: BotSession): Bot = Bot(xSelfId, session)
 }

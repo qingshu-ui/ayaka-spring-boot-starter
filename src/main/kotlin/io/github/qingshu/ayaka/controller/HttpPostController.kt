@@ -12,11 +12,7 @@ import kotlinx.coroutines.launch
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.http.ResponseEntity
-import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestHeader
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
+import org.springframework.web.bind.annotation.*
 
 /**
  * Copyright (c) 2024 qingshu.
@@ -25,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod
  * This project is licensed under the GPL-3.0 License.
  * See the LICENSE file for details.
  */
-@Controller
+@RestController
 @ConditionalOnProperty(prefix = "ayaka.http", name = ["enable"], havingValue = "true", matchIfMissing = false)
 class HttpPostController(
     private val eventFactory: EventFactory,

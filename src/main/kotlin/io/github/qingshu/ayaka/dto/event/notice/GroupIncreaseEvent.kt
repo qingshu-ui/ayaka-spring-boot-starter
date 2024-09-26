@@ -26,9 +26,7 @@ class GroupIncreaseEvent : NoticeEvent() {
         this.block = cancelled
     }
 
-    override fun isCancelled(): Boolean {
-        return this.block
-    }
+    override fun isCancelled(): Boolean = this.block
 
     companion object {
         init {

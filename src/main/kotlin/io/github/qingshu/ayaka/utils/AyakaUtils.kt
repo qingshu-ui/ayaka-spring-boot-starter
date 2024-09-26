@@ -142,18 +142,16 @@ fun arrayMsg2Code(arrayMsg: List<ArrayMsg>): String {
  * @param msgList 消息链
  * @return [List]
  */
-fun getImgUrlInMsg(msgList: List<ArrayMsg>): List<String> {
-    return msgList.filter { MsgTypeEnum.IMAGE == it.getType() }.map { it.data["url"]?.toString() ?: "" }.toList()
-}
+fun getImgUrlInMsg(msgList: List<ArrayMsg>): List<String> =
+    msgList.filter { MsgTypeEnum.IMAGE == it.getType() }.map { it.data["url"]?.toString() ?: "" }.toList()
 
 /**
  * 获取消息内所有视频链接
  * @param msgList 消息链
  * @return [List]
  */
-fun getVideoUrlInMsg(msgList: List<ArrayMsg>): List<String> {
-    return msgList.filter { MsgTypeEnum.VIDEO == it.getType() }.map { it.data["url"]?.toString() ?: "" }.toList()
-}
+fun getVideoUrlInMsg(msgList: List<ArrayMsg>): List<String> =
+    msgList.filter { MsgTypeEnum.VIDEO == it.getType() }.map { it.data["url"]?.toString() ?: "" }.toList()
 
 /**
  * 获取消息内所有at对象账号（不包含全体 at）

@@ -19,7 +19,6 @@ class BotSessionFactory(
     private val websocketProperties: WebsocketProperties
 ) {
 
-    fun <T> createSession(session: T): BotSession {
-        return BotSessionImpl(session, helper, httpCfg, websocketProperties.echoTimeout)
-    }
+    fun <T> createSession(session: T): BotSession =
+        BotSessionImpl(session, helper, httpCfg, websocketProperties.echoTimeout)
 }
