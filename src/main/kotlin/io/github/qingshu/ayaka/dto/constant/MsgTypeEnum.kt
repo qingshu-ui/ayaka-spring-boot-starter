@@ -7,7 +7,6 @@ package io.github.qingshu.ayaka.dto.constant
  * This project is licensed under the GPL-3.0 License.
  * See the LICENSE file for details.
  */
-@Suppress("unused")
 enum class MsgTypeEnum(val path: String) {
 
     /**

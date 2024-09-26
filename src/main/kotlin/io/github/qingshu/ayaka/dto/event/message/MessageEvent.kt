@@ -42,7 +42,7 @@ open class MessageEvent: GeneralEvent(){
      * @return [Boolean]
      */
     fun isAt(userId: Long): Boolean {
-        val atPattern = "\\[CQ:at,qq=$userId(,[^]]*)?\\]".toRegex()
+        val atPattern = "\\[CQ:at,qq=$userId(,[^]]*)?]".toRegex()
         return atPattern.find(rawMessage) != null
     }
 }

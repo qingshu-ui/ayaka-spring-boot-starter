@@ -1,5 +1,6 @@
 package io.github.qingshu.ayaka.aop
 
+import io.github.qingshu.ayaka.annotation.HmacCheck
 import io.github.qingshu.ayaka.annotation.Slf4j
 import io.github.qingshu.ayaka.annotation.Slf4j.Companion.log
 import io.github.qingshu.ayaka.config.HttpPostProperties
@@ -7,7 +8,6 @@ import io.github.qingshu.ayaka.exception.HmacException
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
-import org.aspectj.lang.annotation.Pointcut
 import org.springframework.stereotype.Component
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
@@ -27,12 +27,8 @@ class HmacCheckAop(
     private val httpCfg: HttpPostProperties,
 ) {
 
-    @Pointcut("@annotation(io.github.qingshu.ayaka.annotation.HmacCheck)")
-    fun hmacCheckMethods() {
-    }
-
-    @Around("hmacCheckMethods()")
-    fun hmacCheck(joinPoint: ProceedingJoinPoint): Any {
+    @Around("@annotation(hmacCheck)")
+    fun hmacCheck(joinPoint: ProceedingJoinPoint, hmacCheck: HmacCheck): Any {
         return try {
             if (httpCfg.secret.isEmpty()) {
                 return joinPoint.proceed()
