@@ -1,9 +1,11 @@
 package io.github.qingshu.ayaka.utils
 
+import com.fasterxml.jackson.annotation.JsonSetter
+import com.fasterxml.jackson.annotation.Nulls
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.github.qingshu.ayaka.dto.ArrayMsg
 import io.github.qingshu.ayaka.dto.constant.MsgTypeEnum
 import io.github.qingshu.ayaka.dto.event.message.MessageEvent
@@ -21,7 +23,8 @@ class AyakaUtils
 private val log = LoggerFactory.getLogger(AyakaUtils::class.java)
 val mapper = ObjectMapper().apply {
     configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-    registerModule(KotlinModule.Builder().build())
+    setDefaultSetterInfo(JsonSetter.Value.forValueNulls(Nulls.AS_EMPTY))
+    registerKotlinModule()
 }
 const val EMPTY_STRING = ""
 
