@@ -27,13 +27,13 @@ configurations {
 repositories {
     mavenCentral()
     maven {
-        url = uri("https://maven.meteordev.org/releases")
+        url = uri("https://jitpack.io")
     }
 }
 
 dependencies {
     api(kotlin("reflect"))
-    api("meteordevelopment:orbit:0.2.3")
+    api("com.github.qingshu-ui:orbit:0.2.3")
     api("org.springframework.boot:spring-boot-starter-websocket")
     api("org.springframework.boot:spring-boot-starter-aop")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
@@ -70,6 +70,15 @@ publishing {
                 groupId = project.group.toString()
                 artifactId = project.name
                 version = project.version.toString()
+
+                withXml {
+                    asNode().appendNode("repositories").apply {
+                        appendNode("repository").apply {
+                            appendNode("id", "jitpack.io")
+                            appendNode("url", "https://jitpack.io")
+                        }
+                    }
+                }
             }
         }
     }
