@@ -7,7 +7,9 @@ import io.github.qingshu.ayaka.bot.action.GoCQHTTPExtend
 import io.github.qingshu.ayaka.bot.action.OneBot
 import io.github.qingshu.ayaka.dto.constant.ActionPathEnum
 import io.github.qingshu.ayaka.dto.constant.ParamsKey
-import io.github.qingshu.ayaka.dto.event.message.AnyMessageEvent
+import io.github.qingshu.ayaka.dto.event.message.GroupMessageEvent
+import io.github.qingshu.ayaka.dto.event.message.MessageEvent
+import io.github.qingshu.ayaka.dto.event.message.PrivateMessageEvent
 import io.github.qingshu.ayaka.dto.general.*
 import io.github.qingshu.ayaka.dto.resp.*
 import io.github.qingshu.ayaka.utils.mapper
@@ -92,15 +94,15 @@ class Bot(
 
     /**
      * 发送消息
-     * @param event [AnyMessageEvent]
+     * @param event [MessageEvent]
      * @param msg 消息内容
      * @param autoEscape 消息内容是否作为纯文本发送，不解析 CQ 码
      * @return result [RespData] of [MsgId]
      */
-    override fun sendMsg(event: AnyMessageEvent, msg: String, autoEscape: Boolean): RespData<MsgId> {
-        return when (event.messageType) {
-            ParamsKey.GROUP -> sendGroupMsg(event.groupId, msg, autoEscape)
-            ParamsKey.PRIVATE -> sendPrivateMsg(event.userId, msg, autoEscape)
+    override fun sendMsg(event: MessageEvent, msg: String, autoEscape: Boolean): RespData<MsgId> {
+        return when (event) {
+            is GroupMessageEvent -> sendGroupMsg(event.groupId, msg, autoEscape)
+            is PrivateMessageEvent -> sendPrivateMsg(event.userId, msg, autoEscape)
             else -> RespData(
                 status = "failed", data = MsgId(-1), retCode = -1
             )
@@ -621,11 +623,11 @@ class Bot(
      * @param msg   自定义转发消息
      * @return [RespData]
      */
-    override fun sendForwardMsg(event: AnyMessageEvent, msg: List<Map<String, Any>>): RespData<MsgId> {
+    override fun sendForwardMsg(event: MessageEvent, msg: List<Map<String, Any>>): RespData<MsgId> {
         val params = mapper.createObjectNode()
-        when (event.messageType) {
-            ParamsKey.GROUP -> params.put(ParamsKey.GROUP_ID, event.groupId)
-            ParamsKey.PRIVATE -> params.put(ParamsKey.USER_ID, event.userId)
+        when (event) {
+            is GroupMessageEvent -> params.put(ParamsKey.GROUP_ID, event.groupId)
+            is PrivateMessageEvent -> params.put(ParamsKey.USER_ID, event.userId)
         }
         params.set<ArrayNode>(ParamsKey.MESSAGES, mapper.valueToTree(msg))
         val api = ProtocolBody(

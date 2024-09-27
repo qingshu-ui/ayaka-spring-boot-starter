@@ -20,10 +20,9 @@ import org.springframework.stereotype.Component
 @Component
 class MessageHandlerFilterAop {
 
-    @Around("@annotation(filter)")
-    fun messageFilter(joinPoint: ProceedingJoinPoint, filter: MessageHandlerFilter): Any? {
+    @Around("@annotation(filter) && args(event)")
+    fun messageFilter(joinPoint: ProceedingJoinPoint, filter: MessageHandlerFilter, event: MessageEvent): Any? {
         return try {
-            val event = joinPoint.args.singleOrNull() as? MessageEvent ?: return joinPoint.proceed()
             val checkResult = CommonUtils.allFilterCheck(event, filter)
             if (checkResult.result) {
                 event.matcher = checkResult.matcher

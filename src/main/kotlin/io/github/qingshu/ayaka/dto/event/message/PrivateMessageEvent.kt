@@ -11,8 +11,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode
  * See the LICENSE file for details.
  */
 class PrivateMessageEvent : MessageEvent() {
-    @JsonProperty("message_id")
-    var messageId: Int = 0
 
     @JsonProperty("sub_type")
     lateinit var subType: String

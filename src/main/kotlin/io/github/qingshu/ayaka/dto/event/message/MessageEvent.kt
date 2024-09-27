@@ -9,6 +9,10 @@ import io.github.qingshu.ayaka.utils.ArrayJsonDeserializer
 import java.util.regex.Matcher
 
 open class MessageEvent: GeneralEvent(){
+
+    @JsonProperty("message_id")
+    open var messageId: Int = 0
+
     @JsonProperty("message_type")
     open lateinit var messageType: String
 

@@ -5,8 +5,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import io.github.qingshu.ayaka.dto.general.Anonymous
 
 open class GroupMessageEvent : MessageEvent() {
-    @JsonProperty("message_id")
-    open var messageId: Int = 0
 
     @JsonProperty("sub_type")
     open lateinit var subType: String

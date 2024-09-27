@@ -1,6 +1,6 @@
 package io.github.qingshu.ayaka.bot.action
 
-import io.github.qingshu.ayaka.dto.event.message.AnyMessageEvent
+import io.github.qingshu.ayaka.dto.event.message.MessageEvent
 import io.github.qingshu.ayaka.dto.general.Anonymous
 import io.github.qingshu.ayaka.dto.general.RawResp
 import io.github.qingshu.ayaka.dto.general.RespData
@@ -51,12 +51,12 @@ interface OneBot {
 
     /**
      * 发送消息
-     * @param event [AnyMessageEvent]
+     * @param event [MessageEvent]
      * @param msg 消息内容
      * @param autoEscape 消息内容是否作为纯文本发送，不解析 CQ 码
      * @return result [RespData] of [MsgId]
      */
-    fun sendMsg(event: AnyMessageEvent, msg: String, autoEscape: Boolean = false): RespData<MsgId>
+    fun sendMsg(event: MessageEvent, msg: String, autoEscape: Boolean = false): RespData<MsgId>
 
     /**
      * 撤回消息

@@ -12,9 +12,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode
  */
 class GuildMessageEvent: MessageEvent() {
 
-    @JsonProperty("message_id")
-    lateinit var messageId: String
-
     @JsonProperty("sub_type")
     lateinit var subType: String
 

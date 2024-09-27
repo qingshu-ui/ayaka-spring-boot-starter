@@ -1,6 +1,6 @@
 package io.github.qingshu.ayaka.bot.action
 
-import io.github.qingshu.ayaka.dto.event.message.AnyMessageEvent
+import io.github.qingshu.ayaka.dto.event.message.MessageEvent
 import io.github.qingshu.ayaka.dto.general.RawResp
 import io.github.qingshu.ayaka.dto.general.RespData
 import io.github.qingshu.ayaka.dto.resp.MsgId
@@ -27,7 +27,7 @@ interface GoCQHTTPExtend {
      * @param msg   自定义转发消息
      * @return [RespData]
      */
-    fun sendForwardMsg(event: AnyMessageEvent, msg: List<Map<String, Any>>): RespData<MsgId>
+    fun sendForwardMsg(event: MessageEvent, msg: List<Map<String, Any>>): RespData<MsgId>
 
     /**
      * 发送合并转发 (私聊)
