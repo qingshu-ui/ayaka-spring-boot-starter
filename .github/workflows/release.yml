@@ -16,7 +16,7 @@ jobs:
       - name: Set Release Name
         id: set_release_name
         run: |
-          TAG_NAME="${GITHUB_REF#refs/tags/v}"
+          TAG_NAME="${GITHUB_REF#refs/tags/}"
           echo "RELEASE_NAME=$TAG_NAME" >> $GITHUB_ENV
         env:
           GITHUB_REF: ${{ github.ref }}
