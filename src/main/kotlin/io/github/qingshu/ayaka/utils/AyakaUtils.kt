@@ -23,7 +23,6 @@ class AyakaUtils
 private val log = LoggerFactory.getLogger(AyakaUtils::class.java)
 val mapper = ObjectMapper().apply {
     configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-    setDefaultSetterInfo(JsonSetter.Value.forValueNulls(Nulls.AS_EMPTY))
     registerKotlinModule()
 }
 const val EMPTY_STRING = ""
