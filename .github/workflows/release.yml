@@ -6,7 +6,7 @@ on:
       - 'v*.*.*'
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
 
     steps:
@@ -15,3 +15,9 @@ jobs:
 
       - name: Release
         uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+          token: ${{ secrets.TOKEN }}
