@@ -3,7 +3,7 @@ name: Create Github Release
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - '*.*.*'
 
 jobs:
   release:
