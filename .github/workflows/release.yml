@@ -1,4 +1,4 @@
-name: Release
+name: Create Github Release
 
 on:
   push:
@@ -13,11 +13,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Set Release Name
+        id: set_release_name
+        run: |
+          TAG_NAME="${GITHUB_REF#refs/tags}"
+          echo "RELEASE_NAME=$TAG_NAME" >> $GITHUB_ENV
+        env:
+          GITHUB_REF: ${{ github.ref }}
+
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref }}
-          name: Release ${{ github.ref }}
+          name: ${{ env.RELEASE_NAME }}
           draft: false
           prerelease: false
           token: ${{ secrets.TOKEN }}
