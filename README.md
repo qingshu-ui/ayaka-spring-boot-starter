@@ -20,7 +20,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.qingshu-ui:ayaka-spring-boot-starter:1.0.0'
+    implementation 'com.github.qingshu-ui:ayaka-spring-boot-starter:latest'
 }
 ```
 
@@ -36,7 +36,7 @@ dependencies {
 <dependency>
     <groupId>com.github.qingshu-ui</groupId>
     <artifactId>ayaka-spring-boot-starter</artifactId>
-    <version>1.0.0</version>
+    <version>latest</version>
 </dependency>
 ```
 
