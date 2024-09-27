@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "io.github.qingshu-ui"
-version = "1.0.2-SNAPSHOT"
+version = "1.0.0"
 
 java {
     toolchain {
@@ -70,16 +70,6 @@ publishing {
                 groupId = project.group.toString()
                 artifactId = project.name
                 version = project.version.toString()
-            }
-        }
-    }
-    repositories{
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/qingshu-ui/ayaka-spring-boot-starter")
-            credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
             }
         }
     }
