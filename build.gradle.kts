@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "io.github.qingshu-ui"
-version = "1.0.1-SNAPSHOT"
+version = "1.0.2-SNAPSHOT"
 
 java {
     toolchain {
