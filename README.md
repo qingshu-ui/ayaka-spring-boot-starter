@@ -50,7 +50,7 @@ ayaka:
     plugin-packages: # 插件所在包名
       - io.github.qingshu.ayaka.example
   http:
-    enable: true # 请用 http 上报功能
+    enable: true # 启用 http 上报功能
     api-port: 5800 # onebot api 端口，此项指的是 napcat 的 http 端口
     endpoint: /ayaka # 上报端点 http://localhost:8080/ayaka
     secret: U1FfRzMxQkVvRjBBZ0g5N25tS3Z1YlR3T1NTd0xHNk0= # 校验密钥，关于此配置的详细说明请查看 onebot-11 文档
