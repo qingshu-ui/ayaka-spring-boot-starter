@@ -1,7 +1,6 @@
 package io.github.qingshu.ayaka.utils
 
 import io.github.qingshu.ayaka.dto.ArrayMsg
-import org.apache.tomcat.jni.SSLConf.apply
 
 /**
  * Copyright (c) 2024 qingshu.
