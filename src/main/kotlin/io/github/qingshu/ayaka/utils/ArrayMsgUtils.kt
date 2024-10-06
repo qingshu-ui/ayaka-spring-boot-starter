@@ -15,7 +15,11 @@ class ArrayMsgUtils {
     companion object {
         fun builder() = ArrayMsgUtils()
 
-        fun create(initializer: ArrayMsgUtils.() -> Unit) =
+        fun builder(initializer: ArrayMsgUtils.() -> Unit) = lazy {
+            ArrayMsgUtils().apply(initializer)
+        }
+
+        fun build(initializer: ArrayMsgUtils.() -> Unit) =
             ArrayMsgUtils().apply(initializer).buildCQ()
     }
 
@@ -185,4 +189,8 @@ class ArrayMsgUtils {
 
 fun arrayMsg(initializer: ArrayMsgUtils.() -> Unit) = lazy {
     ArrayMsgUtils().apply(initializer).buildCQ()
+}
+
+fun arrayMsgBuilder(initializer: ArrayMsgUtils.() -> Unit) = lazy {
+    ArrayMsgUtils().apply(initializer)
 }

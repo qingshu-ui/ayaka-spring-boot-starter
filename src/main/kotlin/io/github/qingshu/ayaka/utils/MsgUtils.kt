@@ -305,11 +305,16 @@ class MsgUtils {
     companion object {
         fun builder() = MsgUtils()
 
-        fun create(initializer: MsgUtils.() -> Unit) =
-            MsgUtils().apply(initializer).build()
+        fun builder(initializer: MsgUtils.() -> Unit) = MsgUtils().apply(initializer)
+
+        fun build(initializer: MsgUtils.() -> Unit) = MsgUtils().apply(initializer).build()
     }
 }
 
-fun msgBuilder(initializer: MsgUtils.() -> Unit) = lazy {
+fun buildMsg(initializer: MsgUtils.() -> Unit) = lazy {
     MsgUtils().apply(initializer).build()
+}
+
+fun msgBuilder(initializer: MsgUtils.() -> Unit) = lazy {
+    MsgUtils().apply(initializer)
 }
