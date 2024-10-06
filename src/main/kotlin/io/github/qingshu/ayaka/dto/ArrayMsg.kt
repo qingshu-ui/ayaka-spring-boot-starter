@@ -2,6 +2,7 @@ package io.github.qingshu.ayaka.dto
 
 import io.github.qingshu.ayaka.dto.constant.MsgTypeEnum
 
+@Suppress("MemberVisibilityCanBePrivate")
 class ArrayMsg {
     lateinit var type: String
     lateinit var data: Map<String, Any>

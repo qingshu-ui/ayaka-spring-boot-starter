@@ -14,6 +14,9 @@ class ArrayMsgUtils {
 
     companion object {
         fun builder() = ArrayMsgUtils()
+
+        fun create(initializer: ArrayMsgUtils.() -> Unit) =
+            ArrayMsgUtils().apply(initializer).buildCQ()
     }
 
     private fun getJsonData(type: String, consumer: (MutableMap<String, String>) -> Unit) = ArrayMsg().apply {
@@ -167,7 +170,19 @@ class ArrayMsgUtils {
         })
     }
 
+    @Deprecated(
+        message = "似乎无法使用了，不建议使用",
+        level = DeprecationLevel.ERROR,
+    )
+    fun keyboard(keyboard: Keyboard) = apply {
+        builder.add(getJsonData("keyboard") { it["keyboard"] = mapper.writeValueAsString(keyboard) })
+    }
+
     fun buildCQ() = builder.joinToString("") { it.toCQCode() }
 
     fun build() = builder
+}
+
+fun arrayMsg(initializer: ArrayMsgUtils.() -> Unit) = lazy {
+    ArrayMsgUtils().apply(initializer).buildCQ()
 }

@@ -2,8 +2,11 @@ package io.github.qingshu.ayaka.bot
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import io.github.qingshu.ayaka.config.HttpPostProperties
+import io.github.qingshu.ayaka.dto.constant.MsgTypeEnum
+import io.github.qingshu.ayaka.dto.constant.ParamsKey
 import io.github.qingshu.ayaka.utils.NetUtils
 import io.github.qingshu.ayaka.utils.ProtocolHelper
 import org.slf4j.LoggerFactory
@@ -83,5 +86,34 @@ class BotSessionImpl<T>(
                 FAILED_RESPONSE
             }
         }
+    }
+
+    private fun keyboardSerialize(body: ObjectNode): ObjectNode {
+        val params = body["params"] as? ObjectNode
+        if (params == null || params.isEmpty) {
+            return body
+        }
+        val msg = params[ParamsKey.MESSAGE]
+        if (msg !is ArrayNode) {
+            return body
+        }
+
+        val modified = msg.map {
+            when {
+                it is ObjectNode && it["type"].asText() == MsgTypeEnum.KEYBOARD.path -> {
+                    val data = it["keyboard"].asText()
+                    mapper.readTree(data)
+                }
+
+                else -> it
+            }
+        }
+
+        if (modified != msg) {
+            val copy = params.deepCopy()
+            copy.replace(ParamsKey.MESSAGE, mapper.valueToTree(modified))
+            body.replace("params", copy)
+        }
+        return body
     }
 }

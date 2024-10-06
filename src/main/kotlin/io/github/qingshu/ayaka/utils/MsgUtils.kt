@@ -289,7 +289,7 @@ class MsgUtils {
     /**
      * 发送合并转发消息
      * @param id 合并转发消息Id
-     * @return {@link MsgUtils}
+     * @return [MsgUtils]
      */
     fun forward(id: String): MsgUtils {
         builder.append("[CQ:forward,id=$id]")
@@ -304,5 +304,12 @@ class MsgUtils {
 
     companion object {
         fun builder() = MsgUtils()
+
+        fun create(initializer: MsgUtils.() -> Unit) =
+            MsgUtils().apply(initializer).build()
     }
+}
+
+fun msgBuilder(initializer: MsgUtils.() -> Unit) = lazy {
+    MsgUtils().apply(initializer).build()
 }
